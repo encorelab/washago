@@ -1,0 +1,105 @@
+/* this is mostly lifted from common-knowledge-smartboard.css */
+
+body {
+  /*background: url("/images/common_habitats.png");*/
+  background-size: 70% auto;
+  background-position: 0 100px;
+}
+
+#board {
+  position: absolute;
+  top: 50px;
+  bottom: 0px;
+  right: 180px;
+  left: 0px;
+}
+
+#tags {
+  border-radius: 15px;
+  position: absolute;
+  right: 8px;
+  top: 60px;
+  width: 160px;
+  text-align: center;
+}
+
+#tags .titlebar {
+  margin-bottom: 0.5em;
+}
+
+#tags div.none-yet {
+  padding: 10px;
+  font-style: italic;
+  opacity: 0.6;
+}
+
+#tags ul {
+  list-style: none;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-left: 0;
+  text-align: left;
+}
+
+#tags ul li {
+  background-color: #444;
+  border: 3px solid #aaa;
+  border-radius: 10px;
+  padding: 3px 8px;
+  margin-bottom: 6px;
+}
+
+#tags ul li:hover {
+  cursor: pointer;
+}
+
+#tags li.selected {
+  background-color: #0a0;
+  border: dotted #0f0;
+}
+
+.balloon {
+  position: absolute;
+  width: 300px;
+  
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 14px;
+  padding-right: 14px;
+  
+  border-radius: 15px;
+  background-color: rgba(256,256,256,0.9);
+  box-shadow: rgba(0,0,128,0.25) 3px 3px 4px;
+}
+
+.balloon:hover {
+  cursor: pointer;
+}
+
+.balloon.blurred {
+  opacity: 0.15;
+}
+
+.balloon .author {
+  position: absolute;
+  right: 10px;
+  top: 4px;
+  font-size: 11px;
+  color: #aaa;
+}
+
+.balloon h3.headline {
+  margin: 0;
+}
+
+.balloon .tags {
+  border-top: 2px dashed #ccc;
+  font-size: 12px;
+  margin-top: 1em;
+  padding: 2px;
+}
+
+.balloon .writeup {
+  margin-top: 0.5em;
+  font-size: 14px;
+}
