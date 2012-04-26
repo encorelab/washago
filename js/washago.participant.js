@@ -29,7 +29,7 @@ Washago.Participant = (function() {
     
         connected: function(ev) {
             console.log("Connected...");
-            
+            $("#participant-ui").fadeIn(250);
             Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
                 console.log(who + " joined...");
             });
