@@ -34,6 +34,23 @@ Washago.Participant = (function() {
             Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
                 console.log(who + " joined...");
             });
+        },
+
+        'ui.initialized': function(ev) {
+            console.log("UI initialized, doing bindings...");
+            
+            // binding for submit button - TODO: all of the sev hashes need to be dynamically filled with jQuery etc.
+            jQuery("#submit-button").click(function () {
+                var sev = new Sail.Event('contribution', {
+                    author:"conferenceJoe",
+                    text:"loriddy ipsumius bling la",
+                    tags:["alpha", "beta"],
+                    id:"7582975289532",
+                    about:"poster_A",
+                    discourse_type:"question"
+                });
+                Sail.app.groupchat.sendEvent(sev);
+            });
         }
     };
 
