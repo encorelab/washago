@@ -29,7 +29,6 @@ Washago.Participant = (function() {
     
         connected: function(ev) {
             console.log("Connected...");
-            Washago.Participant.bindEventTriggers();
             
             Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
                 console.log(who + " joined...");
