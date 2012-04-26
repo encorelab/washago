@@ -1,0 +1,31 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <title>Washago Wall</title> 
+  
+    <link href="css/wall.css" rel="stylesheet" type="text/css" /> 
+    <link href="js/sail.js/css/sail.css" rel="stylesheet" type="text/css" /> 
+    
+    <script src="js/sail.js/sail.js" type="text/javascript"></script>
+</head>
+<body> 
+ 
+    <header> 
+        <h1>Washago Wall</h1> 
+    </header> 
+    
+    <div id="wall">
+    </div>
+    
+    
+    <footer> 
+    </footer> 
+
+    <script type="text/javascript">
+        Sail.load()
+            .then('js/washago.wall.js')
+            .thenRun(function() { return Sail.init(Washago.Wall); });
+    </script>
+        
+</body>
+</html>

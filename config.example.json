@@ -1,0 +1,12 @@
+{
+"xmpp": {
+    "domain": "roadshow.local",
+    "port": 5222
+  },
+"bosh": {
+    "url": "http://roadshow.local:5280/http-bind/"
+  },
+"mongo": {
+    "url": "http://mongo.roadshow.local:27080/"
+  }
+}
