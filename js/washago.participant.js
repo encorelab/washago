@@ -9,7 +9,7 @@ Washago.Participant = (function() {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
 
         Sail.modules
-            .load('Strophe.AutoConnector')
+            .load('Strophe.AutoConnector', {anonymous: true})
             .load('AuthStatusWidget')
             .thenRun(function () {
                 Sail.autobindEvents(Washago.Participant);
@@ -19,16 +19,12 @@ Washago.Participant = (function() {
     };
 
     self.authenticate = function () {
-        // TODO: implement anon auth in autoconnector?
-        Sail.Strophe.jid = "";
-        Sail.Strophe.password = "";
+        jQuery(self).trigger('authenticated');
     };
 
     self.events = {
         initialized: function(ev) {
-            // TODO: implement anon auth in autoconnector?
             Washago.Participant.authenticate();
-            Sail.Strophe.connect();
         },
     
         connected: function(ev) {
