@@ -3,6 +3,7 @@
 var Washago = window.Washago || {};
 
 Washago.Participant = (function() {
+    "use strict";
     var self = {};
 
     self.init = function () {
@@ -29,12 +30,23 @@ Washago.Participant = (function() {
     
         connected: function(ev) {
             console.log("Connected...");
-            $("#participant-ui").fadeIn(250);
+            jQuery("#participant-ui").fadeIn(250);
             Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
                 console.log(who + " joined...");
             });
         }
     };
 
+    self.getLocations = function() {
+        var dataStr ='{"tags":["collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
+        var data = jQuery.parseJSON(dataStr);
+        //jQuery.post();
+        
+    };
+    
+    self.getTags = function() {
+        
+    };
+    
     return self;
 })();
