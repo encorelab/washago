@@ -66,28 +66,27 @@ Washago.Wall = (function() {
         alert("I'm writing to a non-existent DB!");
     };
 
-    var participantJoined = function (who, stanza) {
-        console.log(who + " joined...");
+    var addParticipantToList = function (jid) {
+        console.log(jid + " joined...");
 
-        var nickname = Strophe.getResourceFromJid(who);
+        var nickname = Strophe.getResourceFromJid(jid);
 
         var li = jQuery("<li />");
         li.text(nickname);
-        li.data('nickname', nickname);
+        li.addClass("participant-"+MD5.hexdigest(nickname));
 
 
         jQuery("#participants .none-yet").remove('.none-yet');
         jQuery("#participants ul").append(li);
     };
 
-    var participantLeft = function (who, stanza) {
-        console.log(who + " left...");
+    var removeParticipantFromList = function (jid) {
+        console.log(jid + " left...");
 
-        var nickname = Strophe.getResourceFromJid(who);
+        var nickname = Strophe.getResourceFromJid(jid);
 
-        jQuery("#participants li").filter(function() {
-            return jQuery(this).data('nickname') === nickname;
-        }).hide('fade', 'fast', function () {jQuery(this).remove();});
+        jQuery("#participants .participant-"+MD5.hexdigest(nickname))
+            .hide('fade', 'fast', function () {jQuery(this).remove();});
     };
 
     self.init = function() {
@@ -123,11 +122,11 @@ Washago.Wall = (function() {
             console.log("Connected...");
             
             for (var p in Sail.app.groupchat.participants) {
-                participantJoined(p);
+                addParticipantToList(p);
             }
 
-            Sail.app.groupchat.addParticipantJoinedHandler(participantJoined);
-            Sail.app.groupchat.addParticipantLeftHandler(participantLeft);
+            Sail.app.groupchat.addParticipantJoinedHandler(addParticipantToList);
+            Sail.app.groupchat.addParticipantLeftHandler(removeParticipantFromList);
         },
 
         sail: {
