@@ -132,12 +132,11 @@ body {
   opacity: 0.15;
 }
 
-.balloon .author {
-  position: absolute;
-  right: 10px;
-  top: 4px;
+.balloon .about.author {
   font-size: 11px;
-  color: #aaa;
+  padding: 2px;  
+  margin-bottom: 1em;
+  border-bottom: 2px dashed #ccc;
 }
 
 .balloon h3.headline {
@@ -146,12 +145,13 @@ body {
 
 .balloon .tags {
   border-top: 2px dashed #ccc;
-  font-size: 12px;
+  font-size: 11px;
   margin-top: 1em;
   padding: 2px;
+  color: #aaa;
 }
 
-.balloon .writeup {
+.balloon .text {
   margin-top: 0.5em;
   font-size: 14px;
 }

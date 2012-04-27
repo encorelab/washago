@@ -9,12 +9,14 @@
     <script src="js/sail.js/sail.js" type="text/javascript"></script>
 </head>
 <body> 
- 
-    <header> 
-        <h1>Washago Wall</h1> 
-    </header> 
-    
     <div id="wall">
+        <div id="about" class="widget-box toobar">
+            <h3 class="titlebar">About</h3>
+            <div class="none-yet">(None yet...)</div>
+            <ul>
+            </ul>
+        </div>
+
         <div id="participants" class="widget-box toolbar">
             <h3 class="titlebar">Participants</h3>
             <div class="none-yet">(None yet...)</div>
@@ -22,11 +24,19 @@
             </ul>
         </div>
 
+        <div id="discourse-type" class="widget-box toolbar">
+            <h3 class="titlebar">Discourse type</h3>
+            <ul>
+                <li>Comment</li>
+                <li>Question</li>
+            </ul>
+        </div>
+
         <div id="tags" class="widget-box toolbar">
             <h3 class="titlebar">Tags</h3>
             <div class="discourse-type-filter"></div>
             <div class="about-filter-type"></div>
-            <div class="none-yet">(None yet...)</div>           <!-- TODO: fix this class name (also in js) -->
+            <div class="none-yet">(None yet...)</div>
             <ul>
             </ul>
         </div>

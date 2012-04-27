@@ -64,12 +64,19 @@ Washago.Wall = (function() {
 
         balloon.hide(); // initially hidden, we call show() with an effect later
 
+        var about = jQuery("<div class='about author'>");
+        about.text(contribution.about + ' - ' + contribution.author);
+        balloon.prepend(about);
 
         var text = jQuery("<div class='text'></div>");
         text.text(contribution.text);
-
         balloon.append(text);
 
+        tags = jQuery("<div class='tags'></div>");
+        if (contribution.tags) {
+            tags.text(contribution.tags.join(", "));
+            balloon.append(tags);
+        }
 
         balloon.draggable();
 
@@ -113,10 +120,14 @@ Washago.Wall = (function() {
                 list.append(li);
             }
         });
+        //return cumulativeTagArray;
     };
 
-    var writeToDB = function (contribution) {
+    var writeToDB = function (contribution, tagList) {
+        // we might not need to pass tagList
         console.log("I'm writing to a non-existent DB!");
+        // write contribution
+        // write new tag list
     };
 
     var addParticipantToList = function (jid) {
@@ -190,7 +201,6 @@ Washago.Wall = (function() {
 
         sail: {
             contribution: function (sev) {
-                console.log("crapout area");
                 var new_contribution = {
                     author:sev.payload.author,
                     text:sev.payload.text,
@@ -202,7 +212,7 @@ Washago.Wall = (function() {
                 };
                 createBalloon(new_contribution);
                 updateTagList(new_contribution);
-                writeToDB(new_contribution);            // may need to be renamed
+                writeToDB(new_contribution, culumativeTagArray);
             }
         }
     };
