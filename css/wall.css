@@ -6,9 +6,13 @@ body {
   background-position: 0 100px;
 }
 
+header {
+  display: none;
+}
+
 #wall {
   position: absolute;
-  top: 50px;
+  top: 10px;
   bottom: 0px;
   right: 150px;
   left: 150px;
@@ -69,35 +73,47 @@ body {
   border: dotted #0f0;
 }
 
-#tags {
-  right: -140px;
-  top: 10px;
-  width: 160px;
-
-  -moz-transform: rotateY(-20deg) translateY(-10px);
-  -webkit-transform: rotateY(-15deg) translateY(-10px) translateX(-10px);
-  transform: rotateY(-20deg) translateY(-10px);
-}
-
-#tags div.none-yet,
-#participants div.none-yet {
-  padding: 10px;
-  font-style: italic;
-  opacity: 0.6;
-}
-
-#participants {
+.toolbars-left {
+  position: absolute;
   left: -140px;
   top: 10px;
   width: 160px;
+  bottom: 0px;
 
   -moz-transform: rotateY(20deg) translateY(-10px);
   -webkit-transform: rotateY(15deg) translateY(-10px) translateX(10px);
   transform: rotateY(20deg) translateY(-10px);
 }
 
-#participants li {
-  overflow: hidden;
+.toolbars-right {
+  position: absolute;
+  right: -140px;
+  top: 10px;
+  width: 160px;
+  bottom: 0px;
+
+  -moz-transform: rotateY(-20deg) translateY(-10px);
+  -webkit-transform: rotateY(-15deg) translateY(-10px) translateX(-10px);
+  transform: rotateY(-20deg) translateY(-10px);
+}
+
+.filter-list-container {
+  overflow-y: scroll;
+}
+
+#tags-filter,
+#participants-filter,
+#about-filter,
+#discourse-filter {
+  width: 100%;
+  position: static;
+  margin-bottom: 10px;
+}
+
+div.none-yet {
+  padding: 10px;
+  font-style: italic;
+  opacity: 0.6;
 }
 
 .balloon {
