@@ -6,12 +6,19 @@ body {
   background-position: 0 100px;
 }
 
-#board {
+#wall {
   position: absolute;
   top: 50px;
   bottom: 0px;
-  right: 180px;
-  left: 0px;
+  right: 150px;
+  left: 150px;
+
+  -moz-perspective: 900px;
+  -moz-transform-style: preserve-3d;
+  -webkit-perspective: 900px;
+  -webkit-transform-style: preserve-3d;
+  perspective: 900px;
+  transform-style: preserve-3d;
 }
 
 .toolbar {
@@ -22,14 +29,27 @@ body {
 
 .toolbar ul {
   list-style: none;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin: 5px;
   padding-left: 0;
   text-align: left;
 }
 
 .toolbar .titlebar {
   margin-bottom: 0.5em;
+}
+
+.toolbar.ui-draggable .titlebar {
+  cursor: pointer;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.toolbar.ui-draggable-dragging .titlebar {
+  cursor: move;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
 }
 
 .toolbar ul li {
@@ -49,11 +69,14 @@ body {
   border: dotted #0f0;
 }
 
-
 #tags {
-  right: 8px;
-  top: 60px;
+  right: -140px;
+  top: 10px;
   width: 160px;
+
+  -moz-transform: rotateY(-20deg) translateY(-10px);
+  -webkit-transform: rotateY(-15deg) translateY(-10px) translateX(-10px);
+  transform: rotateY(-20deg) translateY(-10px);
 }
 
 #tags div.none-yet,
@@ -64,9 +87,13 @@ body {
 }
 
 #participants {
-  left: 8px;
-  top: 60px;
+  left: -140px;
+  top: 10px;
   width: 160px;
+
+  -moz-transform: rotateY(20deg) translateY(-10px);
+  -webkit-transform: rotateY(15deg) translateY(-10px) translateX(10px);
+  transform: rotateY(20deg) translateY(-10px);
 }
 
 #participants li {
@@ -89,6 +116,16 @@ body {
 
 .balloon:hover {
   cursor: pointer;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.balloon.ui-draggable-dragging {
+  cursor: move;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
 }
 
 .balloon.blurred {
