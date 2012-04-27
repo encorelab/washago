@@ -63,6 +63,18 @@ Washago.Participant = (function() {
     };
 
     self.getLocations = function() {
+        
+        var dataStr ='{"tags":["collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
+        var data = jQuery.parseJSON(dataStr);
+        var firstOption = true;
+        //jQuery.post();
+        var availableLocations = jQuery("#select-location");
+        jQuery.each(data.tags, function(index, value) { 
+            //alert(index + ': ' + value);
+            availableLocations.append('<option value="' + value + '"' + ((firstOption)?'selected="selected"':'') + '>' + value + '</option>')
+            firstOption = false;
+        });
+        
     };
     
     self.getTags = function() {
