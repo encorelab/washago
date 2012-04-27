@@ -13,15 +13,21 @@ Washago.Wall = (function() {
 
         balloon.attr('id', "contibution-" + contribution.id);
         balloon.addClass('author-' + contribution.author);
-        jQuery(contribution.tags).each(function() {
+/*        jQuery(contribution.tags).each(function() {
             balloon.addClass(this);
-        });
+        });*/
 
         balloon.hide(); // initially hidden, we call show() with an effect later
 
+
+        text = jQuery("<div class='text'></div>");
+        text.text(contribution.text);
+
+        balloon.append(text);
+
         // whole mess of stuff goes here (formatting, adding contribution.text, positioning, dragging, etc.)
 
-        jQuery("#board").append(balloon);
+        jQuery("#wall").append(balloon);
         balloon.show('puff', 'fast');
 
         return balloon;
@@ -56,8 +62,6 @@ Washago.Wall = (function() {
                 list.append(li);
             }
         });
-
-
     };
 
     var writeToDB = function (contribution) {
@@ -116,7 +120,6 @@ Washago.Wall = (function() {
                 createBalloon(new_contribution);
                 updateTagList(new_contribution);
                 writeToDB(new_contribution);            // may need to be renamed
-                return true;
             }
         }
     };
