@@ -3,7 +3,7 @@
 ;(function( jQuery, window, undefined ) {
     "use strict";
     jQuery.extend(jQuery.mobile, {
-        showToast: function(message, showLoader, delay,callback) {
+        showToast: function(message, showLoader, delay, isErrorToast, callback) {
             var oldMsg = jQuery.mobile.loadingMessage;
             jQuery.mobile.loadingMessage = message;
             
@@ -17,6 +17,10 @@
             }
             else {
                 jQuery(".ui-icon-loading").removeClass("ui-icon").removeClass("ui-icon-loading");
+            }
+            
+            if (isErrorToast) {
+                jQuery(".ui-body-a, .ui-overlay-a").removeClass("ui-body-a").removeClass("ui-overlay-a").addClass("ui-overlay-error").addClass("ui-body-error");
             }
             
             if(delay && delay >0)
