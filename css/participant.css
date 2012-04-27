@@ -44,11 +44,11 @@
 
 .ui-loader-verbose {
     height: auto;
-    margin-left: -170px;
+    margin-left: -165px;
     margin-top: -43px;
     opacity: 0.90;
-    padding: 15px;
-    width: 300px;
+    padding: 10px;
+    width: 280px;
 }
 
 /* responsive page widths */
