@@ -1,9 +1,12 @@
 /*jshint browser: true, devel: true */
-/*globals Sail, jQuery, _ */
+/*globals Sail, Strophe, jQuery, _ */
 var Washago = window.Washago || {};
 
 Washago.Wall = (function() {
     var self = {};
+
+    self.name = "Washago.Wall";
+
     self.cumulativeTagArray = [];
 
     var createBalloon = function(contribution) {
@@ -13,15 +16,21 @@ Washago.Wall = (function() {
 
         balloon.attr('id', "contibution-" + contribution.id);
         balloon.addClass('author-' + contribution.author);
-        jQuery(contribution.tags).each(function() {
+/*        jQuery(contribution.tags).each(function() {
             balloon.addClass(this);
-        });
+        });*/
 
         balloon.hide(); // initially hidden, we call show() with an effect later
 
+
+        text = jQuery("<div class='text'></div>");
+        text.text(contribution.text);
+
+        balloon.append(text);
+
         // whole mess of stuff goes here (formatting, adding contribution.text, positioning, dragging, etc.)
 
-        jQuery("#board").append(balloon);
+        jQuery("#wall").append(balloon);
         balloon.show('puff', 'fast');
 
         return balloon;
@@ -30,6 +39,12 @@ Washago.Wall = (function() {
     var updateTagList = function(contribution) {
         // this function handles the UI stuff for the list of tags on the sidebar
         // then updates the list of user created tags with newly submitted tags
+
+        // _.difference(array, *others) 
+        // _.difference([1, 2, 3, 4, 5], [5, 2, 10]);
+        // => [1, 3, 4]
+        // update the saved list of tags
+        self.cumulativeTagArray = _.difference(contribution.tags, self.cumulativeTagArray);
 
         var none_yet = jQuery('#tags .none-yet');
         if (none_yet.length > 0) {
@@ -50,24 +65,44 @@ Washago.Wall = (function() {
                 list.append(li);
             }
         });
-
-
-        // _.difference(array, *others) 
-        // _.difference([1, 2, 3, 4, 5], [5, 2, 10]);
-        // => [1, 3, 4]
-        // update the saved list of tags
-        self.cumulativeTagArray = _.difference(contribution.tags, self.cumulativetagArray);
     };
 
     var writeToDB = function (contribution) {
-        alert("I'm writing to a non-existent DB!");
+        console.log("I'm writing to a non-existent DB!");
+    };
+
+    var addParticipantToList = function (jid) {
+        console.log(jid + " joined...");
+
+        var nickname = Strophe.getResourceFromJid(jid);
+
+        var li = jQuery("<li />");
+        li.text(nickname);
+        li.addClass("participant-"+MD5.hexdigest(nickname));
+
+
+        jQuery("#participants .none-yet").remove('.none-yet');
+        jQuery("#participants ul").append(li);
+    };
+
+    var removeParticipantFromList = function (jid) {
+        console.log(jid + " left...");
+
+        var nickname = Strophe.getResourceFromJid(jid);
+
+        jQuery("#participants .participant-"+MD5.hexdigest(nickname))
+            .hide('fade', 'fast', function () {jQuery(this).remove();});
     };
 
     self.init = function() {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
 
+        // TODO: move this out to config.json
+        Sail.app.username = "roadshow";
+        Sail.app.password = "roadshow";
+
         Sail.modules
-            .load('Strophe.AutoConnector', {anonymous: true})
+            .load('Strophe.AutoConnector', {mode: 'pseudo-anon'})
             .load('AuthStatusWidget')
             .thenRun(function () {
                 Sail.autobindEvents(Washago.Wall);
@@ -91,14 +126,18 @@ Washago.Wall = (function() {
         connected: function(ev) {
             console.log("Connected...");
             
-            Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
-                console.log(who + " joined...");
-            });
+            for (var p in Sail.app.groupchat.participants) {
+                addParticipantToList(p);
+            }
+
+            Sail.app.groupchat.addParticipantJoinedHandler(addParticipantToList);
+            Sail.app.groupchat.addParticipantLeftHandler(removeParticipantFromList);
         },
 
         sail: {
-            new_contribution: function(sev) {
-                var contribution = {
+            contribution: function(sev) {
+                console.log("crapout area");
+                var new_contribution = {
                     author:sev.payload.author,
                     text:sev.payload.text,
                     tags:sev.payload.tags,
@@ -107,9 +146,9 @@ Washago.Wall = (function() {
                     timestamp:sev.timestamp,
                     id:sev.payload.id
                 };
-                createBalloon(contribution);
-                updateTagList(contribution);
-                writeToDB(contribution);            // may need to be renamed
+                createBalloon(new_contribution);
+                updateTagList(new_contribution);
+                writeToDB(new_contribution);            // may need to be renamed
             }
         }
     };
