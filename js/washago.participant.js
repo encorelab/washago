@@ -54,12 +54,12 @@ Washago.Participant = (function() {
                 var myText = jQuery.trim(jQuery("#text-contribution").val());
                 
                 if (myTags.length === 0) {
-                    alert('You must select at least ONE tag!');
+                    jQuery.mobile.showToast("You must select at least ONE tag!",false, 4000, true);
                     return;
                 }
                 
                 if (myText.length < 4) {
-                    alert('You must enter in some text!');
+                    jQuery.mobile.showToast("You must enter in some text!",false, 4000, true);
                     return;
                 }
                 
@@ -84,9 +84,9 @@ Washago.Participant = (function() {
                 
                  if (sev.payload.id === lastSentContributeID) {
                     console.log('my contribution event occured!');
-                    jQuery.mobile.showToast("Tags Saved!",false, 3000,function(){console.log("toast end"); });
+                    jQuery.mobile.showToast("Tags Saved!",false, 3000, false, function(){console.log("toast end"); });
                     //alert("Tags Saved!");
-                    self.resetParticipantForm()
+                    self.resetParticipantForm();
                  }
             }
             
@@ -167,8 +167,9 @@ Washago.Participant = (function() {
         jQuery.each(data.tags, function(index, value) { 
             //alert(index + ': ' + value);
             value = jQuery.trim(value);
-            if (self.inTagStack(value) === 0)
+            if (self.inTagStack(value) === 0) {
                 availableTags.after('<li class="tag-class" tag_id="' + value + '" data-theme="c" data-icon="plus"><a class="tag-class-href" href="#page1">' + value + '</a></li>');
+            }
         });
         
         jQuery('#tag-list').listview('refresh');
@@ -199,11 +200,11 @@ Washago.Participant = (function() {
             var searchMatchFound = self.inTagStack(searchValue);
             
             if (e.which === 13 && searchMatchFound >= 2) {
-                jQuery.mobile.showToast("You already used this tag...",false, 3000);
+                jQuery.mobile.showToast("You already used this tag...",false, 3000, true);
             }
             else if (e.which === 13 && searchMatchFound <= 1) {
                 e.preventDefault();
-                if (searchValue.length === 0) return;
+                if (searchValue.length === 0) { return; }
                 
                 var tagButton = '<a href="#" class="tag_button" data-role="button" data-icon="delete" >' + searchValue +'</a>';
                 jQuery('#chosen-tags').append( tagButton );

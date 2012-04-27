@@ -101,12 +101,12 @@ Washago.Wall = (function() {
         // update the saved list of tags
         self.cumulativeTagArray = _.difference(contribution.tags, self.cumulativeTagArray);
 
-        var none_yet = jQuery('#tags .none-yet');
+        var none_yet = jQuery('#tags-filter .none-yet');
         if (none_yet.length > 0) {
             none_yet.remove();
         }
         
-        var list = jQuery('#tags ul');
+        var list = jQuery('#tags-filter ul');
         _.each(contribution.tags, function (tag) {
             //klass = CommonBoard.keywordToClassName(tag);
             var li = list.find('.' + tag);                          // what's going on here?
@@ -140,8 +140,8 @@ Washago.Wall = (function() {
         li.addClass("participant-"+MD5.hexdigest(nickname));
 
 
-        jQuery("#participants .none-yet").remove('.none-yet');
-        jQuery("#participants ul").append(li);
+        jQuery("#participants-filter .none-yet").remove('.none-yet');
+        jQuery("#participants-filter ul").append(li);
     };
 
     var removeParticipantFromList = function (jid) {
@@ -149,7 +149,7 @@ Washago.Wall = (function() {
 
         var nickname = Strophe.getResourceFromJid(jid);
 
-        jQuery("#participants .participant-"+MD5.hexdigest(nickname))
+        jQuery("#participants-filter .participant-"+MD5.hexdigest(nickname))
             .hide('fade', 'fast', function () {jQuery(this).remove();});
     };
 
@@ -195,7 +195,7 @@ Washago.Wall = (function() {
 
         'ui.initialized': function (ev) {
             jQuery('.toolbar')
-                .draggable({handle: '.titlebar'})
+                //.draggable({handle: '.titlebar'})
                 .mousedown(bringDraggableToFront);
         },
 

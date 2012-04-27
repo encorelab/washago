@@ -20,18 +20,33 @@
 
 
 .ui-body-a, .ui-overlay-a {
-    background: #FFC474;
-    border: 1px solid #444444;
-    color: #111111;
-    font-weight: normal;
-    text-shadow: 0 1px 1px #EEEEEE;
+    background-color: #57A957;
+    background-image: -moz-linear-gradient(center top , #62C462, #57A957);
+    background-image: -webkit-linear-gradient(top, #62C462, #57A957);
+    background-image: -o-linear-gradient(top, #62C462, #57A957);
+    background-image: linear-gradient(top, #62C462, #57A957);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.ui-body-error, .ui-overlay-error  {
+    background-color: #C43C35;
+    background-image: -moz-linear-gradient(center top , #EE5F5B, #C43C35);
+    background-image: -webkit-linear-gradient(top, #EE5F5B, #C43C35);
+    background-image: -o-linear-gradient(top, #EE5F5B, #C43C35);
+    background-image: linear-gradient(top, #EE5F5B, #C43C35);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    color: #FFFFFF;
 }
 
 .ui-loader-verbose {
     height: auto;
     margin-left: -110px;
     margin-top: -43px;
-    opacity: 0.80;
+    opacity: 0.90;
     padding: 10px;
     width: 300px;
 }
