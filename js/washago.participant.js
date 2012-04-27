@@ -48,12 +48,25 @@ Washago.Participant = (function() {
             console.log("UI initialized, doing bindings...");
             
             // binding for submit button - TODO: all of the sev hashes need to be dynamically filled with jQuery etc.
-            jQuery("#submit-button").click(function () {
+            jQuery(".submit-button").click(function () {
+                var myTags = self.tagsToArray();
+                var myText = jQuery.trim(jQuery("#text-contribution").val());
+                
+                if (myTags.length === 0) {
+                    alert('Tag Length 0');
+                    return;
+                }
+                
+                if (myText.length < 4) {
+                    alert('Text Length 0');
+                    return;
+                }
+                
                 var sev = new Sail.Event('contribution', {
-                    author:"conferenceJoe",
-                    text:"loriddy ipsumius bling la",
-                    tags:["alpha", "beta"],
-                    id: "7582975289532",
+                    author: Sail.app.nickname,
+                    text:myText,
+                    tags:myTags,
+                    id: Math.floor((Math.random() * 1e50)).toString(36),
                     about: jQuery("#select-location").val(),
                     discourse_type: jQuery('#radioType').val()
                 });
@@ -61,10 +74,14 @@ Washago.Participant = (function() {
             });
         }
     };
+    
+    self.showDialog = function(header, content) {
+        
+    };
 
     self.getLocations = function() {
         
-        var dataStr ='{"tags":["collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
+        var dataStr ='{"tags":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
         var data = jQuery.parseJSON(dataStr);
         var firstOption = true;
         //jQuery.post();
@@ -74,6 +91,8 @@ Washago.Participant = (function() {
             availableLocations.append('<option value="' + value + '"' + ((firstOption)?'selected="selected"':'') + '>' + value + '</option>')
             firstOption = false;
         });
+        
+        jQuery(availableLocations).selectmenu('refresh', true);
         
     };
     
@@ -132,6 +151,16 @@ Washago.Participant = (function() {
            
             
         });
+       
+       self.tagsToArray = function(){
+            var myTags = new Array();
+            
+            jQuery.each(jQuery(".tag_button"), function(index, value) { 
+                myTags[index] = jQuery(value).text();
+            });
+            
+            return myTags;
+       }
     };
     
     return self;
