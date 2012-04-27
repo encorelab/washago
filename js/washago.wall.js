@@ -66,8 +66,12 @@ Washago.Wall = (function() {
     self.init = function() {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
 
+        // TODO: move this out to config.json
+        Sail.app.username = "roadshow";
+        Sail.app.password = "roadshow";
+
         Sail.modules
-            .load('Strophe.AutoConnector', {anonymous: true})
+            .load('Strophe.AutoConnector', {mode: 'pseudo-anon'})
             .load('AuthStatusWidget')
             .thenRun(function () {
                 Sail.autobindEvents(Washago.Wall);
