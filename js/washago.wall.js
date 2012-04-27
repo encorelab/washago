@@ -1,5 +1,5 @@
 /*jshint browser: true, devel: true */
-/*globals Sail, jQuery, _ */
+/*globals Sail, Strophe, jQuery, _ */
 var Washago = window.Washago || {};
 
 Washago.Wall = (function() {
@@ -63,6 +63,30 @@ Washago.Wall = (function() {
         alert("I'm writing to a non-existent DB!");
     };
 
+    var participantJoined = function (who, stanza) {
+        console.log(who + " joined...");
+
+        var nickname = Strophe.getResourceFromJid(who);
+
+        var li = jQuery("<li />");
+        li.text(nickname);
+        li.data('nickname', nickname);
+
+
+        jQuery("#participants .none-yet").remove('.none-yet');
+        jQuery("#participants ul").append(li);
+    };
+
+    var participantLeft = function (who, stanza) {
+        console.log(who + " left...");
+
+        var nickname = Strophe.getResourceFromJid(who);
+
+        jQuery("#participants li").filter(function() {
+            return jQuery(this).data('nickname') === nickname;
+        }).hide('fade', 'fast', function () {jQuery(this).remove();});
+    };
+
     self.init = function() {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
 
@@ -95,9 +119,12 @@ Washago.Wall = (function() {
         connected: function(ev) {
             console.log("Connected...");
             
-            Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
-                console.log(who + " joined...");
-            });
+            for (var p in Sail.app.groupchat.participants) {
+                participantJoined(p);
+            }
+
+            Sail.app.groupchat.addParticipantJoinedHandler(participantJoined);
+            Sail.app.groupchat.addParticipantLeftHandler(participantLeft);
         },
 
         sail: {
