@@ -31,6 +31,12 @@ Washago.Wall = (function() {
         // this function handles the UI stuff for the list of tags on the sidebar
         // then updates the list of user created tags with newly submitted tags
 
+        // _.difference(array, *others) 
+        // _.difference([1, 2, 3, 4, 5], [5, 2, 10]);
+        // => [1, 3, 4]
+        // update the saved list of tags
+        // self.cumulativeTagArray = _.difference(contribution.tags, self.cumulativeTagArray);
+
         var none_yet = jQuery('#tags .none-yet');
         if (none_yet.length > 0) {
             none_yet.remove();
@@ -52,15 +58,10 @@ Washago.Wall = (function() {
         });
 
 
-        // _.difference(array, *others) 
-        // _.difference([1, 2, 3, 4, 5], [5, 2, 10]);
-        // => [1, 3, 4]
-        // update the saved list of tags
-        self.cumulativeTagArray = _.difference(contribution.tags, self.cumulativetagArray);
     };
 
     var writeToDB = function (contribution) {
-        alert("I'm writing to a non-existent DB!");
+        console.log("I'm writing to a non-existent DB!");
     };
 
     self.init = function() {
@@ -101,8 +102,9 @@ Washago.Wall = (function() {
         },
 
         sail: {
-            new_contribution: function(sev) {
-                var contribution = {
+            contribution: function(sev) {
+                console.log("crapout area");
+                var new_contribution = {
                     author:sev.payload.author,
                     text:sev.payload.text,
                     tags:sev.payload.tags,
@@ -111,9 +113,10 @@ Washago.Wall = (function() {
                     timestamp:sev.timestamp,
                     id:sev.payload.id
                 };
-                createBalloon(contribution);
-                updateTagList(contribution);
-                writeToDB(contribution);            // may need to be renamed
+                createBalloon(new_contribution);
+                updateTagList(new_contribution);
+                writeToDB(new_contribution);            // may need to be renamed
+                return true;
             }
         }
     };
