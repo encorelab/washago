@@ -5,6 +5,7 @@ var Washago = window.Washago || {};
 Washago.Participant = (function() {
     "use strict";
     var self = {};
+    var lastSentContributeID = null;
 
     self.init = function () {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
@@ -48,32 +49,86 @@ Washago.Participant = (function() {
             console.log("UI initialized, doing bindings...");
             
             // binding for submit button - TODO: all of the sev hashes need to be dynamically filled with jQuery etc.
-            jQuery("#submit-button").click(function () {
+            jQuery(".submit-button").click(function () {
+                var myTags = self.tagsToArray();
+                var myText = jQuery.trim(jQuery("#text-contribution").val());
+                
+                if (myTags.length === 0) {
+                    alert('You must select at least ONE tag!');
+                    return;
+                }
+                
+                if (myText.length < 4) {
+                    alert('You must enter in some text!');
+                    return;
+                }
+                
+                lastSentContributeID = Math.floor((Math.random() * 1e50)).toString(36);
+                
                 var sev = new Sail.Event('contribution', {
-                    author:"conferenceJoe",
-                    text:"loriddy ipsumius bling la",
-                    tags:["alpha", "beta"],
-                    id: "7582975289532",
+                    author: Sail.app.nickname,
+                    text:myText,
+                    tags:myTags,
+                    id: lastSentContributeID,
                     about: jQuery("#select-location").val(),
-                    discourse_type: jQuery('#radioType').val()
+                    discourse_type: jQuery('input[name="radioType"]:checked').val()
                 });
                 Sail.app.groupchat.sendEvent(sev);
+                
+                 
             });
+        },
+        
+        sail: {
+            contribution: function(sev) {
+                
+                 if (sev.payload.id === lastSentContributeID) {
+                    console.log('my contribution event occured!');
+                    jQuery.mobile.showToast("Tags Saved!",false, 3000,function(){console.log("toast end"); });
+                    //alert("Tags Saved!");
+                    self.resetParticipantForm()
+                 }
+            }
+            
         }
+    };
+    
+    self.resetParticipantForm = function() {
+        lastSentContributeID = null;
+        //Query('#radioType').val('comment');
+        jQuery('input[name="radioType"]:nth(1)').attr('checked', false).checkboxradio("refresh");
+        jQuery('input[name="radioType"]:nth(0)').attr('checked', true).checkboxradio("refresh");
+        jQuery("#text-contribution").val('');
+        
+        self.refreshLocations();
+        self.refreshTags();
+    };
+    
+    self.refreshTags = function () {
+        jQuery(".tag-class").each(function() {jQuery(this).remove();});
+        jQuery('.tag_button').each(function() {jQuery(this).remove();});
+        self.getTags();
+    };
+    
+    self.refreshLocations = function() {
+        jQuery(".location-option-class").each(function() {jQuery(this).remove();});
+        self.getLocations();
     };
 
     self.getLocations = function() {
         
-        var dataStr ='{"tags":["collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
+        var dataStr ='{"tags":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
         var data = jQuery.parseJSON(dataStr);
         var firstOption = true;
         //jQuery.post();
         var availableLocations = jQuery("#select-location");
         jQuery.each(data.tags, function(index, value) { 
             //alert(index + ': ' + value);
-            availableLocations.append('<option value="' + value + '"' + ((firstOption)?'selected="selected"':'') + '>' + value + '</option>')
+            availableLocations.append('<option class="location-option-class" value="' + value + '"' + ((firstOption)?'selected="selected"':'') + '>' + value + '</option>');
             firstOption = false;
         });
+        
+        jQuery(availableLocations).selectmenu('refresh', true);
         
     };
     
@@ -85,7 +140,7 @@ Washago.Participant = (function() {
         var availableTags = jQuery("#tag-list-heading");
         jQuery.each(data.tags, function(index, value) { 
             //alert(index + ': ' + value);
-            availableTags.after('<li tag_id="' + value + '" data-theme="c"><a href="#page1">' + value + '</a></li>')
+            availableTags.after('<li class="tag-class" tag_id="' + value + '" data-theme="c" data-icon="plus"><a href="#page1">' + value + '</a></li>');
         });
         
         jQuery('#tag-list').listview('refresh');
@@ -110,11 +165,11 @@ Washago.Participant = (function() {
     };
     
     self.initSearch = function() {
-       $("div.ui-input-search").live("keyup", function(e){
-            if (e.which == 13) {
+       jQuery("div.ui-input-search").live("keyup", function(e){
+            if (e.which === 13) {
                 e.preventDefault();
                 var searchValueObj = jQuery('input[data-type="search"]');
-                var searchValue = jQuery(searchValueObj).val();
+                var searchValue = jQuery(searchValueObj).val().toLowerCase();
                 var tagButton = '<a href="#" class="tag_button" data-role="button" data-icon="delete" >' + searchValue +'</a>';
                 jQuery('#chosen-tags').append( tagButton );
                 jQuery('.tag_button').button();
@@ -132,7 +187,19 @@ Washago.Participant = (function() {
            
             
         });
-    };
+       };
+       
+       self.tagsToArray = function(){
+            var myTags = [];
+            
+            jQuery.each(jQuery(".tag_button"), function(index, value) { 
+                myTags[index] = jQuery(value).text().toLowerCase();
+            });
+            
+            return myTags;
+       };
     
     return self;
 })();
+
+
