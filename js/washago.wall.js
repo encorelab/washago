@@ -44,7 +44,7 @@ Washago.Wall = (function() {
         // _.difference([1, 2, 3, 4, 5], [5, 2, 10]);
         // => [1, 3, 4]
         // update the saved list of tags
-        // self.cumulativeTagArray = _.difference(contribution.tags, self.cumulativeTagArray);
+        self.cumulativeTagArray = _.difference(contribution.tags, self.cumulativeTagArray);
 
         var none_yet = jQuery('#tags .none-yet');
         if (none_yet.length > 0) {
