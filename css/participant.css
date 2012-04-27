@@ -1,0 +1,54 @@
+.ui-sail-loading-icon {
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: #2A2A2A;
+    background-image: url("../loader32.gif");
+    background-origin: padding-box;
+    background-position: 0 0;
+    background-repeat: repeat;
+    background-size: 46px 46px;
+    
+    border-radius: 36px 36px 36px 36px;
+    display: block;
+    height: 44px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.5em;
+    padding: 1px;
+    width: 44px;
+}
+
+
+.ui-body-a, .ui-overlay-a {
+    background-color: #57A957;
+    background-image: -moz-linear-gradient(center top , #62C462, #57A957);
+    background-image: -webkit-linear-gradient(top, #62C462, #57A957);
+    background-image: -o-linear-gradient(top, #62C462, #57A957);
+    background-image: linear-gradient(top, #62C462, #57A957);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.ui-body-error, .ui-overlay-error  {
+    background-color: #C43C35;
+    background-image: -moz-linear-gradient(center top , #EE5F5B, #C43C35);
+    background-image: -webkit-linear-gradient(top, #EE5F5B, #C43C35);
+    background-image: -o-linear-gradient(top, #EE5F5B, #C43C35);
+    background-image: linear-gradient(top, #EE5F5B, #C43C35);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    color: #FFFFFF;
+}
+
+.ui-loader-verbose {
+    height: auto;
+    margin-left: -110px;
+    margin-top: -43px;
+    opacity: 0.90;
+    padding: 10px;
+    width: 300px;
+}
+
+    

@@ -54,12 +54,12 @@ Washago.Participant = (function() {
                 var myText = jQuery.trim(jQuery("#text-contribution").val());
                 
                 if (myTags.length === 0) {
-                    alert('You must select at least ONE tag!');
+                    jQuery.mobile.showToast("You must select at least ONE tag!",false, 4000, true);
                     return;
                 }
                 
                 if (myText.length < 4) {
-                    alert('You must enter in some text!');
+                    jQuery.mobile.showToast("You must enter in some text!",false, 4000, true);
                     return;
                 }
                 
@@ -84,9 +84,9 @@ Washago.Participant = (function() {
                 
                  if (sev.payload.id === lastSentContributeID) {
                     console.log('my contribution event occured!');
-                    jQuery.mobile.showToast("Tags Saved!",false, 3000,function(){console.log("toast end"); });
+                    jQuery.mobile.showToast("Tags Saved!",false, 3000, false, function(){console.log("toast end"); });
                     //alert("Tags Saved!");
-                    self.resetParticipantForm()
+                    self.resetParticipantForm();
                  }
             }
             
@@ -132,6 +132,32 @@ Washago.Participant = (function() {
         
     };
     
+    self.inTagStack = function(tag) {
+        
+        var isTagFound = 0;
+        tag = jQuery.trim(tag);
+        jQuery.each(jQuery(".tag-class-href"),  function(index, value) {
+                var tagVal = jQuery.trim(jQuery(value).text());
+                
+                if (tagVal === tag) {
+                    //alert('yo stack same');
+                    isTagFound = 1;
+                }
+            });
+        
+        
+        jQuery.each(jQuery(".tag_button"),  function(index, value) {
+                var tagVal = jQuery.trim(jQuery(value).text());
+                
+                if (tagVal === tag) {
+                    //alert('yo button same');
+                    isTagFound += 2;
+                }
+            });
+        
+        return isTagFound;
+    };
+    
     self.getTags = function() {
         
         var dataStr ='{"tags":["collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
@@ -140,7 +166,10 @@ Washago.Participant = (function() {
         var availableTags = jQuery("#tag-list-heading");
         jQuery.each(data.tags, function(index, value) { 
             //alert(index + ': ' + value);
-            availableTags.after('<li class="tag-class" tag_id="' + value + '" data-theme="c" data-icon="plus"><a href="#page1">' + value + '</a></li>');
+            value = jQuery.trim(value);
+            if (self.inTagStack(value) === 0) {
+                availableTags.after('<li class="tag-class" tag_id="' + value + '" data-theme="c" data-icon="plus"><a class="tag-class-href" href="#page1">' + value + '</a></li>');
+            }
         });
         
         jQuery('#tag-list').listview('refresh');
@@ -166,22 +195,42 @@ Washago.Participant = (function() {
     
     self.initSearch = function() {
        jQuery("div.ui-input-search").live("keyup", function(e){
-            if (e.which === 13) {
+            var searchValueObj = jQuery('input[data-type="search"]');
+            var searchValue = jQuery.trim(jQuery(searchValueObj).val().toLowerCase());
+            var searchMatchFound = self.inTagStack(searchValue);
+            
+            if (e.which === 13 && searchMatchFound >= 2) {
+                jQuery.mobile.showToast("You already used this tag...",false, 3000, true);
+            }
+            else if (e.which === 13 && searchMatchFound <= 1) {
                 e.preventDefault();
-                var searchValueObj = jQuery('input[data-type="search"]');
-                var searchValue = jQuery(searchValueObj).val().toLowerCase();
+                if (searchValue.length === 0) { return; }
+                
                 var tagButton = '<a href="#" class="tag_button" data-role="button" data-icon="delete" >' + searchValue +'</a>';
                 jQuery('#chosen-tags').append( tagButton );
                 jQuery('.tag_button').button();
                 jQuery('.tag_button').click(function(){
-                    jQuery(this).fadeOut(250, function() {  jQuery(this).remove(); });
+                    jQuery(this).fadeOut(250, function() {
+                        var valText = jQuery.trim(jQuery(this).text());
+                        var tagStack = jQuery('[tag_id="' + valText + '"]');
+                        
+                        if (tagStack) {
+                            jQuery(tagStack).fadeIn(250);
+                        }
+                            
+                        jQuery(this).remove();
+                    });
                     console.log('remove');
                 });
                 jQuery('.tag_button').buttonMarkup({inline: "true"});
                 jQuery(searchValueObj).val('');
-                jQuery(searchValueObj).trigger("change");
-                
+                jQuery(searchValueObj).trigger("change");   
+            
+                if (searchMatchFound) {
+                    jQuery('[tag_id="' + searchValue + '"]').fadeOut(250);
+                }
             }
+            
             //alert(e.which);
             
            
