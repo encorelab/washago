@@ -1,0 +1,39 @@
+.ui-sail-loading-icon {
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: #2A2A2A;
+    background-image: url("../loader32.gif");
+    background-origin: padding-box;
+    background-position: 0 0;
+    background-repeat: repeat;
+    background-size: 46px 46px;
+    
+    border-radius: 36px 36px 36px 36px;
+    display: block;
+    height: 44px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.5em;
+    padding: 1px;
+    width: 44px;
+}
+
+
+.ui-body-a, .ui-overlay-a {
+    background: #FFC474;
+    border: 1px solid #444444;
+    color: #111111;
+    font-weight: normal;
+    text-shadow: 0 1px 1px #EEEEEE;
+}
+
+.ui-loader-verbose {
+    height: auto;
+    margin-left: -110px;
+    margin-top: -43px;
+    opacity: 0.80;
+    padding: 10px;
+    width: 300px;
+}
+
+    
