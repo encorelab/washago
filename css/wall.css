@@ -14,26 +14,13 @@ body {
   left: 0px;
 }
 
-#tags {
-  border-radius: 15px;
+.toolbar {
+  border-radius: 8px !important;
   position: absolute;
-  right: 8px;
-  top: 60px;
-  width: 160px;
   text-align: center;
 }
 
-#tags .titlebar {
-  margin-bottom: 0.5em;
-}
-
-#tags div.none-yet {
-  padding: 10px;
-  font-style: italic;
-  opacity: 0.6;
-}
-
-#tags ul {
+.toolbar ul {
   list-style: none;
   margin-left: 10px;
   margin-right: 10px;
@@ -41,7 +28,11 @@ body {
   text-align: left;
 }
 
-#tags ul li {
+.toolbar .titlebar {
+  margin-bottom: 0.5em;
+}
+
+.toolbar ul li {
   background-color: #444;
   border: 3px solid #aaa;
   border-radius: 10px;
@@ -49,13 +40,37 @@ body {
   margin-bottom: 6px;
 }
 
-#tags ul li:hover {
+.toolbar ul li:hover {
   cursor: pointer;
 }
 
-#tags li.selected {
+.toolbar li.selected {
   background-color: #0a0;
   border: dotted #0f0;
+}
+
+
+#tags {
+  right: 8px;
+  top: 60px;
+  width: 160px;
+}
+
+#tags div.none-yet,
+#participants div.none-yet {
+  padding: 10px;
+  font-style: italic;
+  opacity: 0.6;
+}
+
+#participants {
+  left: 8px;
+  top: 60px;
+  width: 160px;
+}
+
+#participants li {
+  overflow: hidden;
 }
 
 .balloon {
