@@ -4,6 +4,9 @@ var Washago = window.Washago || {};
 
 Washago.Wall = (function() {
     var self = {};
+
+    self.name = "Washago.Wall";
+
     self.cumulativeTagArray = [];
 
     var createBalloon = function(contribution) {
