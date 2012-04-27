@@ -44,11 +44,20 @@
 
 .ui-loader-verbose {
     height: auto;
-    margin-left: -110px;
+    margin-left: -180px;
     margin-top: -43px;
     opacity: 0.90;
-    padding: 10px;
+    padding: 15px;
     width: 300px;
+}
+
+/* responsive page widths */
+.ui-mobile-viewport {
+    margin: 0;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: none;
+    -ms-text-size-adjust:none;
+    /*-webkit-tap-highlight-color: rgba(0, 0, 0, 0);*/
 }
 
     

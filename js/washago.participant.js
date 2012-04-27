@@ -59,7 +59,7 @@ Washago.Participant = (function() {
                 }
                 
                 if (myText.length < 4) {
-                    jQuery.mobile.showToast("You must enter in some text!",false, 4000, true);
+                    jQuery.mobile.showToast("You must enter in at least 4 characters in the text field!",false, 4000, true);
                     return;
                 }
                 
