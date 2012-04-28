@@ -101,7 +101,7 @@ Washago.Participant = (function() {
         sail: {
             contribution: function(sev) {
                 
-                if (reconstructingTags) return;
+                //if (reconstructingTags) return;
                 
                 var oldID = lastSentContributeID;
                 // my payload so show the user confirmation
@@ -113,11 +113,11 @@ Washago.Participant = (function() {
                     
                     self.resetParticipantForm();
                 }
-                else { // someone else is contributing update the tags inline
+                //else { // someone else is contributing update the tags inline
                     reconstructingTags = true;
                     self.updateTags(sev.payload.tags, oldID);
                     reconstructingTags = false;
-                }     
+                //}     
             }
             
         }
@@ -140,7 +140,7 @@ Washago.Participant = (function() {
     self.refreshTags = function (doRefreshOnly) {
         
         
-        if (! doRefreshOnly) {
+        if ( 0 && ! doRefreshOnly) {
             // remove the old tags
             jQuery(".tag-class").each(function() {jQuery(this).fadeOut(250, function() {jQuery(this).remove();});});
         }
@@ -308,9 +308,11 @@ Washago.Participant = (function() {
                         jQuery('#tag-count').text(i);
                         jQuery(".tag-class").fadeIn(250);
                         
+                        reconstructingTags = false;
+                        
                         })
                     .error(function() { console.log("Error grabbing mongoDB data for contributions!"); })
-                    .complete(function() { reconstructingTags = false; console.log("Done grabbing mongoDB data for contributions!"); });
+                    .complete(function() { console.log("Done grabbing mongoDB data for contributions!"); });
 
     };
     
