@@ -20,7 +20,7 @@ Washago.Wall = (function() {
         }).toArray();
         var maxZ = Math.max.apply(Math, zs);
         jQuery(this).css('z-index', maxZ + 1);
-    }
+    };
 
     var positionBalloon = function (balloon) {
         var left, top;
@@ -73,9 +73,14 @@ Washago.Wall = (function() {
         text.text(contribution.text);
         balloon.append(text);
 
-        tags = jQuery("<div class='tags'></div>");
+        var tags = jQuery("<div class='tags'></div>");
         if (contribution.tags) {
-            tags.text(contribution.tags.join(", "));
+            var tag;
+            _.each(contribution.tags, function(t) {
+                tag = jQuery("<span class='tag'></span>");
+                tag.text(t);
+                tags.append(tag);
+            });
             balloon.append(tags);
         }
 
@@ -153,7 +158,7 @@ Washago.Wall = (function() {
             error: function(data) {
                 console.warn("Error writing contribution to database. Possible reason: " +data.responseText);
             }
-        })
+        });
     };
 
     var addParticipantToList = function (jid) {
