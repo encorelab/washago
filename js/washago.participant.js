@@ -162,13 +162,13 @@ Washago.Participant = (function() {
         
         var dataStr ='{"tags":["collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
         var data = jQuery.parseJSON(dataStr);
-        //jQuery.post();
+        //jQuery.post(); 
         var availableTags = jQuery("#tag-list-heading");
         jQuery.each(data.tags, function(index, value) { 
             //alert(index + ': ' + value);
             value = jQuery.trim(value);
             if (self.inTagStack(value) === 0) {
-                availableTags.after('<li class="tag-class" tag_id="' + value + '" data-theme="c" data-icon="plus"><a class="tag-class-href" href="#page1">' + value + '</a></li>');
+                availableTags.after('<li class="tag-class" tag_id="' + value + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href" href="#page1">' + value + '<span class="ui-li-count ui-btn-up-c ui-btn-corner-all">1</span></a></li>');
             }
         });
         
