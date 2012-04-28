@@ -5,6 +5,7 @@ body {
   background-size: 70% auto;
   background-position: 0 100px;
   overflow: hidden;
+  background: #eee;
 }
 
 header {
