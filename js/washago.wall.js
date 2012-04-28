@@ -253,12 +253,15 @@ Washago.Wall = (function() {
     var writeToDB = function (contribution) {
         console.log("Attempting to store contribution in database");
 
+        // sleepy mongose requires date being submitted in docs=[{"x":1,"y":2}]
+        var postData = 'docs=[' +JSON.stringify(contribution)+ ']';
+
         // Post to mongodb-rest interface to store contribution
         jQuery.ajax({
             type: "POST",
             url: "/mongo/roadshow/contributions/_insert",
             // do a feeble attempt at checking for uniqueness
-            data: contribution,
+            data: postData,
             context: this,
             success: function(data) {
                 console.log("Contribution with id '" +contribution.id+ "' posted to database");
