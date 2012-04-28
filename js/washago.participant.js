@@ -211,7 +211,6 @@ Washago.Participant = (function() {
         var availableTags = jQuery('#tag-list-heading');
         var tagStr = '';
         var updatedTags = 0;
-        var tagCount = parseInt(jQuery('#tag-count').text(), 10);
         var i = 0;
         
         // grab current tags and stuff them into an array
@@ -236,8 +235,7 @@ Washago.Participant = (function() {
         });
         
         if (newTagsDataStructure.length > 0) {
-            self.sortTags();
-            jQuery('#tag-count').text(tagCount + updatedTags);
+            self.sortTags();    
         }
         
         jQuery(".tag-class").fadeIn(250);
@@ -249,6 +247,7 @@ Washago.Participant = (function() {
             }).insertAfter(jQuery('#tag-list-heading'));
         
             jQuery('#tag-list').listview('refresh');
+            jQuery('#tag-count').text(parseInt(jQuery('.tag-class').size(),10) - 1);
     };
     
     // get the tags from the MongoDB server and add them to the tag stack
@@ -305,7 +304,6 @@ Washago.Participant = (function() {
                         
                         
                         self.sortTags();
-                        jQuery('#tag-count').text(i);
                         jQuery(".tag-class").fadeIn(250);
                         
                         reconstructingTags = false;
