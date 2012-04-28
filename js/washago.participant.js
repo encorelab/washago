@@ -134,7 +134,7 @@ Washago.Participant = (function() {
         // remove the old tags
         jQuery(".tag-class").each(function() {jQuery(this).remove();});
         
-        // remove the custom tags
+        // remove the custom/selected tags
         jQuery('.tag_button').each(function() {jQuery(this).remove();});
         
         // get the tags from MongoDB
@@ -241,7 +241,7 @@ Washago.Participant = (function() {
     self.getTags = function() {
         
         var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
-        var tagDepotURI = '/mongo/roadshow/contributions' + ((Sail.app.run)?'?query={"run":"' + Sail.app.run.name+ '"}':'');
+        var tagDepotURI = '/mongo/roadshow/contributions/_find' + ((Sail.app.run)?'?criteria={"run":"' + Sail.app.run.name+ '"}':'');
         
         
         var jqxhr = jQuery.get(tagDepotURI)
@@ -252,7 +252,9 @@ Washago.Participant = (function() {
                         var tagStr = '';
                         var i = 0;
                         
-                        jQuery.each(data, function(index, value) {
+                        if (data.ok === 1) { console.log('Problem getting DB Data'); return; }
+                        
+                        jQuery.each(data.results, function(index, value) {
                              jQuery.each(value.tags, function(i, v) {
                                 v = jQuery.trim(v);
                                 //alert(v);
@@ -364,7 +366,7 @@ Washago.Participant = (function() {
             var myTags = [];
             
             jQuery.each(jQuery(".tag_button"), function(index, value) { 
-                myTags[index] = jQuery(value).text().toLowerCase();
+                myTags[index] = jQuery.trim(jQuery(value).text().toLowerCase());
             });
             
             return myTags;
