@@ -114,7 +114,9 @@ Washago.Participant = (function() {
                     self.resetParticipantForm();
                 }
                 else { // someone else is contributing update the tags inline
+                    reconstructingTags = true;
                     self.updateTags(sev.payload.tags, oldID);
+                    reconstructingTags = false;
                 }     
             }
             
@@ -238,7 +240,7 @@ Washago.Participant = (function() {
             jQuery('#tag-count').text(tagCount + updatedTags);
         }
         
-            
+        jQuery(".tag-class").fadeIn(250);
     };
     
     self.sortTags = function() {
