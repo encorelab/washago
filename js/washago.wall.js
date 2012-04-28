@@ -91,16 +91,7 @@ Washago.Wall = (function() {
         return balloon;
     };
 
-    var updateTagList = function(contribution) {
-        // this function handles the UI stuff for the list of tags on the sidebar
-        // then updates the list of user created tags with newly submitted tags
-
-        // _.difference(array, *others) 
-        // _.difference([1, 2, 3, 4, 5], [5, 2, 10]);
-        // => [1, 3, 4]
-        // update the saved list of tags
-        self.cumulativeTagArray = _.difference(contribution.tags, self.cumulativeTagArray);
-
+    var addTagToList = function(contribution) {
         var none_yet = jQuery('#tags-filter .none-yet');
         if (none_yet.length > 0) {
             none_yet.remove();
@@ -108,11 +99,11 @@ Washago.Wall = (function() {
         
         var list = jQuery('#tags-filter ul');
         _.each(contribution.tags, function (tag) {
-            //klass = CommonBoard.keywordToClassName(tag);
-            var li = list.find('.' + tag);                          // what's going on here?
+            var li = list.find('.tag-' + MD5.hexdigest(tag));
             if (li.length === 0) {
-                li = jQuery('<li></li>'); li.text(tag);
-                li.addClass("tag-" + tag);
+                li = jQuery('<li />');
+                li.text(tag);
+                li.addClass("tag-" + MD5.hexdigest(tag));
                 li.click(function() {
                     // TODO set this up for filtering
                     //self.toggleTag(tag);
@@ -121,6 +112,28 @@ Washago.Wall = (function() {
             }
         });
         //return cumulativeTagArray;
+    };
+
+    var addAboutToList = function(contribution) {
+        var none_yet = jQuery('#about-filter .none-yet');
+        if (none_yet.length > 0) {
+            none_yet.remove();
+        }
+
+        var list = jQuery('#about-filter ul');
+
+        var li = list.find('.about-' + MD5.hexdigest(contribution.about));
+        var myTemp = 8;
+        if (li.length === 0) {
+            li = jQuery('<li />');
+            li.text(contribution.about);
+            li.addClass("about-" + MD5.hexdigest(contribution.about));
+            li.click(function() {
+                // TODO set this up for filtering
+                //self.toggleTag(tag);
+            });
+            list.append(li);
+        }
     };
 
     var writeToDB = function (contribution, tagList) {
@@ -138,7 +151,6 @@ Washago.Wall = (function() {
         var li = jQuery("<li />");
         li.text(nickname);
         li.addClass("participant-"+MD5.hexdigest(nickname));
-
 
         jQuery("#participants-filter .none-yet").remove('.none-yet');
         jQuery("#participants-filter ul").append(li);
@@ -211,8 +223,9 @@ Washago.Wall = (function() {
                     id:sev.payload.id
                 };
                 createBalloon(new_contribution);
-                updateTagList(new_contribution);
-                writeToDB(new_contribution, culumativeTagArray);
+                addTagToList(new_contribution);
+                addAboutToList(new_contribution);                
+                //writeToDB(new_contribution, culumativeTagArray);
             }
         }
     };
