@@ -62,6 +62,7 @@ header {
   border-radius: 10px;
   padding: 3px 8px;
   margin-bottom: 6px;
+  overflow: hidden;
 }
 
 .toolbar ul li:hover {
@@ -98,7 +99,9 @@ header {
 }
 
 .filter-list-container {
-  overflow-y: scroll;
+  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 #tags-filter,
@@ -108,6 +111,27 @@ header {
   width: 100%;
   position: static;
   margin-bottom: 10px;
+  overflow: hidden;
+}
+
+#tags-filter {
+  max-height: 75%;
+  height: 75%;
+}
+
+#participants-filter {
+  max-height: 75%;
+  height: 75%;
+}
+
+#discourse-filter {
+  max-height: 20%;
+  height: 20%;
+}
+
+#about-filter {
+  max-height: 20%;
+  height: 20%;
 }
 
 div.none-yet {

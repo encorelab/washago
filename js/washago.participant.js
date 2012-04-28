@@ -27,6 +27,22 @@ Washago.Participant = (function() {
     self.authenticate = function () {
         jQuery(self).trigger('authenticated');
     };
+    
+    self.generateID = function(numOfDigits) {
+	var chars = "0123456789abcdef";
+	var randomstring = '';
+	for (var i=0; i< numOfDigits; i++) {
+		var rnum = Math.floor(Math.random() * chars.length);
+                if (i === 0) {
+                    if (rnum === 0) {
+                        rnum = 1;
+                    }
+                }
+                
+		randomstring += chars.substring(rnum,rnum+1);
+	}
+	return randomstring;
+    };
 
     self.events = {
         initialized: function(ev) {
@@ -53,17 +69,18 @@ Washago.Participant = (function() {
                 var myTags = self.tagsToArray();
                 var myText = jQuery.trim(jQuery("#text-contribution").val());
                 
-                if (myTags.length === 0) {
+                ///MIKE:: uncomment if you want to check the tags length!!
+                /*if (myTags.length === 0) {
                     jQuery.mobile.showToast("You must select at least ONE tag!",false, 4000, true);
                     return;
-                }
+                }*/
                 
                 if (myText.length < 4) {
-                    jQuery.mobile.showToast("You must enter in some text!",false, 4000, true);
+                    jQuery.mobile.showToast("You must enter in at least 4 characters in the text field!",false, 4000, true);
                     return;
                 }
                 
-                lastSentContributeID = Math.floor((Math.random() * 1e50)).toString(36);
+                lastSentContributeID = self.generateID(12*2);// Math.floor((Math.random() * Math.pow(36,16))).toString(16);
                 
                 var sev = new Sail.Event('contribution', {
                     author: Sail.app.nickname,
@@ -160,18 +177,21 @@ Washago.Participant = (function() {
     
     self.getTags = function() {
         
-        var dataStr ='{"tags":["collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
+        var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
         var data = jQuery.parseJSON(dataStr);
-        //jQuery.post();
+        //jQuery.post(); 
         var availableTags = jQuery("#tag-list-heading");
-        jQuery.each(data.tags, function(index, value) { 
+        var dataTags = data.tags;
+        var tagStr = '';
+        dataTags.sort();
+        jQuery.each(dataTags, function(index, value) { 
             //alert(index + ': ' + value);
             value = jQuery.trim(value);
             if (self.inTagStack(value) === 0) {
-                availableTags.after('<li class="tag-class" tag_id="' + value + '" data-theme="c" data-icon="plus"><a class="tag-class-href" href="#page1">' + value + '</a></li>');
+               tagStr += '<li class="tag-class" tag_id="' + value + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href" href="#page1">' + value + '<!-- span class="ui-li-count ui-btn-up-c ui-btn-corner-all">1</span --></a></li>';
             }
         });
-        
+        availableTags.after(tagStr);
         jQuery('#tag-list').listview('refresh');
         
          self.initTagClick(jQuery('#tag-list li a'));

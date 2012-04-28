@@ -136,11 +136,23 @@ Washago.Wall = (function() {
         }
     };
 
-    var writeToDB = function (contribution, tagList) {
-        // we might not need to pass tagList
-        console.log("I'm writing to a non-existent DB!");
-        // write contribution
-        // write new tag list
+    var writeToDB = function (contribution) {
+        console.log("Attempting to store contribution in database");
+
+        // Post to mongodb-rest interface to store contribution
+        jQuery.ajax({
+            type: "POST",
+            url: "/mongo/roadshow/contributions/",
+            // do a feeble attempt at checking for uniqueness
+            data: contribution,
+            context: this,
+            success: function(data) {
+                console.log("Contribution with id '" +contribution.id+ "' posted to database");
+            },
+            error: function(data) {
+                console.warn("Error writing contribution to database. Possible reason: " +data.responseText);
+            }
+        })
     };
 
     var addParticipantToList = function (jid) {
@@ -154,6 +166,10 @@ Washago.Wall = (function() {
 
         jQuery("#participants-filter .none-yet").remove('.none-yet');
         jQuery("#participants-filter ul").append(li);
+
+        jQuery("#participants-filter .filter-list-container")
+            .css('overflow-y', 'auto')
+            .css('height', '90%');
     };
 
     var removeParticipantFromList = function (jid) {
