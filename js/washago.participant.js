@@ -79,8 +79,8 @@ Washago.Participant = (function() {
                     return;
                 }
                 
-                lastSentContributeID = self.generateID(12);// Math.floor((Math.random() * Math.pow(36,16))).toString(16);
-                alert(lastSentContributeID.length);
+                lastSentContributeID = self.generateID(12*2);// Math.floor((Math.random() * Math.pow(36,16))).toString(16);
+                
                 var sev = new Sail.Event('contribution', {
                     author: Sail.app.nickname,
                     text:myText,
