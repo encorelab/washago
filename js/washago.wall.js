@@ -65,12 +65,19 @@ Washago.Wall = (function() {
 
         balloon.hide(); // initially hidden, we call show() with an effect later
 
+        var about = jQuery("<div class='about author'>");
+        about.text(contribution.about + ' - ' + contribution.author);
+        balloon.prepend(about);
 
         var text = jQuery("<div class='text'></div>");
         text.text(contribution.text);
-
         balloon.append(text);
 
+        tags = jQuery("<div class='tags'></div>");
+        if (contribution.tags) {
+            tags.text(contribution.tags.join(", "));
+            balloon.append(tags);
+        }
 
         balloon.draggable();
 
@@ -85,16 +92,7 @@ Washago.Wall = (function() {
         return balloon;
     };
 
-    var updateTagList = function(contribution) {
-        // this function handles the UI stuff for the list of tags on the sidebar
-        // then updates the list of user created tags with newly submitted tags
-
-        // _.difference(array, *others) 
-        // _.difference([1, 2, 3, 4, 5], [5, 2, 10]);
-        // => [1, 3, 4]
-        // update the saved list of tags
-        self.cumulativeTagArray = _.difference(contribution.tags, self.cumulativeTagArray);
-
+    var addTagToList = function(contribution) {
         var none_yet = jQuery('#tags-filter .none-yet');
         if (none_yet.length > 0) {
             none_yet.remove();
@@ -102,11 +100,11 @@ Washago.Wall = (function() {
         
         var list = jQuery('#tags-filter ul');
         _.each(contribution.tags, function (tag) {
-            //klass = CommonBoard.keywordToClassName(tag);
-            var li = list.find('.' + tag);                          // what's going on here?
+            var li = list.find('.tag-' + MD5.hexdigest(tag));
             if (li.length === 0) {
-                li = jQuery('<li></li>'); li.text(tag);
-                li.addClass("tag-" + tag);
+                li = jQuery('<li />');
+                li.text(tag);
+                li.addClass("tag-" + MD5.hexdigest(tag));
                 li.click(function() {
                     // TODO set this up for filtering
                     //self.toggleTag(tag);
@@ -114,23 +112,46 @@ Washago.Wall = (function() {
                 list.append(li);
             }
         });
+        //return cumulativeTagArray;
+    };
+
+    var addAboutToList = function(contribution) {
+        var none_yet = jQuery('#about-filter .none-yet');
+        if (none_yet.length > 0) {
+            none_yet.remove();
+        }
+
+        var list = jQuery('#about-filter ul');
+
+        var li = list.find('.about-' + MD5.hexdigest(contribution.about));
+        var myTemp = 8;
+        if (li.length === 0) {
+            li = jQuery('<li />');
+            li.text(contribution.about);
+            li.addClass("about-" + MD5.hexdigest(contribution.about));
+            li.click(function() {
+                // TODO set this up for filtering
+                //self.toggleTag(tag);
+            });
+            list.append(li);
+        }
     };
 
     var writeToDB = function (contribution) {
-        console.log("I'm writing to a non-existent DB!");
+        console.log("Attempting to store contribution in database");
 
         // Post to mongodb-rest interface to store contribution
         jQuery.ajax({
             type: "POST",
-            url: "/mongo/roadshow/contribution/",
+            url: "/mongo/roadshow/contributions/",
             // do a feeble attempt at checking for uniqueness
             data: contribution,
             context: this,
             success: function(data) {
-                console.log("Contribution posted to database");
+                console.log("Contribution with id '" +contribution.id+ "' posted to database");
             },
             error: function(data) {
-                console.warn("Error writing contribution to database");
+                console.warn("Error writing contribution to database. Possible reason: " +data.responseText);
             }
         })
     };
@@ -143,7 +164,6 @@ Washago.Wall = (function() {
         var li = jQuery("<li />");
         li.text(nickname);
         li.addClass("participant-"+MD5.hexdigest(nickname));
-
 
         jQuery("#participants-filter .none-yet").remove('.none-yet');
         jQuery("#participants-filter ul").append(li);
@@ -210,7 +230,6 @@ Washago.Wall = (function() {
 
         sail: {
             contribution: function (sev) {
-                console.log("crapout area");
                 var new_contribution = {
                     author:sev.payload.author,
                     text:sev.payload.text,
@@ -221,8 +240,9 @@ Washago.Wall = (function() {
                     id:sev.payload.id
                 };
                 createBalloon(new_contribution);
-                updateTagList(new_contribution);
-                writeToDB(new_contribution);            // may need to be renamed
+                addTagToList(new_contribution);
+                addAboutToList(new_contribution);                
+                //writeToDB(new_contribution, culumativeTagArray);
             }
         }
     };
