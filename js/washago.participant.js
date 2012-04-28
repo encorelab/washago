@@ -6,6 +6,7 @@ Washago.Participant = (function() {
     "use strict";
     var self = {};
     var lastSentContributeID = null;
+    var reconstructingTags = false;
 
     self.init = function () {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
@@ -100,16 +101,23 @@ Washago.Participant = (function() {
         sail: {
             contribution: function(sev) {
                 
+                //if (reconstructingTags) return;
+                
+                var oldID = lastSentContributeID;
                 // my payload so show the user confirmation
                 if (sev.payload.id === lastSentContributeID) {
+                    reconstructingTags = true;
                     console.log('my contribution event occured!');
                     jQuery.mobile.showToast("Your contribution was sent!",false, 3000, false, function(){console.log("toast end"); });
                     //alert("Tags Saved!");
+                    
                     self.resetParticipantForm();
                 }
-                else { // someone else is contributing update the tags inline
-                    self.updateTags(sev.payload.tags, lastSentContributeID);
-                }     
+                //else { // someone else is contributing update the tags inline
+                    reconstructingTags = true;
+                    self.updateTags(sev.payload.tags, oldID);
+                    reconstructingTags = false;
+                //}     
             }
             
         }
@@ -126,15 +134,21 @@ Washago.Participant = (function() {
         jQuery("#text-contribution").val('');
         
         self.refreshLocations();
-        self.refreshTags();
+        self.refreshTags(false);
     };
     
-    self.refreshTags = function () {
+    self.refreshTags = function (doRefreshOnly) {
         
-        // remove the old tags
-        jQuery(".tag-class").each(function() {jQuery(this).remove();});
         
-        // remove the custom tags
+        if ( 0 && ! doRefreshOnly) {
+            // remove the old tags
+            jQuery(".tag-class").each(function() {jQuery(this).fadeOut(250, function() {jQuery(this).remove();});});
+        }
+        else {
+            jQuery(".tag-class").fadeIn(250);
+        }
+        
+        // remove the custom/selected tags
         jQuery('.tag_button').each(function() {jQuery(this).remove();});
         
         // get the tags from MongoDB
@@ -197,7 +211,6 @@ Washago.Participant = (function() {
         var availableTags = jQuery('#tag-list-heading');
         var tagStr = '';
         var updatedTags = 0;
-        var tagCount = parseInt(jQuery('#tag-count').text(), 10);
         var i = 0;
         
         // grab current tags and stuff them into an array
@@ -222,11 +235,10 @@ Washago.Participant = (function() {
         });
         
         if (newTagsDataStructure.length > 0) {
-            self.sortTags();
-            jQuery('#tag-count').text(tagCount + updatedTags);
+            self.sortTags();    
         }
         
-            
+        jQuery(".tag-class").fadeIn(250);
     };
     
     self.sortTags = function() {
@@ -235,13 +247,14 @@ Washago.Participant = (function() {
             }).insertAfter(jQuery('#tag-list-heading'));
         
             jQuery('#tag-list').listview('refresh');
+            jQuery('#tag-count').text(parseInt(jQuery('.tag-class').size(),10) - 1);
     };
     
     // get the tags from the MongoDB server and add them to the tag stack
     self.getTags = function() {
         
         var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
-        var tagDepotURI = '/mongo/roadshow/contributions' + ((Sail.app.run)?'?query={"run":"' + Sail.app.run.name+ '"}':'');
+        var tagDepotURI = '/mongo/roadshow/contributions/_find?batch_size=10000000000' + ((Sail.app.run)?'&criteria={"run":"' + Sail.app.run.name+ '"}':'');
         
         
         var jqxhr = jQuery.get(tagDepotURI)
@@ -252,7 +265,11 @@ Washago.Participant = (function() {
                         var tagStr = '';
                         var i = 0;
                         
-                        jQuery.each(data, function(index, value) {
+                        if (data.ok !== 1) { console.log('Problem getting DB Data'); return; }
+                        
+                        // go through json object returned by GET DB Query and grab the tags
+                        jQuery.each(data.results, function(index, value) {
+                             if (! value.tags) return;
                              jQuery.each(value.tags, function(i, v) {
                                 v = jQuery.trim(v);
                                 //alert(v);
@@ -287,7 +304,9 @@ Washago.Participant = (function() {
                         
                         
                         self.sortTags();
-                        jQuery('#tag-count').text(i);
+                        jQuery(".tag-class").fadeIn(250);
+                        
+                        reconstructingTags = false;
                         
                         })
                     .error(function() { console.log("Error grabbing mongoDB data for contributions!"); })
@@ -364,7 +383,7 @@ Washago.Participant = (function() {
             var myTags = [];
             
             jQuery.each(jQuery(".tag_button"), function(index, value) { 
-                myTags[index] = jQuery(value).text().toLowerCase();
+                myTags[index] = jQuery.trim(jQuery(value).text().toLowerCase());
             });
             
             return myTags;

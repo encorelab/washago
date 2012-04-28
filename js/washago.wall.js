@@ -30,22 +30,24 @@ Washago.Wall = (function() {
         var boardWidth = jQuery("#wall").width();
         var boardHeight = jQuery("#wall").height();
         
-        if (contrib.pos && contrib.pos.left)
+        if (contrib.pos && contrib.pos.left) {
             left = contrib.pos.left;
-        else
+        } else {
             left = Math.random() * (boardWidth - balloon.width());
+        }
         
-        if (contrib.pos && contrib.pos.top)
+        if (contrib.pos && contrib.pos.top) {
             top = contrib.pos.top;
-        else
+        } else {
             top = Math.random() * (boardHeight - balloon.height());
+        }
         
         balloon.css('left', left + 'px');
         balloon.css('top', top + 'px');
         
-        if (contrib.id) {
+        //if (contrib.id) {
             //CommonBoard.contribBalloonPositioned(contrib, {left: left, top: top});
-        }
+        //}
     };
 
     var createBalloon = function (contribution) {
@@ -58,6 +60,7 @@ Washago.Wall = (function() {
         balloon.data('contribution', contribution);
         balloon.attr('id', "contibution-" + contribution.id);
         balloon.addClass('author-' + contribution.author);
+        balloon.addClass('discourse-' + contribution.discourse_type);
         jQuery(contribution.tags).each(function() {
             balloon.addClass('tags-' + MD5.hexdigest(this));
         });
@@ -72,9 +75,14 @@ Washago.Wall = (function() {
         text.text(contribution.text);
         balloon.append(text);
 
-        tags = jQuery("<div class='tags'></div>");
+        var tags = jQuery("<div class='tags'></div>");
         if (contribution.tags) {
-            tags.text(contribution.tags.join(", "));
+            var tag;
+            _.each(contribution.tags, function(t) {
+                tag = jQuery("<span class='tag'></span>");
+                tag.text(t);
+                tags.append(tag);
+            });
             balloon.append(tags);
         }
 
@@ -253,12 +261,15 @@ Washago.Wall = (function() {
     var writeToDB = function (contribution) {
         console.log("Attempting to store contribution in database");
 
+        // sleepy mongose requires date being submitted in docs=[{"x":1,"y":2}]
+        var postData = 'docs=[' +JSON.stringify(contribution)+ ']';
+
         // Post to mongodb-rest interface to store contribution
         jQuery.ajax({
             type: "POST",
-            url: "/mongo/roadshow/contributions/",
+            url: "/mongo/roadshow/contributions/_insert",
             // do a feeble attempt at checking for uniqueness
-            data: contribution,
+            data: postData,
             context: this,
             success: function(data) {
                 console.log("Contribution with id '" +contribution.id+ "' posted to database");
@@ -330,7 +341,7 @@ Washago.Wall = (function() {
                 addTagToList(new_contribution);
                 addAboutToList(new_contribution);                
                 addTypeToList(new_contribution);
-                //writeToDB(new_contribution, culumativeTagArray);
+                writeToDB(new_contribution);
             }
         }
     };
