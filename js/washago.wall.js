@@ -146,6 +146,10 @@ Washago.Wall = (function() {
 
         jQuery("#participants-filter .none-yet").remove('.none-yet');
         jQuery("#participants-filter ul").append(li);
+
+        jQuery("#participants-filter .filter-list-container")
+            .css('overflow-y', 'auto')
+            .css('height', '90%');
     };
 
     var removeParticipantFromList = function (jid) {
