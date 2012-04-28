@@ -177,18 +177,21 @@ Washago.Participant = (function() {
     
     self.getTags = function() {
         
-        var dataStr ='{"tags":["collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
+        var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
         var data = jQuery.parseJSON(dataStr);
         //jQuery.post(); 
         var availableTags = jQuery("#tag-list-heading");
-        jQuery.each(data.tags, function(index, value) { 
+        var dataTags = data.tags;
+        var tagStr = '';
+        dataTags.sort();
+        jQuery.each(dataTags, function(index, value) { 
             //alert(index + ': ' + value);
             value = jQuery.trim(value);
             if (self.inTagStack(value) === 0) {
-                availableTags.after('<li class="tag-class" tag_id="' + value + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href" href="#page1">' + value + '<!-- span class="ui-li-count ui-btn-up-c ui-btn-corner-all">1</span --></a></li>');
+               tagStr += '<li class="tag-class" tag_id="' + value + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href" href="#page1">' + value + '<!-- span class="ui-li-count ui-btn-up-c ui-btn-corner-all">1</span --></a></li>';
             }
         });
-        
+        availableTags.after(tagStr);
         jQuery('#tag-list').listview('refresh');
         
          self.initTagClick(jQuery('#tag-list li a'));
