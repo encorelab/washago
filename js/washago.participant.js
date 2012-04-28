@@ -108,9 +108,9 @@ Washago.Participant = (function() {
                     
                     self.resetParticipantForm();
                 }
-                //else { // someone else is contributing update the tags inline
+                else { // someone else is contributing update the tags inline
                     self.updateTags(sev.payload.tags, oldID);
-                //}     
+                }     
             }
             
         }
@@ -127,13 +127,19 @@ Washago.Participant = (function() {
         jQuery("#text-contribution").val('');
         
         self.refreshLocations();
-        self.refreshTags();
+        self.refreshTags(false);
     };
     
-    self.refreshTags = function () {
+    self.refreshTags = function (doRefreshOnly) {
         
-        // remove the old tags
-        jQuery(".tag-class").each(function() {jQuery(this).remove();});
+        
+        if (! doRefreshOnly) {
+            // remove the old tags
+            jQuery(".tag-class").each(function() {jQuery(this).fadeOut(250, function() {jQuery(this).remove();});});
+        }
+        else {
+            jQuery(".tag-class").fadeIn(250);
+        }
         
         // remove the custom/selected tags
         jQuery('.tag_button').each(function() {jQuery(this).remove();});
@@ -253,8 +259,9 @@ Washago.Participant = (function() {
                         var tagStr = '';
                         var i = 0;
                         
-                        if (data.ok === 1) { console.log('Problem getting DB Data'); return; }
+                        if (data.ok !== 1) { console.log('Problem getting DB Data'); return; }
                         
+                        // go through json object returned by GET DB Query and grab the tags
                         jQuery.each(data.results, function(index, value) {
                              jQuery.each(value.tags, function(i, v) {
                                 v = jQuery.trim(v);
