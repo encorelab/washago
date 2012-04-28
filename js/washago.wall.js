@@ -58,6 +58,7 @@ Washago.Wall = (function() {
         balloon.data('contribution', contribution);
         balloon.attr('id', "contibution-" + contribution.id);
         balloon.addClass('author-' + contribution.author);
+        balloon.addClass('discourse-' + contribution.discourse_type);
         jQuery(contribution.tags).each(function() {
             balloon.addClass('tags-' + MD5.hexdigest(this));
         });
@@ -72,9 +73,14 @@ Washago.Wall = (function() {
         text.text(contribution.text);
         balloon.append(text);
 
-        tags = jQuery("<div class='tags'></div>");
+        var tags = jQuery("<div class='tags'></div>");
         if (contribution.tags) {
-            tags.text(contribution.tags.join(", "));
+            var tag;
+            _.each(contribution.tags, function(t) {
+                tag = jQuery("<span class='tag'></span>");
+                tag.text(t);
+                tags.append(tag);
+            });
             balloon.append(tags);
         }
 
