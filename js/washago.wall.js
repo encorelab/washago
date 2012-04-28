@@ -76,6 +76,10 @@ Washago.Wall = (function() {
         balloon.append(text);
 
         var tags = jQuery("<div class='tags'></div>");
+        
+        tags.hide(); // tags are initially collapsed
+
+
         if (contribution.tags) {
             var tag;
             _.each(contribution.tags, function(t) {
@@ -92,6 +96,10 @@ Washago.Wall = (function() {
         balloon.mousedown(bringDraggableToFront);
 
         positionBalloon(balloon);
+
+        balloon.dblclick(function() {
+            $(this).find('.tags').toggle('slideUp');
+        });
 
         jQuery("#wall").append(balloon);
         balloon.show('puff', 'fast');
@@ -230,9 +238,9 @@ Washago.Wall = (function() {
         jQuery("#participants-filter .none-yet").remove('.none-yet');
         jQuery("#participants-filter ul").append(li);
 
-        jQuery("#participants-filter .filter-list-container")
-            .css('overflow-y', 'auto')
-            .css('height', '90%');
+        // jQuery("#participants-filter .filter-list-container")
+        //     .css('overflow-y', 'auto')
+        //     .css('height', '90%');
     };
 
     var removeParticipantFromList = function (jid) {
