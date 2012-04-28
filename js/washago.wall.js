@@ -261,6 +261,10 @@ Washago.Wall = (function() {
     var writeToDB = function (contribution) {
         console.log("Attempting to store contribution in database");
 
+        // TODO: might need to clone contribution to avoid modifying the original object
+        contribution._id = contribution.id;
+        delete contribution.id;
+
         // sleepy mongose requires date being submitted in docs=[{"x":1,"y":2}]
         var postData = 'docs=[' +JSON.stringify(contribution)+ ']';
 
