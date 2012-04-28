@@ -43,6 +43,10 @@ Washago.Participant = (function() {
             self.getLocations();
             self.getTags();
             self.initSearch();
+            
+            jQuery("#tag-region").click(function(){
+                //jQuery(this).slideToggle();
+                })
         },
 
         'ui.initialized': function(ev) {
@@ -59,11 +63,11 @@ Washago.Participant = (function() {
                 }
                 
                 if (myText.length < 4) {
-                    jQuery.mobile.showToast("You must enter in some text!",false, 4000, true);
+                    jQuery.mobile.showToast("You must enter in at least 4 characters in the text field!",false, 4000, true);
                     return;
                 }
                 
-                lastSentContributeID = Math.floor((Math.random() * 1e50)).toString(36);
+                lastSentContributeID = Math.floor((Math.random() * Math.pow(36,12))).toString(36);
                 
                 var sev = new Sail.Event('contribution', {
                     author: Sail.app.nickname,
@@ -162,13 +166,13 @@ Washago.Participant = (function() {
         
         var dataStr ='{"tags":["collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
         var data = jQuery.parseJSON(dataStr);
-        //jQuery.post();
+        //jQuery.post(); 
         var availableTags = jQuery("#tag-list-heading");
         jQuery.each(data.tags, function(index, value) { 
             //alert(index + ': ' + value);
             value = jQuery.trim(value);
             if (self.inTagStack(value) === 0) {
-                availableTags.after('<li class="tag-class" tag_id="' + value + '" data-theme="c" data-icon="plus"><a class="tag-class-href" href="#page1">' + value + '</a></li>');
+                availableTags.after('<li class="tag-class" tag_id="' + value + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href" href="#page1">' + value + '<span class="ui-li-count ui-btn-up-c ui-btn-corner-all">1</span></a></li>');
             }
         });
         

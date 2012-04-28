@@ -117,6 +117,21 @@ Washago.Wall = (function() {
 
     var writeToDB = function (contribution) {
         console.log("I'm writing to a non-existent DB!");
+
+        // Post to mongodb-rest interface to store contribution
+        jQuery.ajax({
+            type: "POST",
+            url: "/mongo/roadshow/contribution/",
+            // do a feeble attempt at checking for uniqueness
+            data: contribution,
+            context: this,
+            success: function(data) {
+                console.log("Contribution posted to database");
+            },
+            error: function(data) {
+                console.warn("Error writing contribution to database");
+            }
+        })
     };
 
     var addParticipantToList = function (jid) {
