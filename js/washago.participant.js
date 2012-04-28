@@ -69,10 +69,11 @@ Washago.Participant = (function() {
                 var myTags = self.tagsToArray();
                 var myText = jQuery.trim(jQuery("#text-contribution").val());
                 
-                if (myTags.length === 0) {
+                ///MIKE:: uncomment if you want to check the tags length!!
+                /*if (myTags.length === 0) {
                     jQuery.mobile.showToast("You must select at least ONE tag!",false, 4000, true);
                     return;
-                }
+                }*/
                 
                 if (myText.length < 4) {
                     jQuery.mobile.showToast("You must enter in at least 4 characters in the text field!",false, 4000, true);
