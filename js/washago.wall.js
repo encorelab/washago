@@ -100,8 +100,8 @@ Washago.Wall = (function() {
     };
 
     var filterBalloons = function () {
-        activeKeywordClasses = activeKeywordClasses();
-        inactiveKeywordClasses = inactiveKeywordClasses();
+        var keywordClasses = activeKeywordClasses();
+        //var inactiveKeywordClasses = inactiveKeywordClasses();
         
 /*        _.each(jQuery('#tags-filter .selected'), function (tag) {
 
@@ -129,19 +129,19 @@ Washago.Wall = (function() {
         }*/
     };
 
-    // no touching!!
-
     var activeKeywordClasses = function () {
         return jQuery('#li.selected').map(function() {
-            return _.select($(this).attr('class').split(' '), MD5.hexdigest(criteria));
+            return _.select(jQuery(this).attr('class').split(' '), function(klass) {
+                return klass.match(/tags-/);
+            });
         }).toArray();
     };
     
-    var inactiveKeywordClasses = function () {
-/*        return jQuery('#li').not('.selected').map(function() {
-            return _.select($(this).attr('class').split(' '), MD5.hexdigest(criteria) ).toArray();
-        }*/
-    };
+/*    var inactiveKeywordClasses = function () {
+        return jQuery('#li').not('.selected').map(function() {
+            return _.select($(this).attr('class').split(' '), MD5.hexdigest(criteria))
+        }).toArray();
+    };*/
 
 /*    activeKeywordClasses: function() {
         return $('#li.selected').map(function() {
@@ -260,6 +260,10 @@ Washago.Wall = (function() {
 
     var writeToDB = function (contribution) {
         console.log("Attempting to store contribution in database");
+
+        // TODO: might need to clone contribution to avoid modifying the original object
+        contribution._id = contribution.id;
+        delete contribution.id;
 
         // sleepy mongose requires date being submitted in docs=[{"x":1,"y":2}]
         var postData = 'docs=[' +JSON.stringify(contribution)+ ']';
