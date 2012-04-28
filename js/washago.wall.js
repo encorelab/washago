@@ -30,22 +30,24 @@ Washago.Wall = (function() {
         var boardWidth = jQuery("#wall").width();
         var boardHeight = jQuery("#wall").height();
         
-        if (contrib.pos && contrib.pos.left)
+        if (contrib.pos && contrib.pos.left) {
             left = contrib.pos.left;
-        else
+        } else {
             left = Math.random() * (boardWidth - balloon.width());
+        }
         
-        if (contrib.pos && contrib.pos.top)
+        if (contrib.pos && contrib.pos.top) {
             top = contrib.pos.top;
-        else
+        } else {
             top = Math.random() * (boardHeight - balloon.height());
+        }
         
         balloon.css('left', left + 'px');
         balloon.css('top', top + 'px');
         
-        if (contrib.id) {
+        //if (contrib.id) {
             //CommonBoard.contribBalloonPositioned(contrib, {left: left, top: top});
-        }
+        //}
     };
 
     var createBalloon = function (contribution) {
@@ -131,7 +133,7 @@ Washago.Wall = (function() {
 
     var activeKeywordClasses = function () {
         return jQuery('#li.selected').map(function() {
-            return _.select($(this).attr('class').split(' '), MD5.hexdigest(criteria))
+            return _.select($(this).attr('class').split(' '), MD5.hexdigest(criteria));
         }).toArray();
     };
     
@@ -275,7 +277,7 @@ Washago.Wall = (function() {
             error: function(data) {
                 console.warn("Error writing contribution to database. Possible reason: " +data.responseText);
             }
-        })
+        });
     };
 
     self.init = function() {
