@@ -256,7 +256,7 @@ Washago.Wall = (function() {
         // Post to mongodb-rest interface to store contribution
         jQuery.ajax({
             type: "POST",
-            url: "/mongo/roadshow/contributions/",
+            url: "/mongo/roadshow/contributions/_insert",
             // do a feeble attempt at checking for uniqueness
             data: contribution,
             context: this,
@@ -266,7 +266,7 @@ Washago.Wall = (function() {
             error: function(data) {
                 console.warn("Error writing contribution to database. Possible reason: " +data.responseText);
             }
-        });
+        })
     };
 
     self.init = function() {
@@ -330,7 +330,7 @@ Washago.Wall = (function() {
                 addTagToList(new_contribution);
                 addAboutToList(new_contribution);                
                 addTypeToList(new_contribution);
-                //writeToDB(new_contribution, culumativeTagArray);
+                writeToDB(new_contribution);
             }
         }
     };
