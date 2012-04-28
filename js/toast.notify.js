@@ -33,6 +33,9 @@
                 },delay);
             }
             
+        },
+        hideToast: function() {
+            jQuery(".ui-loader").fadeOut('slow');
         }
     });
 })( jQuery, this );

@@ -5,6 +5,7 @@ body {
   background-size: 70% auto;
   background-position: 0 100px;
   overflow: hidden;
+  background: #eee;
 }
 
 header {
@@ -105,6 +106,10 @@ header {
   overflow-x: hidden;
 }
 
+.toolbars-left .toolbar {
+  box-shadow: -3px 3px 4px rgba(0, 0, 128, 0.25)
+}
+
 #tags-filter,
 #participants-filter,
 #about-filter,
@@ -203,4 +208,12 @@ div.none-yet {
   padding-bottom: 10px;
   padding-left: 14px;
   padding-right: 14px;
+}
+
+.balloon.discourse-question {
+  background: rgba(255, 230, 208, 0.9);
+}
+
+.balloon.discourse-comment {
+  background: rgba(202, 248, 202, 0.9);
 }

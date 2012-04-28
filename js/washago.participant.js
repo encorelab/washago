@@ -29,20 +29,23 @@ Washago.Participant = (function() {
         jQuery(self).trigger('authenticated');
     };
     
-    self.generateID = function(numOfDigits) {
-	var chars = "0123456789abcdef";
-	var randomstring = '';
-	for (var i=0; i< numOfDigits; i++) {
-		var rnum = Math.floor(Math.random() * chars.length);
-                if (i === 0) {
-                    if (rnum === 0) {
-                        rnum = 1;
+    var generateID = function(numOfDigits) {
+        var base = 16;
+        return Math.ceil(Math.random() * (Math.pow(base, numOfDigits)-1)).toString(base);
+
+    	/*var chars = "0123456789abcdef";
+    	var randomstring = '';
+    	for (var i=0; i< numOfDigits; i++) {
+    		var rnum = Math.floor(Math.random() * chars.length);
+                    if (i === 0) {
+                        if (rnum === 0) {
+                            rnum = 1;
+                        }
                     }
-                }
-                
-		randomstring += chars.substring(rnum,rnum+1);
-	}
-	return randomstring;
+                    
+    		randomstring += chars.substring(rnum,rnum+1);
+    	}
+    	return randomstring;*/
     };
 
     self.events = {
@@ -82,7 +85,7 @@ Washago.Participant = (function() {
                     return;
                 }
                 
-                lastSentContributeID = self.generateID(12*2);// Math.floor((Math.random() * Math.pow(36,16))).toString(16);
+                lastSentContributeID = generateID(12);// Math.floor((Math.random() * Math.pow(36,16))).toString(16);
                 
                 var sev = new Sail.Event('contribution', {
                     author: Sail.app.nickname,
@@ -92,8 +95,9 @@ Washago.Participant = (function() {
                     about: jQuery("#select-location").val(),
                     discourse_type: jQuery('input[name="radioType"]:checked').val()
                 });
-                Sail.app.groupchat.sendEvent(sev);
                 
+                Sail.app.groupchat.sendEvent(sev);
+                jQuery.mobile.showToast("Sending your contribution...", false)
                  
             });
         },
@@ -106,6 +110,7 @@ Washago.Participant = (function() {
                 var oldID = lastSentContributeID;
                 // my payload so show the user confirmation
                 if (sev.payload.id === lastSentContributeID) {
+                    jQuery.mobile.hideToast();
                     reconstructingTags = true;
                     console.log('my contribution event occured!');
                     jQuery.mobile.showToast("Your contribution was sent!",false, 3000, false, function(){console.log("toast end"); });
@@ -269,7 +274,7 @@ Washago.Participant = (function() {
                         
                         // go through json object returned by GET DB Query and grab the tags
                         jQuery.each(data.results, function(index, value) {
-                             if (! value.tags) return;
+                             if (! value.tags) { return; }
                              jQuery.each(value.tags, function(i, v) {
                                 v = jQuery.trim(v);
                                 //alert(v);
