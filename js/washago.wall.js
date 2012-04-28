@@ -101,64 +101,36 @@ Washago.Wall = (function() {
 
     var filterBalloons = function () {
         var keywordClasses = activeKeywordClasses();
+/*        var keywordClasses = activeKeywordClasses("tags");
+        keywordClasses += activeKeywordClasses("about");
+*/
         //var inactiveKeywordClasses = inactiveKeywordClasses();
         
-/*        _.each(jQuery('#tags-filter .selected'), function (tag) {
-
-            if (jQuery('.balloon.tag-' + MD5.hexdigest(tag)).length > 0) {
-                jQuery('.balloon').removeClass('blurred');
-            } else {
-                jQuery('.balloon').addClass('blurred');
-            }
-
-        });
-*/
-
-/*        if (activeKeywordClasses.length === 0) {
+        if (keywordClasses.length === 0) {
             // show all balloons if no filters are active
-            $('.balloon').removeClass('blurred');
+            jQuery('.balloon').removeClass('blurred');
         } else {
             // TODO: use inactiveKeywordClasses to make this more efficient
-            $('.balloon').addClass('blurred');
+            jQuery('.balloon').addClass('blurred');
         
             // INTERSECTION (and)
             //$('.balloon.'+activeKeywordClasses.join(".")).removeClass('blurred')
         
             // UNION (or)
-            $('.balloon.'+activeKeywordClasses.join(", .balloon.")).removeClass('blurred');
-        }*/
+            jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred')
+        }
     };
 
+    // this function returns an (unflattened) array that contain all of the (non-unique) tags to be turned on or off   // this isn't quite working... TODO
     var activeKeywordClasses = function () {
-        return jQuery('#li.selected').map(function() {
+        return jQuery('li.selected').map(function() {
             return _.select(jQuery(this).attr('class').split(' '), function(klass) {
-                return klass.match(/tags-/);
+                return klass.match(/(tags|about|discourse)-/);
+
             });
         }).toArray();
     };
     
-/*    var inactiveKeywordClasses = function () {
-        return jQuery('#li').not('.selected').map(function() {
-            return _.select($(this).attr('class').split(' '), MD5.hexdigest(criteria))
-        }).toArray();
-    };*/
-
-/*    activeKeywordClasses: function() {
-        return $('#li.selected').map(function() {
-            return _.select($(this).attr('class').split(' '), function(klass) {
-                return klass.match(/keyword-/)
-            })
-        }).toArray()
-    },
-    
-    inactiveKeywordClasses: function() {
-        return $('#li').not('.selected').map(function() {
-            return _.select($(this).attr('class').split(' '), function(klass) {
-                return klass.match(/keyword-/)
-            })
-        }).toArray()
-    },*/    
-
     var addTagToList = function (contribution) {
         var none_yet = jQuery('#tags-filter .none-yet');
         if (none_yet.length > 0) {
@@ -206,13 +178,13 @@ Washago.Wall = (function() {
         }
         
         var list = jQuery('#discourse-filter ul');
-        var li = list.find('.discourse-' + MD5.hexdigest(contribution.discourseType));
+        var li = list.find('.discourse-' + MD5.hexdigest(contribution.discourse_type));
         if (li.length === 0) {
             li = jQuery('<li />');
-            li.text(contribution.discourseType);
-            li.addClass("discourse-" + MD5.hexdigest(contribution.discourseType));
+            li.text(contribution.discourse_type);
+            li.addClass("discourse-" + MD5.hexdigest(contribution.discourse_type));
             li.click(function() {
-                toggleFilterOption(contribution.discourseType, "discourse");
+                toggleFilterOption(contribution.discourse_type, "discourse");
             });
             list.append(li);
         }
@@ -265,7 +237,7 @@ Washago.Wall = (function() {
         contribution._id = contribution.id;
         delete contribution.id;
 
-        // sleepy mongose requires date being submitted in docs=[{"x":1,"y":2}]
+        // sleepy mongoose requires date being submitted in docs=[{"x":1,"y":2}]
         var postData = 'docs=[' +JSON.stringify(contribution)+ ']';
 
         // Post to mongodb-rest interface to store contribution
@@ -337,7 +309,7 @@ Washago.Wall = (function() {
                     text:sev.payload.text,
                     tags:sev.payload.tags,
                     about:sev.payload.about,
-                    discourseType:sev.payload.discourse_type,
+                    discourse_type:sev.payload.discourse_type,
                     timestamp:sev.timestamp,
                     id:sev.payload.id
                 };
