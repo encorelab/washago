@@ -63,7 +63,7 @@ Washago.Participant = (function() {
                     return;
                 }
                 
-                lastSentContributeID = Math.floor((Math.random() * Math.pow(36,12))).toString(36);
+                lastSentContributeID = Math.floor((Math.random() * Math.pow(36,12))).toString(16);
                 
                 var sev = new Sail.Event('contribution', {
                     author: Sail.app.nickname,
