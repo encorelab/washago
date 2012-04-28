@@ -4,6 +4,7 @@ body {
   /*background: url("/images/common_habitats.png");*/
   background-size: 70% auto;
   background-position: 0 100px;
+  overflow: hidden;
 }
 
 header {
@@ -81,7 +82,7 @@ header {
   width: 160px;
   bottom: 0px;
 
-  -moz-transform: rotateY(20deg) translateY(-10px);
+  -moz-transform: rotateY(20deg) translateY(-2px);
   -webkit-transform: rotateY(15deg) translateY(-10px) translateX(10px);
   transform: rotateY(20deg) translateY(-10px);
 }
@@ -93,7 +94,7 @@ header {
   width: 160px;
   bottom: 0px;
 
-  -moz-transform: rotateY(-20deg) translateY(-10px);
+  -moz-transform: rotateY(-20deg) translateY(-2px);
   -webkit-transform: rotateY(-15deg) translateY(-10px) translateX(-10px);
   transform: rotateY(-20deg) translateY(-10px);
 }
@@ -115,23 +116,23 @@ header {
 }
 
 #tags-filter {
-  max-height: 75%;
-  height: 75%;
+  max-height: 72%;
+  height: 72%;
 }
 
 #participants-filter {
-  max-height: 75%;
-  height: 75%;
+  max-height: 72%;
+  height: 72%;
 }
 
 #discourse-filter {
-  max-height: 20%;
-  height: 20%;
+  max-height: 22%;
+  height: 22%;
 }
 
 #about-filter {
-  max-height: 20%;
-  height: 20%;
+  max-height: 22%;
+  height: 22%;
 }
 
 div.none-yet {
@@ -143,11 +144,6 @@ div.none-yet {
 .balloon {
   position: absolute;
   width: 300px;
-  
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 14px;
-  padding-right: 14px;
   
   border-radius: 15px;
   background-color: rgba(256,256,256,0.9);
@@ -173,10 +169,13 @@ div.none-yet {
 }
 
 .balloon .about.author {
+  color: #999999;
   font-size: 11px;
-  padding: 2px;  
   margin-bottom: 1em;
-  border-bottom: 2px dashed #ccc;
+  padding: 2px;
+  position: absolute;
+  right: 6px;
+  top: 0;
 }
 
 .balloon h3.headline {
@@ -184,14 +183,24 @@ div.none-yet {
 }
 
 .balloon .tags {
-  border-top: 2px dashed #ccc;
   font-size: 11px;
-  margin-top: 1em;
-  padding: 2px;
-  color: #aaa;
+  margin: 0 8px 6px;
+}
+
+.balloon .tag {
+  background: #ddf;
+  border-radius: 5px;
+  display: inline-block;
+  margin-right: 5px;
+  padding: 2px 4px;
 }
 
 .balloon .text {
   margin-top: 0.5em;
   font-size: 14px;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 14px;
+  padding-right: 14px;
 }
