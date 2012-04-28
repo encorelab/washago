@@ -6,12 +6,23 @@ body {
   background-position: 0 100px;
 }
 
-#board {
+header {
+  display: none;
+}
+
+#wall {
   position: absolute;
-  top: 50px;
+  top: 10px;
   bottom: 0px;
-  right: 180px;
-  left: 0px;
+  right: 150px;
+  left: 150px;
+
+  -moz-perspective: 900px;
+  -moz-transform-style: preserve-3d;
+  -webkit-perspective: 900px;
+  -webkit-transform-style: preserve-3d;
+  perspective: 900px;
+  transform-style: preserve-3d;
 }
 
 .toolbar {
@@ -22,8 +33,7 @@ body {
 
 .toolbar ul {
   list-style: none;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin: 5px;
   padding-left: 0;
   text-align: left;
 }
@@ -32,12 +42,27 @@ body {
   margin-bottom: 0.5em;
 }
 
+.toolbar.ui-draggable .titlebar {
+  cursor: pointer;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.toolbar.ui-draggable-dragging .titlebar {
+  cursor: move;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
+
 .toolbar ul li {
   background-color: #444;
   border: 3px solid #aaa;
   border-radius: 10px;
   padding: 3px 8px;
   margin-bottom: 6px;
+  overflow: hidden;
 }
 
 .toolbar ul li:hover {
@@ -49,28 +74,70 @@ body {
   border: dotted #0f0;
 }
 
-
-#tags {
-  right: 8px;
-  top: 60px;
+.toolbars-left {
+  position: absolute;
+  left: -140px;
+  top: 10px;
   width: 160px;
+  bottom: 0px;
+
+  -moz-transform: rotateY(20deg) translateY(-10px);
+  -webkit-transform: rotateY(15deg) translateY(-10px) translateX(10px);
+  transform: rotateY(20deg) translateY(-10px);
 }
 
-#tags div.none-yet,
-#participants div.none-yet {
+.toolbars-right {
+  position: absolute;
+  right: -140px;
+  top: 10px;
+  width: 160px;
+  bottom: 0px;
+
+  -moz-transform: rotateY(-20deg) translateY(-10px);
+  -webkit-transform: rotateY(-15deg) translateY(-10px) translateX(-10px);
+  transform: rotateY(-20deg) translateY(-10px);
+}
+
+.filter-list-container {
+  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#tags-filter,
+#participants-filter,
+#about-filter,
+#discourse-filter {
+  width: 100%;
+  position: static;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+#tags-filter {
+  max-height: 75%;
+  height: 75%;
+}
+
+#participants-filter {
+  max-height: 75%;
+  height: 75%;
+}
+
+#discourse-filter {
+  max-height: 20%;
+  height: 20%;
+}
+
+#about-filter {
+  max-height: 20%;
+  height: 20%;
+}
+
+div.none-yet {
   padding: 10px;
   font-style: italic;
   opacity: 0.6;
-}
-
-#participants {
-  left: 8px;
-  top: 60px;
-  width: 160px;
-}
-
-#participants li {
-  overflow: hidden;
 }
 
 .balloon {
@@ -89,18 +156,27 @@ body {
 
 .balloon:hover {
   cursor: pointer;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.balloon.ui-draggable-dragging {
+  cursor: move;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
 }
 
 .balloon.blurred {
   opacity: 0.15;
 }
 
-.balloon .author {
-  position: absolute;
-  right: 10px;
-  top: 4px;
+.balloon .about.author {
   font-size: 11px;
-  color: #aaa;
+  padding: 2px;  
+  margin-bottom: 1em;
+  border-bottom: 2px dashed #ccc;
 }
 
 .balloon h3.headline {
@@ -109,12 +185,13 @@ body {
 
 .balloon .tags {
   border-top: 2px dashed #ccc;
-  font-size: 12px;
+  font-size: 11px;
   margin-top: 1em;
   padding: 2px;
+  color: #aaa;
 }
 
-.balloon .writeup {
+.balloon .text {
   margin-top: 0.5em;
   font-size: 14px;
 }
