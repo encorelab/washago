@@ -206,13 +206,13 @@ Washago.Wall = (function() {
         }
         
         var list = jQuery('#discourse-filter ul');
-        var li = list.find('.discourse-' + MD5.hexdigest(contribution.discourseType));
+        var li = list.find('.discourse-' + MD5.hexdigest(contribution.discourse_type));
         if (li.length === 0) {
             li = jQuery('<li />');
-            li.text(contribution.discourseType);
-            li.addClass("discourse-" + MD5.hexdigest(contribution.discourseType));
+            li.text(contribution.discourse_type);
+            li.addClass("discourse-" + MD5.hexdigest(contribution.discourse_type));
             li.click(function() {
-                toggleFilterOption(contribution.discourseType, "discourse");
+                toggleFilterOption(contribution.discourse_type, "discourse");
             });
             list.append(li);
         }
@@ -337,7 +337,7 @@ Washago.Wall = (function() {
                     text:sev.payload.text,
                     tags:sev.payload.tags,
                     about:sev.payload.about,
-                    discourseType:sev.payload.discourse_type,
+                    discourse_type:sev.payload.discourse_type,
                     timestamp:sev.timestamp,
                     id:sev.payload.id
                 };
