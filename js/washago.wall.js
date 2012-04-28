@@ -33,13 +33,13 @@ Washago.Wall = (function() {
         if (contrib.pos && contrib.pos.left) {
             left = contrib.pos.left;
         } else {
-            left = Math.random() * (boardWidth - balloon.width());
+            left = Math.random() * ((boardWidth - balloon.width()) - 10);
         }
         
         if (contrib.pos && contrib.pos.top) {
             top = contrib.pos.top;
         } else {
-            top = Math.random() * (boardHeight - balloon.height());
+            top = Math.random() * (boardHeight - (balloon.height() - 10));
         }
         
         balloon.css('left', left + 'px');

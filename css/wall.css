@@ -15,7 +15,7 @@ header {
 #wall {
   position: absolute;
   top: 10px;
-  bottom: 0px;
+  bottom: 5px;
   right: 150px;
   left: 150px;
 
