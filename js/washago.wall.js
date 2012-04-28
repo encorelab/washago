@@ -101,64 +101,36 @@ Washago.Wall = (function() {
 
     var filterBalloons = function () {
         var keywordClasses = activeKeywordClasses();
+/*        var keywordClasses = activeKeywordClasses("tags");
+        keywordClasses += activeKeywordClasses("about");
+*/
         //var inactiveKeywordClasses = inactiveKeywordClasses();
         
-/*        _.each(jQuery('#tags-filter .selected'), function (tag) {
-
-            if (jQuery('.balloon.tag-' + MD5.hexdigest(tag)).length > 0) {
-                jQuery('.balloon').removeClass('blurred');
-            } else {
-                jQuery('.balloon').addClass('blurred');
-            }
-
-        });
-*/
-
-/*        if (activeKeywordClasses.length === 0) {
+        if (keywordClasses.length === 0) {
             // show all balloons if no filters are active
-            $('.balloon').removeClass('blurred');
+            jQuery('.balloon').removeClass('blurred');
         } else {
             // TODO: use inactiveKeywordClasses to make this more efficient
-            $('.balloon').addClass('blurred');
+            jQuery('.balloon').addClass('blurred');
         
             // INTERSECTION (and)
             //$('.balloon.'+activeKeywordClasses.join(".")).removeClass('blurred')
         
             // UNION (or)
-            $('.balloon.'+activeKeywordClasses.join(", .balloon.")).removeClass('blurred');
-        }*/
+            jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred')
+        }
     };
 
+    // this function returns an (unflattened) array that contain all of the (non-unique) tags to be turned on or off   // this isn't quite working... TODO
     var activeKeywordClasses = function () {
-        return jQuery('#li.selected').map(function() {
+        return jQuery('li.selected').map(function() {
             return _.select(jQuery(this).attr('class').split(' '), function(klass) {
-                return klass.match(/tags-/);
+                return klass.match(/(tags|about|discourse)-/);
+
             });
         }).toArray();
     };
     
-/*    var inactiveKeywordClasses = function () {
-        return jQuery('#li').not('.selected').map(function() {
-            return _.select($(this).attr('class').split(' '), MD5.hexdigest(criteria))
-        }).toArray();
-    };*/
-
-/*    activeKeywordClasses: function() {
-        return $('#li.selected').map(function() {
-            return _.select($(this).attr('class').split(' '), function(klass) {
-                return klass.match(/keyword-/)
-            })
-        }).toArray()
-    },
-    
-    inactiveKeywordClasses: function() {
-        return $('#li').not('.selected').map(function() {
-            return _.select($(this).attr('class').split(' '), function(klass) {
-                return klass.match(/keyword-/)
-            })
-        }).toArray()
-    },*/    
-
     var addTagToList = function (contribution) {
         var none_yet = jQuery('#tags-filter .none-yet');
         if (none_yet.length > 0) {
@@ -261,7 +233,7 @@ Washago.Wall = (function() {
     var writeToDB = function (contribution) {
         console.log("Attempting to store contribution in database");
 
-        // sleepy mongose requires date being submitted in docs=[{"x":1,"y":2}]
+        // sleepy mongoose requires date being submitted in docs=[{"x":1,"y":2}]
         var postData = 'docs=[' +JSON.stringify(contribution)+ ']';
 
         // Post to mongodb-rest interface to store contribution
