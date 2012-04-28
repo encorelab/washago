@@ -99,17 +99,18 @@ Washago.Participant = (function() {
         
         sail: {
             contribution: function(sev) {
-                
+                var oldID = lastSentContributeID;
                 // my payload so show the user confirmation
                 if (sev.payload.id === lastSentContributeID) {
                     console.log('my contribution event occured!');
                     jQuery.mobile.showToast("Your contribution was sent!",false, 3000, false, function(){console.log("toast end"); });
                     //alert("Tags Saved!");
+                    
                     self.resetParticipantForm();
                 }
-                else { // someone else is contributing update the tags inline
-                    self.updateTags(sev.payload.tags, lastSentContributeID);
-                }     
+                //else { // someone else is contributing update the tags inline
+                    self.updateTags(sev.payload.tags, oldID);
+                //}     
             }
             
         }
