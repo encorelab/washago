@@ -43,6 +43,10 @@ Washago.Participant = (function() {
             self.getLocations();
             self.getTags();
             self.initSearch();
+            
+            jQuery("#tag-region").click(function(){
+                //jQuery(this).slideToggle();
+                })
         },
 
         'ui.initialized': function(ev) {
@@ -63,7 +67,7 @@ Washago.Participant = (function() {
                     return;
                 }
                 
-                lastSentContributeID = Math.floor((Math.random() * 1e50)).toString(36);
+                lastSentContributeID = Math.floor((Math.random() * Math.pow(36,12))).toString(36);
                 
                 var sev = new Sail.Event('contribution', {
                     author: Sail.app.nickname,
