@@ -6,6 +6,7 @@ Washago.Participant = (function() {
     "use strict";
     var self = {};
     var lastSentContributeID = null;
+    var reconstructingTags = false;
 
     self.init = function () {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
@@ -99,9 +100,13 @@ Washago.Participant = (function() {
         
         sail: {
             contribution: function(sev) {
+                
+                if (reconstructingTags) return;
+                
                 var oldID = lastSentContributeID;
                 // my payload so show the user confirmation
                 if (sev.payload.id === lastSentContributeID) {
+                    reconstructingTags = true;
                     console.log('my contribution event occured!');
                     jQuery.mobile.showToast("Your contribution was sent!",false, 3000, false, function(){console.log("toast end"); });
                     //alert("Tags Saved!");
@@ -299,10 +304,11 @@ Washago.Participant = (function() {
                         
                         self.sortTags();
                         jQuery('#tag-count').text(i);
+                        jQuery(".tag-class").fadeIn(250);
                         
                         })
                     .error(function() { console.log("Error grabbing mongoDB data for contributions!"); })
-                    .complete(function() { console.log("Done grabbing mongoDB data for contributions!"); });
+                    .complete(function() { reconstructingTags = false; console.log("Done grabbing mongoDB data for contributions!"); });
 
     };
     
