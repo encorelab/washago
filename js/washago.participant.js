@@ -222,17 +222,19 @@ Washago.Participant = (function() {
         });
         
         if (newTagsDataStructure.length > 0) {
-            
-            jQuery('.tag-class').sort(function (a,b) { 
-                return jQuery(a).attr("tag_id") > jQuery(b).attr("tag_id") ? 1 : -1;
-            }).insertAfter(availableTags);
-        
-            jQuery('#tag-list').listview('refresh');
-            
+            self.sortTags();
             jQuery('#tag-count').text(tagCount + updatedTags);
         }
         
             
+    };
+    
+    self.sortTags = function() {
+         jQuery('.tag-class').sort(function (a,b) { 
+                return jQuery(a).attr("tag_id") > jQuery(b).attr("tag_id") ? 1 : -1;
+            }).insertAfter(jQuery('#tag-list-heading'));
+        
+            jQuery('#tag-list').listview('refresh');
     };
     
     // get the tags from the MongoDB server and add them to the tag stack
@@ -284,7 +286,7 @@ Washago.Participant = (function() {
         
                         
                         
-                        jQuery('#tag-list').listview('refresh');
+                        self.sortTags();
                         jQuery('#tag-count').text(i);
                         
                         })
