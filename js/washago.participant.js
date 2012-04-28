@@ -183,7 +183,6 @@ Washago.Participant = (function() {
         var tagStr = '';
         var updatedTags = 0;
         var tagCount = parseInt(jQuery('#tag-count').text());
-        var uniqueClassID = '';
         var i = 0;
         
         // grab current tags and stuff them into an array
@@ -192,7 +191,7 @@ Washago.Participant = (function() {
             var tagFound = self.inTagStack(val);
             
             if (tagFound == 0) { // tag not in stack so insert it
-                uniqueClassID = tagClassID + '_' + i;
+                var uniqueClassID = tagClassID + '_' + i;
                 tagStr = '<li class="tag-class" tag_id="' + val + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href ' + uniqueClassID + '" href="#page1"><span class="tag-value">' + val + '</span><span class="tag-counter ui-li-count ui-btn-up-c ui-btn-corner-all">1</span></a></li>';
                 updatedTags++;
                 availableTags.after(tagStr);
@@ -228,27 +227,29 @@ Washago.Participant = (function() {
         var availableTags = jQuery("#tag-list-heading");
         var dataTags = data.tags;
         var tagStr = '';
+        var i = 0;
         dataTags.sort();
         jQuery.each(dataTags, function(index, value) { 
             //alert(index + ': ' + value);
             value = jQuery.trim(value);
             var tagFound = self.inTagStack(value);
+            var uniqueClassID = 'original_tag_stack_item_' + i;
             
             if (tagFound === 0) {
                 // adds the tags in the stack
-               tagStr += '<li class="tag-class" tag_id="' + value + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href" href="#page1"><span class="tag-value">' + value + '</span><span class="tag-counter ui-li-count ui-btn-up-c ui-btn-corner-all">1</span></a></li>';
+               tagStr = '<li class="tag-class" tag_id="' + value + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href ' + uniqueClassID + '" href="#page1"><span class="tag-value">' + value + '</span><span class="tag-counter ui-li-count ui-btn-up-c ui-btn-corner-all">1</span></a></li>';
+                availableTags.after(tagStr);
+                self.initTagClick(jQuery('#tag-list li a.' + uniqueClassID));
             }
+            
+            i++;
         });
         
         if (! tagStr) return;
         
-        availableTags.after(tagStr);
-        
-        
         jQuery('#tag-list').listview('refresh');
         jQuery('#tag-count').text(dataTags.length);
         
-         self.initTagClick(jQuery('#tag-list li a'));
         
     };
     self.initTagClick = function(obj) {
