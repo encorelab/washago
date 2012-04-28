@@ -43,10 +43,6 @@ Washago.Participant = (function() {
             self.getLocations();
             self.getTags();
             self.initSearch();
-            
-            jQuery("#tag-region").click(function(){
-                //jQuery(this).slideToggle();
-                })
         },
 
         'ui.initialized': function(ev) {
