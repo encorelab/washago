@@ -209,3 +209,11 @@ div.none-yet {
   padding-left: 14px;
   padding-right: 14px;
 }
+
+.balloon.discourse-question {
+  background: rgba(255, 230, 208, 0.9);
+}
+
+.balloon.discourse-comment {
+  background: rgba(202, 248, 202, 0.9);
+}
