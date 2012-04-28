@@ -27,6 +27,22 @@ Washago.Participant = (function() {
     self.authenticate = function () {
         jQuery(self).trigger('authenticated');
     };
+    
+    self.generateID = function(numOfDigits) {
+	var chars = "0123456789abcdef";
+	var randomstring = '';
+	for (var i=0; i< numOfDigits; i++) {
+		var rnum = Math.floor(Math.random() * chars.length);
+                if (i === 0) {
+                    if (rnum === 0) {
+                        rnum = 1;
+                    }
+                }
+                
+		randomstring += chars.substring(rnum,rnum+1);
+	}
+	return randomstring;
+    };
 
     self.events = {
         initialized: function(ev) {
@@ -63,8 +79,8 @@ Washago.Participant = (function() {
                     return;
                 }
                 
-                lastSentContributeID = Math.floor((Math.random() * Math.pow(36,12))).toString(16);
-                
+                lastSentContributeID = self.generateID(12);// Math.floor((Math.random() * Math.pow(36,16))).toString(16);
+                alert(lastSentContributeID.length);
                 var sev = new Sail.Event('contribution', {
                     author: Sail.app.nickname,
                     text:myText,
