@@ -58,6 +58,7 @@ Washago.Wall = (function() {
         balloon.data('contribution', contribution);
         balloon.attr('id', "contibution-" + contribution.id);
         balloon.addClass('author-' + contribution.author);
+        balloon.addClass('discourse-' + contribution.discourse_type);
 /*        jQuery(contribution.tags).each(function() {
             balloon.addClass(this);
         });*/
