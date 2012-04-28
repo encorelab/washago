@@ -272,7 +272,7 @@ Washago.Participant = (function() {
                         
                         // go through json object returned by GET DB Query and grab the tags
                         jQuery.each(data.results, function(index, value) {
-                             if (! value.tags) return;
+                             if (! value.tags) { return; }
                              jQuery.each(value.tags, function(i, v) {
                                 v = jQuery.trim(v);
                                 //alert(v);
