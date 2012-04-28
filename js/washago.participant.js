@@ -248,7 +248,7 @@ Washago.Participant = (function() {
     self.getTags = function() {
         
         var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
-        var tagDepotURI = '/mongo/roadshow/contributions/_find' + ((Sail.app.run)?'?criteria={"run":"' + Sail.app.run.name+ '"}':'');
+        var tagDepotURI = '/mongo/roadshow/contributions/_find?batch_size=10000000000' + ((Sail.app.run)?'&criteria={"run":"' + Sail.app.run.name+ '"}':'');
         
         
         var jqxhr = jQuery.get(tagDepotURI)
@@ -263,6 +263,7 @@ Washago.Participant = (function() {
                         
                         // go through json object returned by GET DB Query and grab the tags
                         jQuery.each(data.results, function(index, value) {
+                             if (! value.tags) return;
                              jQuery.each(value.tags, function(i, v) {
                                 v = jQuery.trim(v);
                                 //alert(v);
