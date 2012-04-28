@@ -56,6 +56,7 @@ Washago.Participant = (function() {
                 console.log(who + " joined...");
             });
             
+            jQuery("#washago-header").html(Sail.app.nickname);
             self.getLocations();
             self.getTags();
             self.initSearch();
@@ -98,24 +99,29 @@ Washago.Participant = (function() {
         
         sail: {
             contribution: function(sev) {
-                
+                var oldID = lastSentContributeID;
+                // my payload so show the user confirmation
                 if (sev.payload.id === lastSentContributeID) {
                     console.log('my contribution event occured!');
                     jQuery.mobile.showToast("Your contribution was sent!",false, 3000, false, function(){console.log("toast end"); });
                     //alert("Tags Saved!");
+                    
                     self.resetParticipantForm();
                 }
-                
-                self.updateTags(sev.payload.tags, lastSentContributeID);
-                 
+                //else { // someone else is contributing update the tags inline
+                    self.updateTags(sev.payload.tags, oldID);
+                //}     
             }
             
         }
     };
     
     self.resetParticipantForm = function() {
+        
+        // reset the lasy sent contribution ID
         lastSentContributeID = null;
-        //Query('#radioType').val('comment');
+        
+        // set the default contribution type to comment
         jQuery('input[name="radioType"]:nth(1)').attr('checked', false).checkboxradio("refresh");
         jQuery('input[name="radioType"]:nth(0)').attr('checked', true).checkboxradio("refresh");
         jQuery("#text-contribution").val('');
@@ -125,16 +131,24 @@ Washago.Participant = (function() {
     };
     
     self.refreshTags = function () {
-        jQuery(".tag-class").fadeIn(250);
+        
+        // remove the old tags
+        jQuery(".tag-class").each(function() {jQuery(this).remove();});
+        
+        // remove the custom/selected tags
         jQuery('.tag_button').each(function() {jQuery(this).remove();});
+        
+        // get the tags from MongoDB
         self.getTags();
     };
     
+    // perform a refresh of the options - used when resetting the form (doesn't do much now but later can be extended to automagically update locations)
     self.refreshLocations = function() {
         jQuery(".location-option-class").each(function() {jQuery(this).remove();});
         self.getLocations();
     };
-
+    
+    // set the poster X drop down menu options from getLocations
     self.getLocations = function() {
         
         var dataStr ='{"tags":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
@@ -152,6 +166,7 @@ Washago.Participant = (function() {
         
     };
     
+    // check to see if the tag is in the set of prefilled or custom tags
     self.inTagStack = function(tag) {
         
         var isTagFound = 0;
@@ -178,11 +193,12 @@ Washago.Participant = (function() {
         return isTagFound;
     };
     
+    // provides dyamic adding of tags coming from events while user is on the form 
     self.updateTags = function(newTagsDataStructure, tagClassID) {
         var availableTags = jQuery('#tag-list-heading');
         var tagStr = '';
         var updatedTags = 0;
-        var tagCount = parseInt(jQuery('#tag-count').text());
+        var tagCount = parseInt(jQuery('#tag-count').text(), 10);
         var i = 0;
         
         // grab current tags and stuff them into an array
@@ -190,7 +206,7 @@ Washago.Participant = (function() {
             var val = jQuery.trim(value);
             var tagFound = self.inTagStack(val);
             
-            if (tagFound == 0) { // tag not in stack so insert it
+            if (tagFound === 0) { // tag not in stack so insert it
                 var uniqueClassID = tagClassID + '_' + i;
                 tagStr = '<li class="tag-class" tag_id="' + val + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href ' + uniqueClassID + '" href="#page1"><span class="tag-value">' + val + '</span><span class="tag-counter ui-li-count ui-btn-up-c ui-btn-corner-all">1</span></a></li>';
                 updatedTags++;
@@ -198,7 +214,8 @@ Washago.Participant = (function() {
                 self.initTagClick(jQuery('#tag-list li a.' + uniqueClassID));
             }
             else if (tagFound === 1 || tagFound === 3) { // tag exists in the stack so update the count
-                
+                var currentCountObject = jQuery('[tag_id="' + val + '"]').find("a span.tag-counter");
+                jQuery(currentCountObject).text(parseInt(jQuery(currentCountObject).text(), 10) + 1);
             }
             
             i++;
@@ -206,52 +223,83 @@ Washago.Participant = (function() {
         });
         
         if (newTagsDataStructure.length > 0) {
-            
-            jQuery('.tag-class').sort(function (a,b) { 
-                return jQuery(a).attr("tag_id") > jQuery(b).attr("tag_id") ? 1 : -1;
-            }).insertAfter(availableTags);
-        
-            jQuery('#tag-list').listview('refresh');
-            
+            self.sortTags();
             jQuery('#tag-count').text(tagCount + updatedTags);
         }
         
             
     };
     
+    self.sortTags = function() {
+         jQuery('.tag-class').sort(function (a,b) { 
+                return jQuery(a).attr("tag_id") > jQuery(b).attr("tag_id") ? 1 : -1;
+            }).insertAfter(jQuery('#tag-list-heading'));
+        
+            jQuery('#tag-list').listview('refresh');
+    };
+    
+    // get the tags from the MongoDB server and add them to the tag stack
     self.getTags = function() {
         
         var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
-        var data = jQuery.parseJSON(dataStr);
-        //jQuery.post(); 
-        var availableTags = jQuery("#tag-list-heading");
-        var dataTags = data.tags;
-        var tagStr = '';
-        var i = 0;
-        dataTags.sort();
-        jQuery.each(dataTags, function(index, value) { 
-            //alert(index + ': ' + value);
-            value = jQuery.trim(value);
-            var tagFound = self.inTagStack(value);
-            var uniqueClassID = 'original_tag_stack_item_' + i;
-            
-            if (tagFound === 0) {
-                // adds the tags in the stack
-               tagStr = '<li class="tag-class" tag_id="' + value + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href ' + uniqueClassID + '" href="#page1"><span class="tag-value">' + value + '</span><span class="tag-counter ui-li-count ui-btn-up-c ui-btn-corner-all">1</span></a></li>';
-                availableTags.after(tagStr);
-                self.initTagClick(jQuery('#tag-list li a.' + uniqueClassID));
-            }
-            
-            i++;
-        });
-        
-        if (! tagStr) return;
-        
-        jQuery('#tag-list').listview('refresh');
-        jQuery('#tag-count').text(dataTags.length);
+        var tagDepotURI = '/mongo/roadshow/contributions/_find' + ((Sail.app.run)?'?criteria={"run":"' + Sail.app.run.name+ '"}':'');
         
         
+        var jqxhr = jQuery.get(tagDepotURI)
+                    .success(function(data) {
+                        console.log("grabbing tags for mongoDB");
+                        var availableTags = jQuery("#tag-list-heading");
+                        var dataTags = {};
+                        var tagStr = '';
+                        var i = 0;
+                        
+                        if (data.ok === 1) { console.log('Problem getting DB Data'); return; }
+                        
+                        jQuery.each(data.results, function(index, value) {
+                             jQuery.each(value.tags, function(i, v) {
+                                v = jQuery.trim(v);
+                                //alert(v);
+                                if (dataTags[v] > 0) {
+                                    dataTags[v] += 1;
+                                }
+                                else {
+                                    dataTags[v] = 1;
+                                }
+                             });
+                        });
+                        
+                       
+                        jQuery.each(dataTags, function(index, value) { 
+                            //alert(index + ':' + value);
+                            var tagName = index;
+                            var tagFound = self.inTagStack(tagName);
+                            var uniqueClassID = 'original_tag_stack_item_' + i;
+                            var tagStr = '';
+                            
+                            if (tagFound === 0) {
+                                // adds the tags in the stack
+                               tagStr = '<li class="tag-class original-tag-stack" tag_id="' + tagName + '" data-theme="c" data-iconpos="right" data-iconshadow="true" data-icon="plus"><a class="tag-class-href ' + uniqueClassID + '" href="#page1"><span class="tag-value">' + tagName + '</span><span class="tag-counter ui-li-count ui-btn-up-c ui-btn-corner-all">' + value + '</span></a></li>';
+                                availableTags.after(tagStr);
+                                //alert(tagStr)
+                                self.initTagClick(jQuery('#tag-list li a.' + uniqueClassID));
+                            }
+                            
+                            i++;
+                        });
+        
+                        
+                        
+                        self.sortTags();
+                        jQuery('#tag-count').text(i);
+                        
+                        })
+                    .error(function() { console.log("Error grabbing mongoDB data for contributions!"); })
+                    .complete(function() { console.log("Done grabbing mongoDB data for contributions!"); });
+
     };
+    
+    
+    // add the click listener to the tag so that it can add the tag to the selected/custom button stack.
     self.initTagClick = function(obj) {
         var availableTags = jQuery("#tag-list-heading");
         jQuery(obj).click(function(){
@@ -268,6 +316,7 @@ Washago.Participant = (function() {
         });
     };
     
+    // initialize the search field to swallow and create custom selection tag on enter key in the search field
     self.initSearch = function() {
        jQuery("div.ui-input-search").live("keyup", function(e){
             var searchValueObj = jQuery('input[data-type="search"]');
@@ -313,11 +362,12 @@ Washago.Participant = (function() {
         });
        };
        
+       // convert the selected tag list to an array in order to send it as Sail event (in the event payload)
        self.tagsToArray = function(){
             var myTags = [];
             
             jQuery.each(jQuery(".tag_button"), function(index, value) { 
-                myTags[index] = jQuery(value).text().toLowerCase();
+                myTags[index] = jQuery.trim(jQuery(value).text().toLowerCase());
             });
             
             return myTags;

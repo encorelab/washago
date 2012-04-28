@@ -7,6 +7,6 @@
     "url": "http://roadshow.encore:5280/http-bind/"
   },
 "mongo": {
-    "url": "http://roadshow.encore:3000"
+    "url": "http://roadshow.encore:27080"
   }
 }

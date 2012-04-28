@@ -59,9 +59,9 @@ Washago.Wall = (function() {
         balloon.attr('id', "contibution-" + contribution.id);
         balloon.addClass('author-' + contribution.author);
         balloon.addClass('discourse-' + contribution.discourse_type);
-/*        jQuery(contribution.tags).each(function() {
-            balloon.addClass(this);
-        });*/
+        jQuery(contribution.tags).each(function() {
+            balloon.addClass('tags-' + MD5.hexdigest(this));
+        });
 
         balloon.hide(); // initially hidden, we call show() with an effect later
 
@@ -97,7 +97,67 @@ Washago.Wall = (function() {
         return balloon;
     };
 
-    var addTagToList = function(contribution) {
+    var filterBalloons = function () {
+        activeKeywordClasses = activeKeywordClasses();
+        inactiveKeywordClasses = inactiveKeywordClasses();
+        
+/*        _.each(jQuery('#tags-filter .selected'), function (tag) {
+
+            if (jQuery('.balloon.tag-' + MD5.hexdigest(tag)).length > 0) {
+                jQuery('.balloon').removeClass('blurred');
+            } else {
+                jQuery('.balloon').addClass('blurred');
+            }
+
+        });
+*/
+
+/*        if (activeKeywordClasses.length === 0) {
+            // show all balloons if no filters are active
+            $('.balloon').removeClass('blurred');
+        } else {
+            // TODO: use inactiveKeywordClasses to make this more efficient
+            $('.balloon').addClass('blurred');
+        
+            // INTERSECTION (and)
+            //$('.balloon.'+activeKeywordClasses.join(".")).removeClass('blurred')
+        
+            // UNION (or)
+            $('.balloon.'+activeKeywordClasses.join(", .balloon.")).removeClass('blurred');
+        }*/
+    };
+
+    // no touching!!
+
+    var activeKeywordClasses = function () {
+        return jQuery('#li.selected').map(function() {
+            return _.select($(this).attr('class').split(' '), MD5.hexdigest(criteria))
+        }).toArray();
+    };
+    
+    var inactiveKeywordClasses = function () {
+/*        return jQuery('#li').not('.selected').map(function() {
+            return _.select($(this).attr('class').split(' '), MD5.hexdigest(criteria) ).toArray();
+        }*/
+    };
+
+/*    activeKeywordClasses: function() {
+        return $('#li.selected').map(function() {
+            return _.select($(this).attr('class').split(' '), function(klass) {
+                return klass.match(/keyword-/)
+            })
+        }).toArray()
+    },
+    
+    inactiveKeywordClasses: function() {
+        return $('#li').not('.selected').map(function() {
+            return _.select($(this).attr('class').split(' '), function(klass) {
+                return klass.match(/keyword-/)
+            })
+        }).toArray()
+    },*/    
+
+    var addTagToList = function (contribution) {
         var none_yet = jQuery('#tags-filter .none-yet');
         if (none_yet.length > 0) {
             none_yet.remove();
@@ -105,61 +165,56 @@ Washago.Wall = (function() {
         
         var list = jQuery('#tags-filter ul');
         _.each(contribution.tags, function (tag) {
-            var li = list.find('.tag-' + MD5.hexdigest(tag));
+            var li = list.find('.tags-' + MD5.hexdigest(tag));
             if (li.length === 0) {
                 li = jQuery('<li />');
                 li.text(tag);
-                li.addClass("tag-" + MD5.hexdigest(tag));
+                li.addClass("tags-" + MD5.hexdigest(tag));
                 li.click(function() {
-                    // TODO set this up for filtering
-                    //self.toggleTag(tag);
+                    toggleFilterOption(tag, "tags");
                 });
                 list.append(li);
             }
         });
-        //return cumulativeTagArray;
     };
 
-    var addAboutToList = function(contribution) {
+    var addAboutToList = function (contribution) {
         var none_yet = jQuery('#about-filter .none-yet');
         if (none_yet.length > 0) {
             none_yet.remove();
         }
 
         var list = jQuery('#about-filter ul');
-
         var li = list.find('.about-' + MD5.hexdigest(contribution.about));
-        var myTemp = 8;
         if (li.length === 0) {
             li = jQuery('<li />');
             li.text(contribution.about);
             li.addClass("about-" + MD5.hexdigest(contribution.about));
             li.click(function() {
-                // TODO set this up for filtering
-                //self.toggleTag(tag);
+                toggleFilterOption(contribution.about, "about");
             });
             list.append(li);
         }
     };
 
-    var writeToDB = function (contribution) {
-        console.log("Attempting to store contribution in database");
-
-        // Post to mongodb-rest interface to store contribution
-        jQuery.ajax({
-            type: "POST",
-            url: "/mongo/roadshow/contributions/",
-            // do a feeble attempt at checking for uniqueness
-            data: contribution,
-            context: this,
-            success: function(data) {
-                console.log("Contribution with id '" +contribution.id+ "' posted to database");
-            },
-            error: function(data) {
-                console.warn("Error writing contribution to database. Possible reason: " +data.responseText);
-            }
-        });
-    };
+    var addTypeToList = function (contribution) {
+        var none_yet = jQuery('#discourse-filter .none-yet');
+        if (none_yet.length > 0) {
+            none_yet.remove();
+        }
+        
+        var list = jQuery('#discourse-filter ul');
+        var li = list.find('.discourse-' + MD5.hexdigest(contribution.discourseType));
+        if (li.length === 0) {
+            li = jQuery('<li />');
+            li.text(contribution.discourseType);
+            li.addClass("discourse-" + MD5.hexdigest(contribution.discourseType));
+            li.click(function() {
+                toggleFilterOption(contribution.discourseType, "discourse");
+            });
+            list.append(li);
+        }
+    }  ;  
 
     var addParticipantToList = function (jid) {
         console.log(jid + " joined...");
@@ -185,6 +240,39 @@ Washago.Wall = (function() {
 
         jQuery("#participants-filter .participant-"+MD5.hexdigest(nickname))
             .hide('fade', 'fast', function () {jQuery(this).remove();});
+    };
+
+    // this is kinda sloppy, but it should work
+    var toggleFilterOption = function (criteria, keyword) {
+        li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + MD5.hexdigest(criteria));
+        if (li.is('.selected')) {
+            li.removeClass('selected');
+            alert('unselected');
+            filterBalloons();
+        } else {
+            li.addClass('selected');
+            alert('selected');
+            filterBalloons();
+        }
+    };
+
+    var writeToDB = function (contribution) {
+        console.log("Attempting to store contribution in database");
+
+        // Post to mongodb-rest interface to store contribution
+        jQuery.ajax({
+            type: "POST",
+            url: "/mongo/roadshow/contributions/_insert",
+            // do a feeble attempt at checking for uniqueness
+            data: contribution,
+            context: this,
+            success: function(data) {
+                console.log("Contribution with id '" +contribution.id+ "' posted to database");
+            },
+            error: function(data) {
+                console.warn("Error writing contribution to database. Possible reason: " +data.responseText);
+            }
+        })
     };
 
     self.init = function() {
@@ -240,14 +328,15 @@ Washago.Wall = (function() {
                     text:sev.payload.text,
                     tags:sev.payload.tags,
                     about:sev.payload.about,
-                    disourceType:sev.payload.discourse_type,
+                    discourseType:sev.payload.discourse_type,
                     timestamp:sev.timestamp,
                     id:sev.payload.id
                 };
                 createBalloon(new_contribution);
                 addTagToList(new_contribution);
                 addAboutToList(new_contribution);                
-                //writeToDB(new_contribution, culumativeTagArray);
+                addTypeToList(new_contribution);
+                writeToDB(new_contribution);
             }
         }
     };
