@@ -15,7 +15,7 @@ header {
 #wall {
   position: absolute;
   top: 10px;
-  bottom: 0px;
+  bottom: 5px;
   right: 150px;
   left: 150px;
 
@@ -31,6 +31,7 @@ header {
   border-radius: 8px !important;
   position: absolute;
   text-align: center;
+  background: rgba(0,0,0,0.85);
 }
 
 .toolbar ul {
@@ -104,10 +105,16 @@ header {
   overflow: auto;
   overflow-y: auto;
   overflow-x: hidden;
+
+  height: 90%;
 }
 
 .toolbars-left .toolbar {
-  box-shadow: -3px 3px 4px rgba(0, 0, 128, 0.25)
+  box-shadow: -4px 3px 5px rgba(0, 0, 0, 0.4);
+}
+
+.toolbars-right .toolbar {
+  box-shadow: 4px 3px 5px rgba(0, 0, 0, 0.4);
 }
 
 #tags-filter,
@@ -135,6 +142,10 @@ header {
   height: 22%;
 }
 
+#discourse-filter li {
+  text-transform: capitalize;
+}
+
 #about-filter {
   max-height: 22%;
   height: 22%;
@@ -152,7 +163,7 @@ div.none-yet {
   
   border-radius: 15px;
   background-color: rgba(256,256,256,0.9);
-  box-shadow: rgba(0,0,128,0.25) 3px 3px 4px;
+  box-shadow: rgba(0,0,0,0.25) 3px 3px 4px;
 }
 
 .balloon:hover {
@@ -193,10 +204,11 @@ div.none-yet {
 }
 
 .balloon .tag {
-  background: #ddf;
+  background: rgba(200,200,200, 0.5);
   border-radius: 5px;
   display: inline-block;
   margin-right: 5px;
+  margin-bottom: 3px;
   padding: 2px 4px;
 }
 

@@ -95,8 +95,9 @@ Washago.Participant = (function() {
                     about: jQuery("#select-location").val(),
                     discourse_type: jQuery('input[name="radioType"]:checked').val()
                 });
-                Sail.app.groupchat.sendEvent(sev);
                 
+                Sail.app.groupchat.sendEvent(sev);
+                jQuery.mobile.showToast("Sending your contribution...", false)
                  
             });
         },
@@ -109,6 +110,7 @@ Washago.Participant = (function() {
                 var oldID = lastSentContributeID;
                 // my payload so show the user confirmation
                 if (sev.payload.id === lastSentContributeID) {
+                    jQuery.mobile.hideToast();
                     reconstructingTags = true;
                     console.log('my contribution event occured!');
                     jQuery.mobile.showToast("Your contribution was sent!",false, 3000, false, function(){console.log("toast end"); });
