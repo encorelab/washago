@@ -59,7 +59,7 @@ Washago.Wall = (function() {
 
         balloon.data('contribution', contribution);
         balloon.attr('id', "contribution-" + contribution.id);
-        balloon.addClass('author-' + contribution.author);
+        balloon.addClass('author-' + MD5.hexdigest(contribution.author));
         balloon.addClass('discourse-' + contribution.discourse);
         balloon.addClass('about-' + MD5.hexdigest(contribution.about));
         jQuery(contribution.tags).each(function() {
@@ -99,7 +99,7 @@ Washago.Wall = (function() {
         positionBalloon(balloon);
 
         balloon.dblclick(function() {
-            $(this).find('.tags').toggle('slideUp');
+            jQuery(this).find('.tags').toggle('slideUp');
         });
 
         jQuery("#wall").append(balloon);
@@ -155,7 +155,7 @@ Washago.Wall = (function() {
                 li.text(tag);
                 li.addClass("tags-" + MD5.hexdigest(tag));
                 li.click(function() {
-                    toggleFilterOption(tag, "tags");
+                    toggleFilterOption(MD5.hexdigest(tag), "tags");
                 });
                 list.append(li);
             }
@@ -175,7 +175,7 @@ Washago.Wall = (function() {
             li.text(contribution.about);
             li.addClass("about-" + MD5.hexdigest(contribution.about));
             li.click(function() {
-                toggleFilterOption(contribution.about, "about");
+                toggleFilterOption(MD5.hexdigest(contribution.about), "about");
             });
             list.append(li);
         }
@@ -194,7 +194,7 @@ Washago.Wall = (function() {
             li.text(contribution.discourse);
             li.addClass("discourse-" + contribution.discourse);
             li.click(function() {
-                toggleFilterType(contribution.discourse);
+                toggleFilterOption(contribution.discourse, "discourse");
             });
             list.append(li);
         }
@@ -212,6 +212,10 @@ Washago.Wall = (function() {
         jQuery("#participants-filter .none-yet").remove('.none-yet');
         jQuery("#participants-filter ul").append(li);
 
+        li.click(function() {
+            toggleFilterOption(MD5.hexdigest(contribution.author), "author");
+        });        
+
         // jQuery("#participants-filter .filter-list-container")
         //     .css('overflow-y', 'auto')
         //     .css('height', '90%');
@@ -228,7 +232,7 @@ Washago.Wall = (function() {
 
     // this is kinda sloppy, but it should work
     var toggleFilterOption = function (criteria, keyword) {
-        li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + MD5.hexdigest(criteria));
+        li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + criteria);
         if (li.is('.selected')) {
             li.removeClass('selected');
             //alert('unselected');
@@ -236,18 +240,6 @@ Washago.Wall = (function() {
         } else {
             li.addClass('selected');
             //alert('selected');
-            filterBalloons();
-        }
-    };
-
-    // we need this semi-duplicate function here because discourse is not hex
-    var toggleFilterType = function (criteria) {
-        li = jQuery('#discourse-filter li.discourse-' + criteria);
-        if (li.is('.selected')) {
-            li.removeClass('selected');
-            filterBalloons();
-        } else {
-            li.addClass('selected');
             filterBalloons();
         }
     };
