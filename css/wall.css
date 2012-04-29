@@ -12,12 +12,17 @@ header {
   display: none;
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 #wall {
   position: absolute;
   top: 10px;
-  bottom: 5px;
-  right: 150px;
-  left: 150px;
+  bottom: 30px;
+  right: 165px;
+  left: 165px;
 
   -moz-perspective: 900px;
   -moz-transform-style: preserve-3d;
@@ -79,7 +84,7 @@ header {
 
 .toolbars-left {
   position: absolute;
-  left: -140px;
+  left: -155px;
   top: 10px;
   width: 160px;
   bottom: 0px;
@@ -91,7 +96,7 @@ header {
 
 .toolbars-right {
   position: absolute;
-  right: -140px;
+  right: -150px;
   top: 10px;
   width: 160px;
   bottom: 0px;
@@ -99,6 +104,50 @@ header {
   -moz-transform: rotateY(-20deg) translateY(-2px);
   -webkit-transform: rotateY(-15deg) translateY(-10px) translateX(-10px);
   transform: rotateY(-20deg) translateY(-10px);
+}
+
+.toolbars-top {
+  top: -8px;
+  position: absolute;
+  right: 25%;
+}
+
+.toolbars-top .widget-box {
+  display: inline-block;
+  border-radius: 0px 0px 13px 13px;
+  padding: 4px;
+}
+
+.toolbars-top .widget-box a {
+  background-color: #444444;
+  border: 3px solid #AAAAAA;
+  border-radius: 10px 10px 10px 10px;
+  margin-top: 6px;
+  overflow: hidden;
+  padding: 3px 8px;
+  display: inline-block;
+}
+
+.toolbars-bottom {
+  bottom: -8px;
+  position: absolute;
+  right: 25%;
+}
+
+.toolbars-bottom .widget-box {
+  display: inline-block;
+  border-radius: 13px 13px 0px 0px;
+  padding: 4px;
+}
+
+.toolbars-bottom .widget-box a {
+  background-color: #444444;
+  border: 3px solid #AAAAAA;
+  border-radius: 10px 10px 10px 10px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  padding: 3px 8px;
+  display: inline-block;
 }
 
 .filter-list-container {
@@ -160,6 +209,7 @@ div.none-yet {
 .balloon {
   position: absolute;
   width: 300px;
+  display: inline-block;
   
   border-radius: 15px;
   background-color: rgba(256,256,256,0.9);
@@ -228,4 +278,15 @@ div.none-yet {
 
 .balloon.discourse-comment {
   background: rgba(202, 248, 202, 0.9);
+}
+
+.link {
+  position: absolute;
+  border-bottom: solid #999 1px;
+  height: 0;
+  -webkit-transform-origin: 0 0;
+  -moz-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  -o-transform-origin: 0 0;
+  transform-origin: 0 0;
 }

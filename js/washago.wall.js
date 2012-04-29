@@ -33,26 +33,25 @@ Washago.Wall = (function() {
         if (contrib.pos && contrib.pos.left) {
             left = contrib.pos.left;
         } else {
-            left = Math.random() * ((boardWidth - balloon.width()) - 10);
+            left = Math.random() * (boardWidth - balloon.width());
         }
         
         if (contrib.pos && contrib.pos.top) {
             top = contrib.pos.top;
         } else {
-            top = Math.random() * (boardHeight - (balloon.height() - 10));
+            top = Math.random() * (boardHeight - balloon.height());
         }
         
         balloon.css('left', left + 'px');
         balloon.css('top', top + 'px');
-        
+
         //if (contrib.id) {
             //CommonBoard.contribBalloonPositioned(contrib, {left: left, top: top});
         //}
     };
 
-    var createBalloon = function (contribution) {
+    var createBalloon = function (contribution, restoring) {
         // this function creates the balloon, adds the text, positions it on the board
-
         var balloon = jQuery("<div class='balloon contribution'></div>");
 
         balloon.append("<div class='balloon-shadow'></div>");
@@ -61,9 +60,12 @@ Washago.Wall = (function() {
         balloon.attr('id', "contibution-" + contribution.id);
         balloon.addClass('author-' + contribution.author);
         balloon.addClass('discourse-' + contribution.discourse_type);
-        jQuery(contribution.tags).each(function() {
-            balloon.addClass('tags-' + MD5.hexdigest(this));
+
+        md5tags = _.map(contribution.tags, function(t) {return MD5.hexdigest(t);});
+        _.each(md5tags, function (t) {
+            balloon.addClass('tags-' + t);
         });
+        balloon.data('tags', md5tags); // used by washago.wall.graph
 
         balloon.hide(); // initially hidden, we call show() with an effect later
 
@@ -76,8 +78,6 @@ Washago.Wall = (function() {
         balloon.append(text);
 
         var tags = jQuery("<div class='tags'></div>");
-        
-        tags.hide(); // tags are initially collapsed
 
 
         if (contribution.tags) {
@@ -92,17 +92,27 @@ Washago.Wall = (function() {
 
         balloon.draggable();
 
+        // BANDAID: For some reason in Chrome draggable() makes balloon's position 'relative'...
+        //          Need ot reset it back to absolute for proper positioning within the wall.
+        balloon.css('position', 'absolute');
+
         // bring the balloon to the top when clicked
         balloon.mousedown(bringDraggableToFront);
 
-        positionBalloon(balloon);
+        tags.hide(); // tags are initially collapsed
 
         balloon.dblclick(function() {
-            $(this).find('.tags').toggle('slideUp');
+            jQuery(this).find('.tags').toggle('slideUp');
         });
 
         jQuery("#wall").append(balloon);
-        balloon.show('puff', 'fast');
+        
+        positionBalloon(balloon);
+        
+        if (restoring)
+            balloon.show();
+        else
+            balloon.show('puff', 'fast');
 
         return balloon;
     };
@@ -125,7 +135,7 @@ Washago.Wall = (function() {
             //$('.balloon.'+activeKeywordClasses.join(".")).removeClass('blurred')
         
             // UNION (or)
-            jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred')
+            jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred');
         }
     };
 
@@ -196,7 +206,7 @@ Washago.Wall = (function() {
             });
             list.append(li);
         }
-    }  ;  
+    };  
 
     var addParticipantToList = function (jid) {
         console.log(jid + " joined...");
@@ -292,7 +302,17 @@ Washago.Wall = (function() {
         initialized: function (ev) {
             Washago.Wall.authenticate();
         },
-    
+
+        'ui.initialized': function (ev) {
+            jQuery('.toolbar')
+                //.draggable({handle: '.titlebar'})
+                .mousedown(bringDraggableToFront);
+
+            jQuery('#cloudify').click(function () {
+                Washago.Wall.Graph.init();
+            });
+        },
+
         connected: function (ev) {
             console.log("Connected...");
             
@@ -302,12 +322,15 @@ Washago.Wall = (function() {
 
             Sail.app.groupchat.addParticipantJoinedHandler(addParticipantToList);
             Sail.app.groupchat.addParticipantLeftHandler(removeParticipantFromList);
-        },
 
-        'ui.initialized': function (ev) {
-            jQuery('.toolbar')
-                //.draggable({handle: '.titlebar'})
-                .mousedown(bringDraggableToFront);
+            
+            jQuery.ajax("/mongo/roadshow/contributions/_find", {
+                success: function (data) {
+                    _.each(data.results, function (contrib) {
+                        createBalloon(contrib, true);
+                    });
+                }
+            });
         },
 
         sail: {
