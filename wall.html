@@ -50,6 +50,12 @@
             </div>
         </div>
     </div>
+
+    <div class="toolbars-bottom">
+        <div class="widget-box">
+            <a id="cloudify" href="#">Cloudify</a>
+        </div>
+    </div>
     
     <footer> 
     </footer> 
@@ -57,6 +63,8 @@
     <script type="text/javascript">
         Sail.load()
             .then('js/washago.wall.js')
+            .then('https://raw.github.com/mbostock/d3/master/d3.v2.js',
+                'js/washago.wall.graph.js')
             .thenRun(function() { return Sail.init(Washago.Wall); });
     </script>
         
