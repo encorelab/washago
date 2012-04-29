@@ -93,7 +93,7 @@ Washago.Participant = (function() {
                     tags:myTags,
                     id: lastSentContributeID,
                     about: jQuery("#select-location").val(),
-                    discourse_type: jQuery('input[name="radioType"]:checked').val()
+                    discourse: jQuery('input[name="radioType"]:checked').val()
                 });
                 
                 Sail.app.groupchat.sendEvent(sev);

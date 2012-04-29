@@ -1,4 +1,4 @@
-/*jshint browser: true, devel: true */
+/*jshint browser: true, devel: true, forin: false */
 /*globals Sail, Strophe, jQuery, _, MD5 */
 var Washago = window.Washago || {};
 
@@ -16,7 +16,7 @@ Washago.Wall = (function() {
     var bringDraggableToFront = function () {
         var zs = jQuery('.ui-draggable').map(function() {
             var z = jQuery(this).css('z-index'); 
-            return z == 'auto' ? 100 : parseInt(z, 10);
+            return z === 'auto' ? 100 : parseInt(z, 10);
         }).toArray();
         var maxZ = Math.max.apply(Math, zs);
         jQuery(this).css('z-index', maxZ + 1);
@@ -57,10 +57,10 @@ Washago.Wall = (function() {
         balloon.append("<div class='balloon-shadow'></div>");
 
         balloon.data('contribution', contribution);
-        balloon.attr('id', "contibution-" + contribution.id);
+        balloon.attr('id', "contribution-" + contribution.id);
         balloon.addClass('author-' + contribution.author);
-        balloon.addClass('discourse-' + contribution.discourse_type);
-
+        balloon.addClass('discourse-' + contribution.discourse);
+        balloon.addClass('about-' + MD5.hexdigest(contribution.about));
         md5tags = _.map(contribution.tags, function(t) {return MD5.hexdigest(t);});
         _.each(md5tags, function (t) {
             balloon.addClass('tags-' + t);
@@ -139,6 +139,7 @@ Washago.Wall = (function() {
         }
     };
 
+
     // this function returns an (unflattened) array that contain all of the (non-unique) tags to be turned on or off   // this isn't quite working... TODO
     var activeKeywordClasses = function () {
         return jQuery('li.selected').map(function() {
@@ -196,13 +197,13 @@ Washago.Wall = (function() {
         }
         
         var list = jQuery('#discourse-filter ul');
-        var li = list.find('.discourse-' + MD5.hexdigest(contribution.discourse_type));
+        var li = list.find('.discourse-' + contribution.discourse);
         if (li.length === 0) {
             li = jQuery('<li />');
-            li.text(contribution.discourse_type);
-            li.addClass("discourse-" + MD5.hexdigest(contribution.discourse_type));
+            li.text(contribution.discourse);
+            li.addClass("discourse-" + contribution.discourse);
             li.click(function() {
-                toggleFilterOption(contribution.discourse_type, "discourse");
+                toggleFilterType(contribution.discourse);
             });
             list.append(li);
         }
@@ -239,11 +240,23 @@ Washago.Wall = (function() {
         li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + MD5.hexdigest(criteria));
         if (li.is('.selected')) {
             li.removeClass('selected');
-            alert('unselected');
+            //alert('unselected');
             filterBalloons();
         } else {
             li.addClass('selected');
-            alert('selected');
+            //alert('selected');
+            filterBalloons();
+        }
+    };
+
+    // we need this semi-duplicate function here because discourse is not hex
+    var toggleFilterType = function (criteria) {
+        li = jQuery('#discourse-filter li.discourse-' + criteria);
+        if (li.is('.selected')) {
+            li.removeClass('selected');
+            filterBalloons();
+        } else {
+            li.addClass('selected');
             filterBalloons();
         }
     };
@@ -272,6 +285,67 @@ Washago.Wall = (function() {
                 console.warn("Error writing contribution to database. Possible reason: " +data.responseText);
             }
         });
+    };
+
+    var storeTags = function (tags) {
+        console.log("Storing tags in the database");
+
+        // {"name":"Tagy tag here", "count":1}
+        _.each(tags, function(tag) {
+            // check if tag is in db
+            jQuery.ajax({
+                type: "GET",
+                url: "/mongo/roadshow/tags/_find",
+                data: { criteria: JSON.stringify({"name":tag})},
+                context: this,
+                success: function(data) {
+                    if (data.ok === 1) {
+                        if (data.results.length > 0) {
+                            console.log("Found tag in database so update count");
+                            
+                            jQuery.ajax({
+                                type: "POST",
+                                url: "/mongo/roadshow/tags/_update",
+                                data: { criteria: JSON.stringify({"name":tag}), newobj: JSON.stringify({"$inc":{"count":1}})},
+                                context: this,
+                                success: function(data) {
+                                    console.log("Tag updated");
+                                },
+                                error: function(data) {
+                                    console.warn("Error updating tag in database. Possible reason: " +data.responseText);
+                                }
+                            });
+                        } else {                            
+                            console.log("Tag not in database - store");
+
+                            var postData = 'docs=[' +JSON.stringify({"name":tag,"count":1})+ ']';
+
+                            jQuery.ajax({
+                                type: "POST",
+                                url: "/mongo/roadshow/tags/_insert",
+                                // do a feeble attempt at checking for uniqueness
+                                data: postData,
+                                context: this,
+                                success: function(data) {
+                                    console.log("Tag stored for the first time");
+                                },
+                                error: function(data) {
+                                    console.warn("Error writing tag to database. Possible reason: " +data.responseText);
+                                }
+                            });
+                        }
+                    } else {
+                        console.warn("Error looking for tag :(");
+                    }
+                },
+                error: function(data) {
+                    console.warn("Error looking for tags in database");
+                }
+            });
+            // if not in database store
+
+            // if in database update count
+        });    
     };
 
     self.init = function() {
@@ -316,8 +390,12 @@ Washago.Wall = (function() {
         connected: function (ev) {
             console.log("Connected...");
             
-            for (var p in Sail.app.groupchat.participants) {
-                addParticipantToList(p);
+            if (Sail.app.groupchat.participants) {
+                for (var p in Sail.app.groupchat.participants) {
+                    addParticipantToList(p);
+                }
+            } else {
+                console.log('no participants yet or connection issues');
             }
 
             Sail.app.groupchat.addParticipantJoinedHandler(addParticipantToList);
@@ -340,7 +418,7 @@ Washago.Wall = (function() {
                     text:sev.payload.text,
                     tags:sev.payload.tags,
                     about:sev.payload.about,
-                    discourse_type:sev.payload.discourse_type,
+                    discourse:sev.payload.discourse,
                     timestamp:sev.timestamp,
                     id:sev.payload.id
                 };
@@ -349,6 +427,7 @@ Washago.Wall = (function() {
                 addAboutToList(new_contribution);                
                 addTypeToList(new_contribution);
                 writeToDB(new_contribution);
+                storeTags(new_contribution.tags);
             }
         }
     };
