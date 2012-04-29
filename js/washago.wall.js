@@ -284,6 +284,55 @@ Washago.Wall = (function() {
         });
     };
 
+    var storeTags = function (tags) {
+        console.log("Storing tags in the database");
+
+        // {"name":"Tagy tag here", "count":1}
+        _.each(tags, function(tag) {
+            // check if tag is in db
+            jQuery.ajax({
+                type: "GET",
+                url: "/mongo/roadshow/tags/_find",
+                data: { criteria: JSON.stringify({"name":tag})},
+                context: this,
+                success: function(data) {
+                    if (data.ok === 1) {
+                        if (data.results.length > 0) {
+                            console.log("Found tag in database so update count");
+                            
+                        } else {                            
+                            console.log("Tag not in database - store");
+
+                            var postData = 'docs=[' +JSON.stringify({"name":tag,"count":1})+ ']';
+
+                            jQuery.ajax({
+                                type: "POST",
+                                url: "/mongo/roadshow/tags/_insert",
+                                // do a feeble attempt at checking for uniqueness
+                                data: postData,
+                                context: this,
+                                success: function(data) {
+                                    console.log("Tag stored for the first time");
+                                },
+                                error: function(data) {
+                                    console.warn("Error writing contribution to database. Possible reason: " +data.responseText);
+                                }
+                            });
+                        }
+                    } else {
+                        console.warn("Error looking for tag :(")
+                    }
+                },
+                error: function(data) {
+                    console.warn("Error looking for tags in database");
+                }
+            });
+            // if not in database store
+
+            // if in database update count
+        });    
+    };
+
     self.init = function() {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
 
@@ -346,6 +395,7 @@ Washago.Wall = (function() {
                 addAboutToList(new_contribution);                
                 addTypeToList(new_contribution);
                 writeToDB(new_contribution);
+                storeTags(new_contribution.tags);
             }
         }
     };
