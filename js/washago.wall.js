@@ -1,4 +1,4 @@
-/*jshint browser: true, devel: true */
+/*jshint browser: true, devel: true, forin: false */
 /*globals Sail, Strophe, jQuery, _, MD5 */
 var Washago = window.Washago || {};
 
@@ -16,7 +16,7 @@ Washago.Wall = (function() {
     var bringDraggableToFront = function () {
         var zs = jQuery('.ui-draggable').map(function() {
             var z = jQuery(this).css('z-index'); 
-            return z == 'auto' ? 100 : parseInt(z, 10);
+            return z === 'auto' ? 100 : parseInt(z, 10);
         }).toArray();
         var maxZ = Math.max.apply(Math, zs);
         jQuery(this).css('z-index', maxZ + 1);
@@ -125,7 +125,7 @@ Washago.Wall = (function() {
             //$('.balloon.'+activeKeywordClasses.join(".")).removeClass('blurred')
         
             // UNION (or)
-            jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred')
+            jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred');
         }
     };
 
@@ -300,7 +300,7 @@ Washago.Wall = (function() {
                             });
                         }
                     } else {
-                        console.warn("Error looking for tag :(")
+                        console.warn("Error looking for tag :(");
                     }
                 },
                 error: function(data) {
@@ -345,8 +345,12 @@ Washago.Wall = (function() {
         connected: function (ev) {
             console.log("Connected...");
             
-            for (var p in Sail.app.groupchat.participants) {
-                addParticipantToList(p);
+            if (Sail.app.groupchat.participants) {
+                for (var p in Sail.app.groupchat.participants) {
+                    addParticipantToList(p);
+                }
+            } else {
+                console.log('no participants yet or connection issues');
             }
 
             Sail.app.groupchat.addParticipantJoinedHandler(addParticipantToList);
