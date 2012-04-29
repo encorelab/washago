@@ -406,6 +406,9 @@ Washago.Wall = (function() {
                 success: function (data) {
                     _.each(data.results, function (contrib) {
                         createBalloon(contrib, true);
+                        addTagToList(contrib);
+                        addAboutToList(contrib);                
+                        addTypeToList(contrib);
                     });
                 }
             });
