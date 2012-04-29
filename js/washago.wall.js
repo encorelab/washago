@@ -280,6 +280,18 @@ Washago.Wall = (function() {
                         if (data.results.length > 0) {
                             console.log("Found tag in database so update count");
                             
+                            jQuery.ajax({
+                                type: "POST",
+                                url: "/mongo/roadshow/tags/_update",
+                                data: { criteria: JSON.stringify({"name":tag}), newobj: JSON.stringify({"$inc":{"count":1}})},
+                                context: this,
+                                success: function(data) {
+                                    console.log("Tag updated");
+                                },
+                                error: function(data) {
+                                    console.warn("Error updating tag in database. Possible reason: " +data.responseText);
+                                }
+                            });
                         } else {                            
                             console.log("Tag not in database - store");
 
@@ -295,7 +307,7 @@ Washago.Wall = (function() {
                                     console.log("Tag stored for the first time");
                                 },
                                 error: function(data) {
-                                    console.warn("Error writing contribution to database. Possible reason: " +data.responseText);
+                                    console.warn("Error writing tag to database. Possible reason: " +data.responseText);
                                 }
                             });
                         }
