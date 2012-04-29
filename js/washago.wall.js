@@ -58,9 +58,10 @@ Washago.Wall = (function() {
         balloon.append("<div class='balloon-shadow'></div>");
 
         balloon.data('contribution', contribution);
-        balloon.attr('id', "contibution-" + contribution.id);
+        balloon.attr('id', "contribution-" + contribution.id);
         balloon.addClass('author-' + contribution.author);
-        balloon.addClass('discourse-' + contribution.discourse_type);
+        balloon.addClass('discourse-' + contribution.discourse);
+        balloon.addClass('about-' + MD5.hexdigest(contribution.about));
         jQuery(contribution.tags).each(function() {
             balloon.addClass('tags-' + MD5.hexdigest(this));
         });
@@ -129,6 +130,7 @@ Washago.Wall = (function() {
         }
     };
 
+
     // this function returns an (unflattened) array that contain all of the (non-unique) tags to be turned on or off   // this isn't quite working... TODO
     var activeKeywordClasses = function () {
         return jQuery('li.selected').map(function() {
@@ -186,17 +188,17 @@ Washago.Wall = (function() {
         }
         
         var list = jQuery('#discourse-filter ul');
-        var li = list.find('.discourse-' + MD5.hexdigest(contribution.discourse_type));
+        var li = list.find('.discourse-' + contribution.discourse);
         if (li.length === 0) {
             li = jQuery('<li />');
-            li.text(contribution.discourse_type);
-            li.addClass("discourse-" + MD5.hexdigest(contribution.discourse_type));
+            li.text(contribution.discourse);
+            li.addClass("discourse-" + contribution.discourse);
             li.click(function() {
-                toggleFilterOption(contribution.discourse_type, "discourse");
+                toggleFilterType(contribution.discourse);
             });
             list.append(li);
         }
-    }  ;  
+    };  
 
     var addParticipantToList = function (jid) {
         console.log(jid + " joined...");
@@ -229,11 +231,23 @@ Washago.Wall = (function() {
         li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + MD5.hexdigest(criteria));
         if (li.is('.selected')) {
             li.removeClass('selected');
-            alert('unselected');
+            //alert('unselected');
             filterBalloons();
         } else {
             li.addClass('selected');
-            alert('selected');
+            //alert('selected');
+            filterBalloons();
+        }
+    };
+
+    // we need this semi-duplicate function here because discourse is not hex
+    var toggleFilterType = function (criteria) {
+        li = jQuery('#discourse-filter li.discourse-' + criteria);
+        if (li.is('.selected')) {
+            li.removeClass('selected');
+            filterBalloons();
+        } else {
+            li.addClass('selected');
             filterBalloons();
         }
     };
@@ -370,7 +384,7 @@ Washago.Wall = (function() {
                     text:sev.payload.text,
                     tags:sev.payload.tags,
                     about:sev.payload.about,
-                    discourse_type:sev.payload.discourse_type,
+                    discourse:sev.payload.discourse,
                     timestamp:sev.timestamp,
                     id:sev.payload.id
                 };
