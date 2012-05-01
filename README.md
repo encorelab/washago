@@ -3,6 +3,8 @@ project washago
 
 Creating a roadshow app to showcase our work at the Encore Lab (OISE @ UofT)
 
+More information and a bit of documentation can be found in the [wiki](https://github.com/encorelab/washago/wiki/Welcome-to-the-project-washago-wiki!)
+
 #Licence
 This software is available under the [MIT licence](http://www.opensource.org/licenses/mit-license.php)
 
