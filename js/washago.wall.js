@@ -59,6 +59,7 @@ Washago.Wall = (function() {
         balloon.data('contribution', contribution);
         balloon.attr('id', "contribution-" + contribution.id);
         balloon.addClass('author-' + MD5.hexdigest(contribution.author));
+        //if (contribution.discourse) { balloon.addClass('discourse-' + contribution.discourse); }      we should probably do some kind of error checking like this
         balloon.addClass('discourse-' + contribution.discourse);
         balloon.addClass('about-' + MD5.hexdigest(contribution.about));
         md5tags = _.map(contribution.tags, function(t) {return MD5.hexdigest(t);});
@@ -117,12 +118,11 @@ Washago.Wall = (function() {
         return balloon;
     };
 
+
+    //"author-1c206b0a8f48aef1217f6e004f10e106"
+    //"author-698d51a19d8a121ce581499d7b701668"
     var filterBalloons = function () {
-        var keywordClasses = activeKeywordClasses();
-/*        var keywordClasses = activeKeywordClasses("tags");
-        keywordClasses += activeKeywordClasses("about");
-*/
-        //var inactiveKeywordClasses = inactiveKeywordClasses();
+        var keywordClasses = activeKeywordClasses();    
         
         if (keywordClasses.length === 0) {
             // show all balloons if no filters are active
@@ -144,8 +144,7 @@ Washago.Wall = (function() {
     var activeKeywordClasses = function () {
         return jQuery('li.selected').map(function() {
             return _.select(jQuery(this).attr('class').split(' '), function(klass) {
-                return klass.match(/(tags|about|discourse)-/);
-
+                return klass.match(/(tags|about|discourse|author)-/);
             });
         }).toArray();
     };
@@ -207,35 +206,34 @@ Washago.Wall = (function() {
             });
             list.append(li);
         }
-    };  
+    };
 
-    var addParticipantToList = function (jid) {
+    var addAuthorToList = function (jid) {
         console.log(jid + " joined...");
 
         var nickname = Strophe.getResourceFromJid(jid);
 
         var li = jQuery("<li />");
         li.text(nickname);
-        li.addClass("participant-"+MD5.hexdigest(nickname));
-
-        jQuery("#participants-filter .none-yet").remove('.none-yet');
-        jQuery("#participants-filter ul").append(li);
-
+        li.addClass("author-"+MD5.hexdigest(nickname));
         li.click(function() {
-            toggleFilterOption(MD5.hexdigest(contribution.author), "author");
-        });        
+            toggleFilterOption(MD5.hexdigest(nickname), "author");
+        });
+        
+        jQuery("#author-filter .none-yet").remove('.none-yet');
+        jQuery("#author-filter ul").append(li);
 
-        // jQuery("#participants-filter .filter-list-container")
+        // jQuery("#author-filter .filter-list-container")
         //     .css('overflow-y', 'auto')
         //     .css('height', '90%');
     };
 
-    var removeParticipantFromList = function (jid) {
-        console.log(jid + " left...");
+    var removeAuthorFromList = function (jid) {
+        console.log(author + " left...");
 
         var nickname = Strophe.getResourceFromJid(jid);
 
-        jQuery("#participants-filter .participant-"+MD5.hexdigest(nickname))
+        jQuery("#author-filter .author-"+MD5.hexdigest(nickname))
             .hide('fade', 'fast', function () {jQuery(this).remove();});
     };
 
@@ -244,11 +242,9 @@ Washago.Wall = (function() {
         li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + criteria);
         if (li.is('.selected')) {
             li.removeClass('selected');
-            //alert('unselected');
             filterBalloons();
         } else {
             li.addClass('selected');
-            //alert('selected');
             filterBalloons();
         }
     };
@@ -384,14 +380,15 @@ Washago.Wall = (function() {
             
             if (Sail.app.groupchat.participants) {
                 for (var p in Sail.app.groupchat.participants) {
-                    addParticipantToList(p);
+                    addAuthorToList(p);
                 }
             } else {
                 console.log('no participants yet or connection issues');
             }
 
-            Sail.app.groupchat.addParticipantJoinedHandler(addParticipantToList);
-            Sail.app.groupchat.addParticipantLeftHandler(removeParticipantFromList);
+            // I don't believe these are working as intended - does the function name actual matter for some reason?
+            Sail.app.groupchat.addParticipantJoinedHandler(addAuthorToList);
+            Sail.app.groupchat.addParticipantLeftHandler(removeAuthorFromList);
 
             
             jQuery.ajax("/mongo/roadshow/contributions/_find", {

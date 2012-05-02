@@ -167,7 +167,7 @@ a {
 }
 
 #tags-filter,
-#participants-filter,
+#authors-filter,
 #about-filter,
 #discourse-filter {
   width: 100%;
@@ -181,7 +181,7 @@ a {
   height: 72%;
 }
 
-#participants-filter {
+#authors-filter {
   max-height: 72%;
   height: 72%;
 }
