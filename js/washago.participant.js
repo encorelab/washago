@@ -55,12 +55,12 @@ Washago.Participant = (function() {
     
         connected: function(ev) {
             console.log("Connected...");
-            jQuery("#participant-ui").fadeIn(250);
+            jQuery("#participant-view").fadeIn(250);
             Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
                 console.log(who + " joined...");
             });
             
-            jQuery("#washago-header").html(Sail.app.nickname);
+            jQuery(".washago-header").html(Sail.app.nickname);
             self.getLocations();
             self.getTags();
             self.initSearch();
