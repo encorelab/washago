@@ -62,7 +62,7 @@ Washago.Participant = (function() {
             
             jQuery(".washago-header").html(Sail.app.nickname);
             self.getLocations();
-            self.getTags();
+            //self.getTags(); Commenting this until mongo is working ok
             self.initSearch();
         },
 
@@ -259,6 +259,8 @@ Washago.Participant = (function() {
     self.getTags = function() {
         
         var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
+        
+        // ANTO: note that his does not work in node server and makes it crash
         var tagDepotURI = '/mongo/roadshow/contributions/_find?batch_size=10000000000' + ((Sail.app.run)?'&criteria={"run":"' + Sail.app.run.name+ '"}':'');
         
         
