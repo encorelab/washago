@@ -73,6 +73,7 @@ Washago.Participant = (function() {
 
         // only now show
         //jQuery('#community-contribution').fadeIn('slow');
+
     };
 
 
@@ -113,6 +114,7 @@ Washago.Participant = (function() {
                 _.each(data, function(obj){
                     addContribution(obj);
                 });
+                jQuery('#community-contribution').fadeIn('slow');
            }
            
         },
