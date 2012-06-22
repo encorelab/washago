@@ -8,6 +8,8 @@ Washago.Participant = (function() {
     var lastSentContributeID = null;
     var reconstructingTags = false;
 
+    var currentLocation = ''; // ANTO: used only in function loadContributions()
+
     self.init = function () {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
 
@@ -48,6 +50,105 @@ Washago.Participant = (function() {
     	return randomstring;*/
     };
 
+    var addContribution = function(contribution){
+        //console.log(contribution.tags);
+        var c = jQuery('<div class="contribution-element"></div>');
+        var author = jQuery('<div class="author">'+contribution.author+'</div>');
+        var text = jQuery('<div class="'+contribution.discourse+'">'+contribution.text+'</div>');
+        var tags = jQuery('<div class="tags"></div>');
+        _.each(contribution.tags, function(tag){
+                var tagElem = jQuery('<span class="tag">'+tag+'</span>');
+                jQuery(tags).append(tagElem)
+        });
+        jQuery(c).append(author);
+        jQuery(c).append(text);
+        jQuery(c).append(tags);
+
+        // Build here jquery mobile UI li. Add some classes and so...
+        var elemMov = jQuery('<li></li>');
+        jQuery(elemMov).append(c);
+
+        jQuery('#community-contribution').prepend(elemMov);
+        //console.log(c.html());
+
+        // only now show
+        //jQuery('#community-contribution').fadeIn('slow');
+    };
+
+
+    // ANTO testing on http://drowsy.badger.encorelab.org/washago-test/contributions
+    /*
+        Populates the contributions container in the tablet/phone
+        It should be every time a poster is selected
+    */
+    var loadContributions = function() {
+
+        // empty #community-contribution when loaded for the first time of when changing location
+
+        jQuery('#community-contribution').hide();
+        jQuery('#community-contribution').html('');
+        jQuery('#contributions-title').hide();
+
+        currentLocation = jQuery("#select-location").val();
+
+
+        /*  ANTO: 
+            If we load the config.json and use currentLocation as mongo db name, 
+            this should be the way it works ;)
+            note we are rollcall-free in this app, so Sail.app.config.mongo.url does not seem to be loaded??????
+
+            jQuery.ajax(Sail.app.config.mongo.url + '/' + currentLocation + '/contributions?selector={"about":"'+currentLocation+'"}', {
+        */
+        jQuery.ajax('http://drowsy.badger.encorelab.org/washago-test/contributions?selector={"about":"'+currentLocation+'"}', {
+           dataType: 'json',
+           success: function (data) {
+           console.log("loadContributions ok");
+
+
+            
+           if(data.length==0){
+                jQuery.mobile.showToast("No contributions so far...", false, 3000, false);
+           } else {
+            jQuery('#contributions-title').show();
+                _.each(data, function(obj){
+                    addContribution(obj);
+                });
+           }
+           
+        },
+           error: function (data) {
+                console.log("error loadContributions", data);
+           }
+       });
+
+    };
+
+    /*
+        ANTO: addapted this code form Matt's.
+        It make sense to me that the client saves the data, not the wall
+        let's discuss this!!
+
+        This function is called when the sail event "contribution" is received
+    */
+    var writeToDB = function (contribution) {
+        console.log("Storeing contribution in database");
+        
+        // ANTO: TODO: we need to get the URL form somewhere else. Hard-coding it for now
+        var url = "http://drowsy.badger.encorelab.org/washago-test/contributions";
+
+        jQuery.ajax({
+            type: "POST",
+            url: url,
+            data: contribution,
+            success: function(data) {
+                console.log("ok writeToDB");
+            },
+            error: function(data) {
+                console.log("Error writeToDB: ", data);
+            }
+        });
+    };
+
     self.events = {
         initialized: function(ev) {
             Washago.Participant.authenticate();
@@ -55,15 +156,17 @@ Washago.Participant = (function() {
     
         connected: function(ev) {
             console.log("Connected...");
-            jQuery("#participant-view").fadeIn(250);
+            //jQuery("#participant-view").fadeIn(250);
             Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
                 console.log(who + " joined...");
+                jQuery('#participant-view-add').fadeIn(250);
             });
             
             jQuery(".washago-header").html(Sail.app.nickname);
             self.getLocations();
             //self.getTags(); Commenting this until mongo is working ok
             self.initSearch();
+
         },
 
         'ui.initialized': function(ev) {
@@ -95,16 +198,91 @@ Washago.Participant = (function() {
                     about: jQuery("#select-location").val(),
                     discourse: jQuery('input[name="radioType"]:checked').val()
                 });
+
+                /*
+                    ANTO: saving contribution from client
+                */
                 
+                
+                // ANTO: keeping the working structure for saving and displaying
+                
+                var my_contribution = {
+                    author: Sail.app.nickname,
+                    text:myText,
+                    tags:myTags,
+                    id: lastSentContributeID,
+                    about: jQuery("#select-location").val(),
+                    discourse: jQuery('input[name="radioType"]:checked').val()
+
+                    /*
+                    author:sev.payload.author,
+                    text:sev.payload.text,
+                    tags:sev.payload.tags,
+                    about:sev.payload.about,
+                    discourse:sev.payload.discourse,
+                    timestamp:sev.timestamp,
+                    id:sev.payload.id
+                    */
+                };
+                
+
+
+                // ANTO: Think this is the right place to save data!!
+                writeToDB(my_contribution);
+                console.log('My Contribution saved', my_contribution);
+
+                // add contribution to the view
+                addContribution(my_contribution);
+
+
                 Sail.app.groupchat.sendEvent(sev);
                 jQuery.mobile.showToast("Sending your contribution...", false)
                  
             });
+
+            jQuery('#select-location').change(function() {
+              loadContributions();
+              jQuery('#p-view').show();
+            });
+
+            jQuery('#p-view-btn').click(function () {
+                // loading this here might be too much, but it is safe
+                //loadContributions();
+
+                jQuery('#p-add').hide();
+                jQuery('#p-view').show();
+            });
+
+            jQuery('#p-add-btn').click(function () {
+                
+                jQuery('#p-view').hide();
+                jQuery('#p-add').show();
+            });
         },
-        
+
         sail: {
             contribution: function(sev) {
                 
+                /*
+                    ANTO: saving contribution from the client
+                */
+                var new_contribution = {
+                    author:sev.payload.author,
+                    text:sev.payload.text,
+                    tags:sev.payload.tags,
+                    about:sev.payload.about,
+                    discourse:sev.payload.discourse,
+                    timestamp:sev.timestamp,
+                    id:sev.payload.id
+                };
+                // ANTO: this is NOT the place to save data!!
+                //writeToDB(new_contribution);
+                
+                // ANTO: add to the client display only if currently in the location of the incoming contribution
+                if(currentLocation==new_contribution.about){
+                    addContribution(new_contribution)
+                }
+
                 //if (reconstructingTags) return;
                 
                 var oldID = lastSentContributeID;
@@ -138,7 +316,7 @@ Washago.Participant = (function() {
         jQuery('input[name="radioType"]:nth(0)').attr('checked', true).checkboxradio("refresh");
         jQuery("#text-contribution").val('');
         
-        self.refreshLocations();
+        //self.refreshLocations();
         self.refreshTags(false);
     };
     
@@ -261,7 +439,8 @@ Washago.Participant = (function() {
         var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
         
         // ANTO: note that his does not work in node server and makes it crash
-        var tagDepotURI = '/mongo/roadshow/contributions/_find?batch_size=10000000000' + ((Sail.app.run)?'&criteria={"run":"' + Sail.app.run.name+ '"}':'');
+        //var tagDepotURI = '/mongo/roadshow/contributions/_find?batch_size=10000000000' + ((Sail.app.run)?'&criteria={"run":"' + Sail.app.run.name+ '"}':'');
+        var tagDepotURI = "http://drowsy.badger.encorelab.org/washago-test/contributions";
         
         
         var jqxhr = jQuery.get(tagDepotURI)
