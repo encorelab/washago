@@ -7,6 +7,11 @@ Washago.Participant = (function() {
     var self = {};
     var lastSentContributeID = null;
     var reconstructingTags = false;
+    var radioTypeArray = [
+        {"typeName": "Question", "toolTip": "Some Question tooltip"},
+        {"typeName": "Comment", "toolTip": "Some Comment tooltip"}
+    ];
+    var locationsArray = [];
 
     var currentLocation = ''; // ANTO: used only in function loadContributions()
 
@@ -89,7 +94,7 @@ Washago.Participant = (function() {
         jQuery('#community-contribution').hide();
         jQuery('#community-contribution').html('');
         jQuery('#contributions-title').hide();
-
+        
         currentLocation = jQuery("#select-location").val();
 
 
@@ -107,14 +112,18 @@ Washago.Participant = (function() {
 
 
             
-           if(data.length==0){
+           if(data.length==0 && jQuery('#p-view').is(':visible')){
                 jQuery.mobile.showToast("No contributions so far...", false, 3000, false);
-           } else {
-            jQuery('#contributions-title').show();
+           } else  {
+            
                 _.each(data, function(obj){
                     addContribution(obj);
                 });
-                jQuery('#community-contribution').fadeIn('slow');
+
+                if (jQuery('#p-view').is(':visible')) {
+                    jQuery('#contributions-title').show();
+                    jQuery('#community-contribution').fadeIn('slow');
+                }
            }
            
         },
@@ -166,7 +175,11 @@ Washago.Participant = (function() {
             
             jQuery(".washago-header").html(Sail.app.nickname);
             self.getLocations();
+
+            self.getTypes();
+            self.getTags();
             //self.getTags(); Commenting this until mongo is working ok
+
             self.initSearch();
 
         },
@@ -178,6 +191,13 @@ Washago.Participant = (function() {
             jQuery(".submit-button").click(function () {
                 var myTags = self.tagsToArray();
                 var myText = jQuery.trim(jQuery("#text-contribution").val());
+                var myLocation = jQuery("#select-location").val();
+                 
+                
+                if (myLocation.length < 2) {
+                    jQuery.mobile.showToast("Please choose a location!",false, 4000, true);
+                    return;
+                }
                 
                 ///MIKE:: uncomment if you want to check the tags length!!
                 /*if (myTags.length === 0) {
@@ -197,7 +217,7 @@ Washago.Participant = (function() {
                     text:myText,
                     tags:myTags,
                     id: lastSentContributeID,
-                    about: jQuery("#select-location").val(),
+                    about: myLocation,
                     discourse: jQuery('input[name="radioType"]:checked').val()
                 });
 
@@ -310,16 +330,43 @@ Washago.Participant = (function() {
     
     self.resetParticipantForm = function() {
         
+        var defaultSelectionIndex = 0;
+        
         // reset the lasy sent contribution ID
         lastSentContributeID = null;
         
         // set the default contribution type to comment
-        jQuery('input[name="radioType"]:nth(1)').attr('checked', false).checkboxradio("refresh");
-        jQuery('input[name="radioType"]:nth(0)').attr('checked', true).checkboxradio("refresh");
+        jQuery('input[name="radioType"]').attr('checked', false).checkboxradio("refresh");
+        
+        // select the first 
+        jQuery('input[name="radioType"]:nth(' + defaultSelectionIndex + ')').attr('checked', true).checkboxradio("refresh");
+        
         jQuery("#text-contribution").val('');
+        jQuery("#text-contribution").attr('placeholder', radioTypeArray[defaultSelectionIndex]["toolTip"]);
         
         //self.refreshLocations();
         self.refreshTags(false);
+    };
+    
+    self.getTypes = function() {
+        
+        var firstOption = true;
+        
+        jQuery.each(radioTypeArray, function(index, values) {
+            var typeName = radioTypeArray[index]["typeName"];
+            jQuery('#typeContainer').append('<input name="radioType" id="radioType' + typeName + '" value="' + typeName + '" type="radio" ' + ((firstOption)?'checked="checked"':'') + ' /><label for="radioType' + typeName + '">' + typeName + '</label>');
+            firstOption = false;
+        });
+        jQuery('#parentTypeContainer').trigger( "create" );
+        jQuery('input[name="radioType"]').checkboxradio("refresh");
+        jQuery("#text-contribution").attr('placeholder', radioTypeArray[0]["toolTip"]);
+        
+        jQuery('input[name="radioType"]').change(function() {
+            var radioButtons = jQuery('input[name="radioType"]');
+            var selectedIndex = radioButtons.index(radioButtons.filter(':checked'));
+            jQuery("#text-contribution").attr('placeholder', radioTypeArray[selectedIndex]["toolTip"]);
+           //alert(jQuery('input[name="radioType"]:checked').val() + " " + selectedIndex);
+        });
     };
     
     self.refreshTags = function (doRefreshOnly) {
@@ -349,16 +396,18 @@ Washago.Participant = (function() {
     // set the poster X drop down menu options from getLocations
     self.getLocations = function() {
         
-        var dataStr ='{"tags":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
-        var data = jQuery.parseJSON(dataStr);
+        locationsArray ='{"locations":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
+        var data = jQuery.parseJSON(locationsArray);
         var firstOption = true;
         //jQuery.post();
         var availableLocations = jQuery("#select-location");
-        jQuery.each(data.tags, function(index, value) { 
+        jQuery.each(data.locations, function(index, value) { 
             //alert(index + ': ' + value);
-            availableLocations.append('<option class="location-option-class" value="' + value + '"' + ((firstOption)?'selected="selected"':'') + '>' + value + '</option>');
+            //availableLocations.append('<option class="location-option-class" value="' + value + '"' + ((firstOption)?'selected="selected"':'') + '>' + value + '</option>');
+            availableLocations.append('<option class="location-option-class" value="' + value + '">' + value + '</option>');
             firstOption = false;
         });
+        
         
         jQuery(availableLocations).selectmenu('refresh', true);
         
@@ -505,6 +554,7 @@ Washago.Participant = (function() {
     
     // add the click listener to the tag so that it can add the tag to the selected/custom button stack.
     self.initTagClick = function(obj) {
+        jQuery(obj).unbind('click');
         var availableTags = jQuery("#tag-list-heading");
         jQuery(obj).click(function(){
             var tagText = jQuery(this).find('span.tag-value').text();
@@ -574,6 +624,15 @@ Washago.Participant = (function() {
                 myTags[index] = jQuery.trim(jQuery(value).text().toLowerCase());
             });
             
+            var searchValueObj = jQuery('input[data-type="search"]');
+            var searchValue = jQuery.trim(jQuery(searchValueObj).val().toLowerCase());
+            
+            if (searchValue.length > 1) {
+                myTags[myTags.length] = searchValue;
+                jQuery(searchValueObj).val('');
+                jQuery(searchValueObj).trigger("change");
+            }
+                
             return myTags;
        };
     

@@ -10,6 +10,13 @@
     <link href="css/participant.css" rel="stylesheet" type="text/css" />
     
     <script src="js/sail.js/sail.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        Sail.load()
+            .then('js/jquery.mobile-1.1.0.min.js')
+            .then('js/washago.participant.js')
+            .then('js/toast.notify.js')
+            .thenRun(function() { return Sail.init(Washago.Participant); }); 
+    </script>
 </head>
 <body>
     <!-- single page -->
@@ -64,6 +71,7 @@
                 </div>
             </div>    
         </div>
+
         <!-- /view page/navebar -->
 
 
@@ -75,19 +83,13 @@
                         <h2>
                             Your contribution
                         </h2>
-                    <div data-role="fieldcontain">
+                    <div data-role="fieldcontain" id="parentTypeContainer">
                         <fieldset data-role="controlgroup" data-type="horizontal">
                             <legend>
                                 Submission type:
                             </legend>
-                            <input name="radioType" id="radioTypeComment" value="comment" type="radio" checked="checked" />
-                            <label for="radioTypeComment">
-                                Comment
-                            </label>
-                            <input name="radioType" id="radioTypeQuestion" value="question" type="radio" />
-                            <label for="radioTypeQuestion">
-                                Question
-                            </label>
+                            <div id="typeContainer">
+                            </div>
                         </fieldset>
                     </div>
                     <div data-role="fieldcontain">
@@ -125,16 +127,6 @@
         <!-- /add page/navebar -->
 
     </div>
-    <!-- /single page -->
-
-    
-    <script type="text/javascript">
-        Sail.load()
-            .then('js/jquery.mobile-1.1.0.min.js')
-            .then('js/washago.participant.js')
-            .then('js/toast.notify.js')
-            .thenRun(function() { return Sail.init(Washago.Participant); }); 
-    </script>
         
 </body>
 </html>
