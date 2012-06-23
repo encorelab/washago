@@ -91,9 +91,9 @@ Washago.Participant = (function() {
 
         // empty #community-contribution when loaded for the first time of when changing location
 
-        jQuery('#community-contribution').hide();
+        //jQuery('#community-contribution').hide();
         jQuery('#community-contribution').html('');
-        jQuery('#contributions-title').hide();
+        //jQuery('#contributions-title').hide();
         
         currentLocation = jQuery("#select-location").val();
 
@@ -111,9 +111,12 @@ Washago.Participant = (function() {
            console.log("loadContributions ok");
 
 
-            
-           if(data.length==0 && jQuery('#p-view').is(':visible')){
-                jQuery.mobile.showToast("No contributions so far...", false, 3000, false);
+            //jQuery('#p-view').is(':visible')
+
+           if(data.length==0){
+                if (jQuery('#p-view').is(':visible')) {
+                   jQuery.mobile.showToast("No contributions so far...", false, 3000, false);
+                }
            } else  {
             
                 _.each(data, function(obj){
@@ -264,7 +267,7 @@ Washago.Participant = (function() {
 
             jQuery('#select-location').change(function() {
               loadContributions();
-              jQuery('#p-view').show();
+              //jQuery('#p-view').show();
             });
 
             jQuery('#p-view-btn').click(function () {
