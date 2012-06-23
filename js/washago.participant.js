@@ -89,46 +89,45 @@ Washago.Participant = (function() {
     */
     var loadContributions = function() {
 
-        // empty #community-contribution when loaded for the first time of when changing location
-
-        //jQuery('#community-contribution').hide();
+        // empty #community-contribution when changing location
         jQuery('#community-contribution').html('');
-        //jQuery('#contributions-title').hide();
         
+        // get current location from top dropdown list
         currentLocation = jQuery("#select-location").val();
-
 
         /*  ANTO: 
             If we load the config.json and use currentLocation as mongo db name, 
             this should be the way it works ;)
             note we are rollcall-free in this app, so Sail.app.config.mongo.url does not seem to be loaded??????
-
+            
+            TODO: FIXME!
             jQuery.ajax(Sail.app.config.mongo.url + '/' + currentLocation + '/contributions?selector={"about":"'+currentLocation+'"}', {
         */
+        // using hardcoded meanwhile...
         jQuery.ajax('http://drowsy.badger.encorelab.org/washago-test/contributions?selector={"about":"'+currentLocation+'"}', {
            dataType: 'json',
            success: function (data) {
-           console.log("loadContributions ok");
+               console.log("loadContributions ok");
 
+               // check if there are no data in the query
+               if(data.length==0){
+                    /* 
+                        Prevent showing an alert if the user is NOT in p-view (DIV)
+                    */
+                    if (jQuery('#p-view').is(':visible')) {
+                       jQuery.mobile.showToast("No contributions so far...", false, 3000, false);
+                    }
+               } else  {
+                
+                    _.each(data, function(obj){
+                        addContribution(obj);
+                    });
 
-            //jQuery('#p-view').is(':visible')
-
-           if(data.length==0){
-                if (jQuery('#p-view').is(':visible')) {
-                   jQuery.mobile.showToast("No contributions so far...", false, 3000, false);
-                }
-           } else  {
-            
-                _.each(data, function(obj){
-                    addContribution(obj);
-                });
-
-                if (jQuery('#p-view').is(':visible')) {
-                    jQuery('#contributions-title').show();
-                    jQuery('#community-contribution').fadeIn('slow');
-                }
-           }
-           
+                    if (jQuery('#p-view').is(':visible')) {
+                        //jQuery('#contributions-title').show();
+                        jQuery('#community-contribution').fadeIn('slow');
+                    }
+               }
         },
            error: function (data) {
                 console.log("error loadContributions", data);
@@ -266,13 +265,20 @@ Washago.Participant = (function() {
             });
 
             jQuery('#select-location').change(function() {
+              jQuery('#p-view').show();
+              jQuery('#p-add').hide();
               loadContributions();
-              //jQuery('#p-view').show();
+              jQuery('#p-view').show();
+              //ui-btn-active
+              //
             });
 
             jQuery('#p-view-btn').click(function () {
-                // loading this here might be too much, but it is safe
-                //loadContributions();
+                /*  ANTO: loading this here might be too much, but it is safe
+                    actually decided to force load contributions when clicked on view. 
+                    It provides positive feedback to the user ;)
+                */
+                loadContributions();
 
                 jQuery('#p-add').hide();
                 jQuery('#p-view').show();
@@ -399,7 +405,7 @@ Washago.Participant = (function() {
     // set the poster X drop down menu options from getLocations
     self.getLocations = function() {
         
-        locationsArray ='{"locations":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
+        locationsArray ='{"locations":["Select a location...", "Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
         var data = jQuery.parseJSON(locationsArray);
         var firstOption = true;
         //jQuery.post();
