@@ -70,11 +70,13 @@ Washago.Participant = (function() {
         jQuery(c).append(tags);
 
         // Build here jquery mobile UI li. Add some classes and so...
-        var elemMov = jQuery('<li></li>');
+        var elemMov = jQuery('<li data-theme="c"></li>');
         jQuery(elemMov).append(c);
 
         jQuery('#community-contribution').prepend(elemMov);
         //console.log(c.html());
+
+        jQuery('#community-contribution').prepend(elemMov);
 
         // only now show
         //jQuery('#community-contribution').fadeIn('slow');
@@ -108,6 +110,7 @@ Washago.Participant = (function() {
            dataType: 'json',
            success: function (data) {
                console.log("loadContributions ok");
+               jQuery('#data-loading').fadeOut('slow');
 
                // check if there are no data in the query
                if(data.length==0){
@@ -265,11 +268,18 @@ Washago.Participant = (function() {
             });
 
             jQuery('#select-location').change(function() {
+            jQuery('#data-loading').fadeIn('slow');
+
+              loadContributions();
+
               jQuery('#p-view').show();
               jQuery('#p-add').hide();
-              loadContributions();
-              jQuery('#p-view').show();
-              //ui-btn-active
+              
+              // reflect change to view in header buttons 
+              jQuery('#p-add-btn').removeClass('ui-btn-active');
+              jQuery('#p-view-btn').addClass('ui-btn-active');
+
+              //
               //
             });
 

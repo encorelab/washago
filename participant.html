@@ -23,9 +23,7 @@
     <div data-role="page" id="participant-view-add" class="hide">
         <!-- common header to view and add page -->
         <div data-theme="b" data-role="header" data-position="fixed">
-            <h1 class="washago-header">
-                Washago Participant
-            </h1>
+            <h1 class="washago-header"></h1>
             <div data-role="" style="position:absolute; top:0px">
                 <select name="select-location" id="select-location">
                 </select>
@@ -63,17 +61,25 @@
         <div id="p-view" class="hide">
             <div data-role="" id="participant-view">
                <!-- contribution's title here -->
-               <div id="contributions-title" class="hide">Community contribution</div>
+           <!--
+               <div id="contributions-title" class="">Community contribution</div>
+           -->
                 <div data-role="content" style="padding: 15px">
-                    <ul id="community-contribution" data-role="listview" data-divider-theme="b" data-inset="true">
-                        <!-- ANTO: it's easier if this starts empty -->
-                    </ul>
+                    <div id="main-region"  data-theme="b" data-content-theme="d" data-role="collapsible" data-collapsed="false">
+                        <h2>
+                            List of Contributions
+                        </h2>
+
+                        <ul id="community-contribution" data-role="listview" data-divider-theme="b" data-inset="true">
+                            <!-- ANTO: it's easier if this starts empty -->
+                        </ul>
+                    </div>
                 </div>
             </div>    
         </div>
-
         <!-- /view page/navebar -->
 
+        <div id="data-loading" class="hide"><img src="images/loader-small.gif"></div>
 
         <!-- add page/navebar -->
         <div id="p-add" class="hide">

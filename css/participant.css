@@ -101,8 +101,11 @@
     margin: .6em 5% .8em;
 }
 
-#select-location {
- /* This messes a bit*/
-    /* margin-left: 3%;*/
-    /* width: 40%;*/
+#data-loading{
+    margin: 5% 30% 0;
+    text-align: center;
+}
+
+.ui-content .ui-listview-inset {
+    margin: 0;
 }
