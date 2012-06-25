@@ -194,9 +194,9 @@ Washago.Participant = (function() {
             
             // binding for submit button - TODO: all of the sev hashes need to be dynamically filled with jQuery etc.
             jQuery(".submit-button").click(function () {
-                var myTags = self.tagsToArray();
                 var myText = jQuery.trim(jQuery("#text-contribution").val());
                 var myLocation = jQuery("#select-location").val();
+                var myTags = null;
                  
                 
                 if (myLocation.length < 2) {
@@ -204,16 +204,20 @@ Washago.Participant = (function() {
                     return;
                 }
                 
+                if (myText.length < 4) {
+                    jQuery.mobile.showToast("You must enter in at least 4 characters in the text field!",false, 4000, true);
+                    return;
+                }
+                
+                // done checking base error case - now grab the tags
+                myTags = self.tagsToArray();
+                
                 ///MIKE:: uncomment if you want to check the tags length!!
                 /*if (myTags.length === 0) {
                     jQuery.mobile.showToast("You must select at least ONE tag!",false, 4000, true);
                     return;
                 }*/
                 
-                if (myText.length < 4) {
-                    jQuery.mobile.showToast("You must enter in at least 4 characters in the text field!",false, 4000, true);
-                    return;
-                }
                 
                 lastSentContributeID = generateID();// Math.floor((Math.random() * Math.pow(36,16))).toString(16);
                 
@@ -223,7 +227,7 @@ Washago.Participant = (function() {
                     tags:myTags,
                     id: lastSentContributeID,
                     about: myLocation,
-                    discourse: jQuery('input[name="radioType"]:checked').val()
+                    discourse: jQuery('input[name="radioType"]:checked').val().toLowerCase()
                 });
 
                 /*
@@ -239,7 +243,7 @@ Washago.Participant = (function() {
                     tags:myTags,
                     id: lastSentContributeID,
                     about: jQuery("#select-location").val(),
-                    discourse: jQuery('input[name="radioType"]:checked').val()
+                    discourse: jQuery('input[name="radioType"]:checked').val().toLowerCase()
 
                     /*
                     author:sev.payload.author,
@@ -486,7 +490,7 @@ Washago.Participant = (function() {
             }).insertAfter(jQuery('#tag-list-heading'));
         
             jQuery('#tag-list').listview('refresh');
-            jQuery('#tag-count').text(parseInt(jQuery('.tag-class').size(),10) - 1);
+            jQuery('#tag-count').text(parseInt(jQuery('.tag-class').size(),10));
     };
     
     // get the tags from the MongoDB server and add them to the tag stack
