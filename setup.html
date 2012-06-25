@@ -1,0 +1,51 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <title>Washago Setup Wizard</title> 
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+    <link href="js/sail.js/css/sail.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="css/jquery.mobile-1.1.0.min.css" /> 
+    
+    
+    <script src="js/sail.js/sail.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        Sail.load()
+            .then('js/jquery.mobile-1.1.0.min.js')
+            .then('js/washago.setup.js')
+            .then('js/toast.notify.js')
+            .thenRun(function() { return Sail.init(Washago.Setup); }); 
+    </script>
+</head>
+<body>
+    <!-- single page -->
+    <div data-role="page" id="page_run">
+        <!-- common header to view and add page -->
+        <div data-theme="b" data-role="header" data-position="fixed">
+            <h1>Washago Setup Wizard</h1>
+        </div>
+        <div data-role="fieldcontain" id="existingRuns">
+		<fieldset data-role="controlgroup">
+		    <legend>Choose an Existing Run:</legend>
+                    <label for="runManual">Create a New Run</label>
+                    <input type="radio" name="runSelector" id="runManual" value="0" checked="checked"  />
+                </fieldset>
+        </div>
+        <div data-role="fieldcontain" id="manualRun">
+                <label for="runName">Run Name:</label>
+                <input type="text" data-theme="b" name="runName" id="runName" value="" placeholder="Enter a unique run name not listed here..." />
+        </div>
+        <div class="ui-body ui-body-b">
+		<fieldset class="ui-grid-a">
+                <div class="ui-block-a">
+                    <button type="button" id="saveRun" data-theme="a">Submit</button>
+                </div>
+                </fieldset>
+        </div>
+        
+    </div>
+    
+        
+</body>
+</html>
