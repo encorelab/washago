@@ -99,16 +99,10 @@ Washago.Participant = (function() {
         // get current location from top dropdown list
         currentLocation = jQuery("#select-location").val();
 
-        /*  ANTO: 
-            If we load the config.json and use currentLocation as mongo db name, 
-            this should be the way it works ;)
-            note we are rollcall-free in this app, so Sail.app.config.mongo.url does not seem to be loaded??????
-            
-            TODO: FIXME!
-            jQuery.ajax(Sail.app.config.mongo.url + '/' + currentLocation + '/contributions?selector={"about":"'+currentLocation+'"}', {
-        */
-        jQuery.ajax(self.config.mongo.url + '/roadshow/contributions?selector={"about":"'+currentLocation+'"}', {
+        //jQuery.ajax(self.config.mongo.url + '/roadshow/contributions?selector={"about":"'+currentLocation+'"}', {
+        jQuery.ajax(self.config.mongo.url + '/roadshow/contributions', {
            dataType: 'json',
+           data: {selector: JSON.stringify({about: currentLocation})},
            success: function (data) {
                console.log("loadContributions ok");
                jQuery('#data-loading').hide();
@@ -293,7 +287,7 @@ Washago.Participant = (function() {
                     actually decided to force load contributions when clicked on view. 
                     It provides positive feedback to the user ;)
                 */
-                loadContributions();
+                //loadContributions();
 
                 jQuery('#p-add').hide();
                 jQuery('#p-view').show();
