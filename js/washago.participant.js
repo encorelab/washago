@@ -74,15 +74,13 @@ Washago.Participant = (function() {
         jQuery(c).append(tags);
 
         // Build here jquery mobile UI li. Add some classes and so...
-        var elemMov = jQuery('<li></li>');
+        var elemMov = jQuery('<li data-theme="c"></li>');
         jQuery(elemMov).append(c);
 
         jQuery('#community-contribution').prepend(elemMov);
         //console.log(c.html());
 
-        // only now show
-        //jQuery('#community-contribution').fadeIn('slow');
-
+        jQuery('#community-contribution').prepend(elemMov);
     };
 
 
@@ -93,43 +91,47 @@ Washago.Participant = (function() {
     */
     var loadContributions = function() {
 
-        // empty #community-contribution when loaded for the first time of when changing location
+        jQuery('#data-loading').fadeIn('fast');
 
-        jQuery('#community-contribution').hide();
+        // empty #community-contribution when changing location
         jQuery('#community-contribution').html('');
-        jQuery('#contributions-title').hide();
         
+        // get current location from top dropdown list
         currentLocation = jQuery("#select-location").val();
-
 
         /*  ANTO: 
             If we load the config.json and use currentLocation as mongo db name, 
             this should be the way it works ;)
             note we are rollcall-free in this app, so Sail.app.config.mongo.url does not seem to be loaded??????
-
+            
+            TODO: FIXME!
             jQuery.ajax(Sail.app.config.mongo.url + '/' + currentLocation + '/contributions?selector={"about":"'+currentLocation+'"}', {
         */
         jQuery.ajax(self.config.mongo.url + '/roadshow/contributions?selector={"about":"'+currentLocation+'"}', {
            dataType: 'json',
            success: function (data) {
-           console.log("loadContributions ok");
+               console.log("loadContributions ok");
+               jQuery('#data-loading').hide();
 
+               // check if there are no data in the query
+               if(data.length==0){
+                    /* 
+                        Prevent showing an alert if the user is NOT in p-view (DIV)
+                    */
+                    if (jQuery('#p-view').is(':visible')) {
+                       jQuery.mobile.showToast("No contributions so far...", false, 3000, false);
+                    }
+               } else  {
+                
+                    _.each(data, function(obj){
+                        addContribution(obj);
+                    });
 
-            
-           if(data.length==0 && jQuery('#p-view').is(':visible')){
-                jQuery.mobile.showToast("No contributions so far...", false, 3000, false);
-           } else  {
-            
-                _.each(data, function(obj){
-                    addContribution(obj);
-                });
-
-                if (jQuery('#p-view').is(':visible')) {
-                    jQuery('#contributions-title').show();
-                    jQuery('#community-contribution').fadeIn('slow');
-                }
-           }
-           
+                    if (jQuery('#p-view').is(':visible')) {
+                        //jQuery('#contributions-title').show();
+                        jQuery('#community-contribution').fadeIn('slow');
+                    }
+               }
         },
            error: function (data) {
                 console.log("error loadContributions", data);
@@ -143,7 +145,7 @@ Washago.Participant = (function() {
         It make sense to me that the client saves the data, not the wall
         let's discuss this!!
 
-        This function is called when the sail event "contribution" is received
+        This function is called when contribution is submitted
     */
     var writeToDB = function (contribution) {
         console.log("Storeing contribution in database");
@@ -272,13 +274,26 @@ Washago.Participant = (function() {
             });
 
             jQuery('#select-location').change(function() {
+
               loadContributions();
+
               jQuery('#p-view').show();
+              jQuery('#p-add').hide();
+              
+              // reflect change to view in header buttons 
+              jQuery('#p-add-btn').removeClass('ui-btn-active');
+              jQuery('#p-view-btn').addClass('ui-btn-active');
+
+              //
+              //
             });
 
             jQuery('#p-view-btn').click(function () {
-                // loading this here might be too much, but it is safe
-                //loadContributions();
+                /*  ANTO: loading this here might be too much, but it is safe
+                    actually decided to force load contributions when clicked on view. 
+                    It provides positive feedback to the user ;)
+                */
+                loadContributions();
 
                 jQuery('#p-add').hide();
                 jQuery('#p-view').show();
@@ -405,7 +420,7 @@ Washago.Participant = (function() {
     // set the poster X drop down menu options from getLocations
     self.getLocations = function() {
         
-        locationsArray ='{"locations":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
+        locationsArray ='{"locations":["Select a location...", "Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
         var data = jQuery.parseJSON(locationsArray);
         var firstOption = true;
         //jQuery.post();
