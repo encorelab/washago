@@ -289,69 +289,69 @@ Washago.Wall = (function() {
         });
     };
 
-    var storeTags = function (tags) {
-        console.log("Storing tags in the database");
+    // var storeTags = function (tags) {
+    //     console.log("Storing tags in the database");
 
-        // {"name":"Tagy tag here", "count":1}
-        _.each(tags, function(tag) {
-            // check if tag is in db
-            jQuery.ajax({
-                type: "GET",
-                url: self.config.mongo.url + '/roadshow/tags',
-                data: { criteria: JSON.stringify({"name":tag})},
-                dataType: 'json',
-                context: this,
-                success: function(data) {
-                    if (data.ok === 1) {
-                        if (data.length > 0) {
-                            console.log("Found tag in database so update count");
+    //     // {"name":"Tagy tag here", "count":1}
+    //     _.each(tags, function(tag) {
+    //         // check if tag is in db
+    //         jQuery.ajax({
+    //             type: "GET",
+    //             url: self.config.mongo.url + '/roadshow/tags',
+    //             data: { criteria: JSON.stringify({"name":tag})},
+    //             dataType: 'json',
+    //             context: this,
+    //             success: function(data) {
+    //                 if (data.ok === 1) {
+    //                     if (data.length > 0) {
+    //                         console.log("Found tag in database so update count");
                             
-                            jQuery.ajax({
-                                type: "PUT",
-                                url: self.config.mongo.url + '/roadshow/tags',
-                                dataType: 'json',
-                                data: { criteria: JSON.stringify({"name":tag}), newobj: JSON.stringify({"$inc":{"count":1}})},
-                                context: this,
-                                success: function(data) {
-                                    console.log("Tag updated");
-                                },
-                                error: function(data) {
-                                    console.warn("Error updating tag in database. Possible reason: " +data.responseText);
-                                }
-                            });
-                        } else {                            
-                            console.log("Tag not in database - store");
+    //                         jQuery.ajax({
+    //                             type: "PUT",
+    //                             url: self.config.mongo.url + '/roadshow/tags',
+    //                             dataType: 'json',
+    //                             data: { criteria: JSON.stringify({"name":tag}), newobj: JSON.stringify({"$inc":{"count":1}})},
+    //                             context: this,
+    //                             success: function(data) {
+    //                                 console.log("Tag updated");
+    //                             },
+    //                             error: function(data) {
+    //                                 console.warn("Error updating tag in database. Possible reason: " +data.responseText);
+    //                             }
+    //                         });
+    //                     } else {                            
+    //                         console.log("Tag not in database - store");
 
-                            var postData = 'docs=[' +JSON.stringify({"name":tag,"count":1})+ ']';
+    //                         var postData = 'docs=[' +JSON.stringify({"name":tag,"count":1})+ ']';
 
-                            jQuery.ajax({
-                                type: "POST",
-                                url: self.config.mongo.url + '/roadshow/tags',
-                                dataType: 'json',
-                                // do a feeble attempt at checking for uniqueness
-                                data: postData,
-                                context: this,
-                                success: function(data) {
-                                    console.log("Tag stored for the first time");
-                                },
-                                error: function(data) {
-                                    console.warn("Error writing tag to database. Possible reason: " +data.responseText);
-                                }
-                            });
-                        }
-                    } else {
-                        console.warn("Error looking for tag :(");
-                    }
-                },
-                error: function(data) {
-                    console.warn("Error looking for tags in database");
-                }
-            });
-            // if not in database store
+    //                         jQuery.ajax({
+    //                             type: "POST",
+    //                             url: self.config.mongo.url + '/roadshow/tags',
+    //                             dataType: 'json',
+    //                             // do a feeble attempt at checking for uniqueness
+    //                             data: postData,
+    //                             context: this,
+    //                             success: function(data) {
+    //                                 console.log("Tag stored for the first time");
+    //                             },
+    //                             error: function(data) {
+    //                                 console.warn("Error writing tag to database. Possible reason: " +data.responseText);
+    //                             }
+    //                         });
+    //                     }
+    //                 } else {
+    //                     console.warn("Error looking for tag :(");
+    //                 }
+    //             },
+    //             error: function(data) {
+    //                 console.warn("Error looking for tags in database");
+    //             }
+    //         });
+    //         // if not in database store
 
-            // if in database update count
-        });    
-    };
+    //         // if in database update count
+    //     });    
+    // };
 
     self.init = function() {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
