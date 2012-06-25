@@ -63,6 +63,7 @@
     <script type="text/javascript">
         Sail.load()
             .then('js/washago.wall.js')
+            .then('js/washago.model.js')
             .then('https://raw.github.com/mbostock/d3/master/d3.v2.js',
                 'js/washago.wall.graph.js')
             .thenRun(function() { return Sail.init(Washago.Wall); });

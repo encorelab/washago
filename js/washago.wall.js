@@ -9,6 +9,8 @@ Washago.Wall = (function() {
 
     app.cumulativeTagArray = [];
 
+    app.configDB = 'roadshow_config';
+
     // Brings a .ui-draggable element to the front (via z-index).
     // This is meant to be used as a callback for jQuery event bindings,
     // so `this` is assumed to refer to the element you want to bring
@@ -62,7 +64,7 @@ Washago.Wall = (function() {
         //if (contribution.discourse) { balloon.addClass('discourse-' + contribution.discourse); }      we should probably do some kind of error checking like this
         balloon.addClass('discourse-' + contribution.discourse.toLowerCase());
         balloon.addClass('about-' + MD5.hexdigest(contribution.about));
-        md5tags = _.map(contribution.tags, function(t) {return MD5.hexdigest(t);});
+        var md5tags = _.map(contribution.tags, function(t) {return MD5.hexdigest(t);});
         _.each(md5tags, function (t) {
             balloon.addClass('tags-' + t);
         });
@@ -119,6 +121,16 @@ Washago.Wall = (function() {
     };
 
 
+
+    // this function returns an (unflattened) array that contain all of the (non-unique) tags to be turned on or off   // this isn't quite working... TODO
+    var activeKeywordClasses = function () {
+        return jQuery('li.selected').map(function() {
+            return _.select(jQuery(this).attr('class').split(' '), function(klass) {
+                return klass.match(/(tags|about|discourse|author)-/);
+            });
+        }).toArray();
+    };
+
     //"author-1c206b0a8f48aef1217f6e004f10e106"
     //"author-698d51a19d8a121ce581499d7b701668"
     var filterBalloons = function () {
@@ -132,21 +144,31 @@ Washago.Wall = (function() {
             jQuery('.balloon').addClass('blurred');
         
             // INTERSECTION (and)
-            $('.balloon.'+keywordClasses.join(".")).removeClass('blurred')
+            jQuery('.balloon.'+keywordClasses.join(".")).removeClass('blurred');
         
             // UNION (or)
             //jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred');
         }
     };
 
+    // this is kinda sloppy, but it should work
+    var toggleFilterOption = function (criteria, keyword) {
+        var li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + criteria);
+        if (li.is('.selected')) {
+            li.removeClass('selected');
+            filterBalloons();
+        } else {
+            li.addClass('selected');
+            filterBalloons();
+        }
+    };
 
-    // this function returns an (unflattened) array that contain all of the (non-unique) tags to be turned on or off   // this isn't quite working... TODO
-    var activeKeywordClasses = function () {
-        return jQuery('li.selected').map(function() {
-            return _.select(jQuery(this).attr('class').split(' '), function(klass) {
-                return klass.match(/(tags|about|discourse|author)-/);
-            });
-        }).toArray();
+    var sortList = function (list) {
+        var items = jQuery(list).children('li').get();
+        items.sort(function(a, b) {
+           return jQuery(a).text().toUpperCase().localeCompare(jQuery(b).text().toUpperCase());
+        });
+        jQuery.each(items, function(idx, itm) { list.append(itm); });
     };
     
     var addTagToList = function (contribution) {
@@ -235,32 +257,12 @@ Washago.Wall = (function() {
     };
 
     var removeAuthorFromList = function (jid) {
-        console.log(author + " left...");
+        console.log(jid + " left...");
 
         var nickname = Strophe.getResourceFromJid(jid);
 
         jQuery("#author-filter .author-"+MD5.hexdigest(nickname))
             .hide('fade', 'fast', function () {jQuery(this).remove();});
-    };
-
-    var sortList = function (list) {
-        var items = jQuery(list).children('li').get();
-        items.sort(function(a, b) {
-           return jQuery(a).text().toUpperCase().localeCompare(jQuery(b).text().toUpperCase());
-        })
-        jQuery.each(items, function(idx, itm) { list.append(itm); });
-    };
-
-    // this is kinda sloppy, but it should work
-    var toggleFilterOption = function (criteria, keyword) {
-        li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + criteria);
-        if (li.is('.selected')) {
-            li.removeClass('selected');
-            filterBalloons();
-        } else {
-            li.addClass('selected');
-            filterBalloons();
-        }
     };
 
     var writeToDB = function (contribution) {
@@ -382,6 +384,10 @@ Washago.Wall = (function() {
             Washago.Wall.authenticate();
         },
 
+        configured: function (ev) {
+            Washago.Model(Washago.Wall);
+        },
+
         'ui.initialized': function (ev) {
             jQuery('.toolbar')
                 //.draggable({handle: '.titlebar'})
@@ -437,7 +443,7 @@ Washago.Wall = (function() {
                 addAboutToList(new_contribution);                
                 addTypeToList(new_contribution);
                 writeToDB(new_contribution);
-                storeTags(new_contribution.tags);
+                //storeTags(new_contribution.tags);
             }
         }
     };
