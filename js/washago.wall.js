@@ -200,11 +200,11 @@ Washago.Wall = (function() {
         }
         
         var list = jQuery('#discourse-filter ul');
-        var li = list.find('.discourse-' + contribution.discourse);
+        var li = list.find('.discourse-' + contribution.discourse.toLowerCase());
         if (li.length === 0) {
             li = jQuery('<li />');
             li.text(contribution.discourse);
-            li.addClass("discourse-" + contribution.discourse);
+            li.addClass("discourse-" + contribution.discourse.toLowerCase());
             li.click(function() {
                 toggleFilterOption(contribution.discourse, "discourse");
             });
