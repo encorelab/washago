@@ -395,17 +395,17 @@ Washago.Wall = (function() {
         connected: function (ev) {
             console.log("Connected...");
             
-            if (Sail.app.groupchat.participants) {
-                for (var p in Sail.app.groupchat.participants) {
-                    addAuthorToList(p);
-                }
-            } else {
-                console.log('no participants yet or connection issues');
-            }
+            // if (Sail.app.groupchat.participants) {
+            //     for (var p in Sail.app.groupchat.participants) {
+            //         addAuthorToList(p);
+            //     }
+            // } else {
+            //     console.log('no participants yet or connection issues');
+            // }
 
             // I don't believe these are working as intended - does the function name actual matter for some reason?
-            Sail.app.groupchat.addParticipantJoinedHandler(addAuthorToList);
-            Sail.app.groupchat.addParticipantLeftHandler(removeAuthorFromList);
+            //Sail.app.groupchat.addParticipantJoinedHandler(addAuthorToList);
+            //Sail.app.groupchat.addParticipantLeftHandler(removeAuthorFromList);
 
             
             jQuery.ajax(self.config.mongo.url + '/roadshow/contributions', {
