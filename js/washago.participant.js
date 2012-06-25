@@ -7,6 +7,22 @@ Washago.Participant = (function() {
     var self = {};
     var lastSentContributeID = null;
     var reconstructingTags = false;
+    var activeRun = 'roadshow';
+    var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
+    
+/*    http://roadshow.encore#a (b|c|d)
+    if (window.location.fragment == 'a') {
+        var activeRun = a;
+    }*/
+    /*
+    tags
+    predifined tags
+    locations
+    types
+    */
+
+    //var config//self.config.url.mongo + activeRun + 
+
     var radioTypeArray = [
         {"typeName": "Question", "toolTip": "Some Question tooltip"},
         {"typeName": "Comment", "toolTip": "Some Comment tooltip"}
@@ -100,7 +116,7 @@ Washago.Participant = (function() {
         currentLocation = jQuery("#select-location").val();
 
         //jQuery.ajax(self.config.mongo.url + '/roadshow/contributions?selector={"about":"'+currentLocation+'"}', {
-        jQuery.ajax(self.config.mongo.url + '/roadshow/contributions', {
+        jQuery.ajax(self.config.mongo.url + '/' + activeRun + '/' + 'contributions', {
            dataType: 'json',
            data: {selector: JSON.stringify({about: currentLocation})},
            success: function (data) {
@@ -269,7 +285,13 @@ Washago.Participant = (function() {
 
             jQuery('#select-location').change(function() {
 
-              loadContributions();
+              if(jQuery('#select-location').val()==""){
+                jQuery('#intro-title').show();
+              } else {
+                  loadContributions();
+                  jQuery('#intro-title').hide();
+                  jQuery('#contribution-title').show();
+              }
 
 /*              jQuery('#p-view').show();
               jQuery('#p-add').hide();
@@ -402,7 +424,7 @@ Washago.Participant = (function() {
         jQuery('.tag_button').each(function() {jQuery(this).remove();});
         
         // get the tags from MongoDB
-        self.getTags();
+        //self.getTags();
     };
     
     // perform a refresh of the options - used when resetting the form (doesn't do much now but later can be extended to automagically update locations)
@@ -504,17 +526,13 @@ Washago.Participant = (function() {
     
     // get the tags from the MongoDB server and add them to the tag stack
     self.getTags = function() {
-        
-        var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
-        
-        // ANTO: note that his does not work in node server and makes it crash
-        //var tagDepotURI = '/mongo/roadshow/contributions/_find?batch_size=10000000000' + ((Sail.app.run)?'&criteria={"run":"' + Sail.app.run.name+ '"}':'');
-        var tagDepotURI = self.config.mongo.url + "/roadshow/contributions";
+                
+        var tagDepotURI = self.config.mongo.url + '/' + activeRun + '/' + 'contributions';
         
         
         var jqxhr = jQuery.get(tagDepotURI)
                     .success(function(data) {
-                        console.log("grabbing tags for mongoDB");
+                        console.log("grabbing tags for mongoDB", data);
                         var availableTags = jQuery("#tag-list-heading");
                         var dataTags = {};
                         var tagStr = '';

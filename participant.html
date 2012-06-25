@@ -26,7 +26,7 @@
             <h1 class="washago-header"></h1>
             <div data-role="" style="position:absolute; top:0px; left:4px">
                 <select name="select-location" id="select-location" data-theme="c" >
-                    <option value="">Select Loc.</option>
+                    <option value="">Select Poster</option>
                 </select>
             </div>
         </div>
@@ -59,14 +59,18 @@
         <!-- /common header -->
     
         <!-- view page/navebar -->
-        <div id="p-view" class="hide">
+        <div id="p-view" class="">
             <div data-role="" id="participant-view">
                 <!-- content -->
                 <div data-role="content" style="padding: 15px">
-                    <div id="main-region"  data-theme="b" data-content-theme="d" data-role="collapsible" data-collapsed="false">
-                        <h2>
+                    <div id="main-region"  data-theme="b" data-content-theme="d" data-role="fieldcontain">
+                        <h2 id="contribution-title" class="hide">
                             List of Contributions
                         </h2>
+                        <h3 id="intro-title">
+                            Select a poster from the dropdown at the top of your screen to view what others have contributed.<br />
+                            After selecting a poster, click on the 'add' tab to contribute your own thoughts and ideas to the knowledge community
+                        </h3>
                         <div id="data-loading" class="hide"><img src="images/loader-small.gif"></div>
                         <ul id="community-contribution" data-role="listview" data-divider-theme="b" data-inset="true">
                             <!-- ANTO: it's easier if this starts empty -->
