@@ -168,6 +168,8 @@ Washago.Wall = (function() {
                 list.append(li);
             }
         });
+
+        sortList(list);
     };
 
     var addAboutToList = function (contribution) {
@@ -187,6 +189,8 @@ Washago.Wall = (function() {
             });
             list.append(li);
         }
+
+        sortList(list);
     };
 
     var addTypeToList = function (contribution) {
@@ -206,6 +210,8 @@ Washago.Wall = (function() {
             });
             list.append(li);
         }
+
+        sortList(list);
     };
 
     var addAuthorToList = function (jid) {
@@ -235,6 +241,14 @@ Washago.Wall = (function() {
 
         jQuery("#author-filter .author-"+MD5.hexdigest(nickname))
             .hide('fade', 'fast', function () {jQuery(this).remove();});
+    };
+
+    var sortList = function (list) {
+        var items = jQuery(list).children('li').get();
+        items.sort(function(a, b) {
+           return jQuery(a).text().toUpperCase().localeCompare(jQuery(b).text().toUpperCase());
+        })
+        jQuery.each(items, function(idx, itm) { list.append(itm); });
     };
 
     // this is kinda sloppy, but it should work
