@@ -271,7 +271,7 @@ Washago.Participant = (function() {
 
 
                 // ANTO: Think this is the right place to save data!!
-                //writeToDB(my_contribution);
+                writeToDB(my_contribution);
                 //console.log('My Contribution saved', my_contribution);
 
                 // add contribution to the view
@@ -286,6 +286,8 @@ Washago.Participant = (function() {
             jQuery('#select-location').change(function() {
 
               if(jQuery('#select-location').val()==""){
+                jQuery('#contribution-title').hide();
+                jQuery('#community-contribution').hide();
                 jQuery('#intro-title').show();
               } else {
                   loadContributions();
