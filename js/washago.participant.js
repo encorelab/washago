@@ -520,7 +520,7 @@ Washago.Participant = (function() {
                         var tagStr = '';
                         var i = 0;
                         
-                        if (data.ok !== 1) { console.log('Problem getting DB Data'); return; }
+                        if (!data) { console.log('Problem getting DB Data'); return; }                  // checking to see if tag data is returned from mongo
                         
                         // go through json object returned by GET DB Query and grab the tags
                         jQuery.each(data, function(index, value) {
