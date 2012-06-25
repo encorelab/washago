@@ -132,10 +132,10 @@ Washago.Wall = (function() {
             jQuery('.balloon').addClass('blurred');
         
             // INTERSECTION (and)
-            //$('.balloon.'+activeKeywordClasses.join(".")).removeClass('blurred')
+            $('.balloon.'+keywordClasses.join(".")).removeClass('blurred')
         
             // UNION (or)
-            jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred');
+            //jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred');
         }
     };
 
