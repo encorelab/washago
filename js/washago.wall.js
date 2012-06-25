@@ -3,11 +3,11 @@
 var Washago = window.Washago || {};
 
 Washago.Wall = (function() {
-    var self = {};
+    var app = {};
 
-    self.name = "Washago.Wall";
+    app.name = "Washago.Wall";
 
-    self.cumulativeTagArray = [];
+    app.cumulativeTagArray = [];
 
     // Brings a .ui-draggable element to the front (via z-index).
     // This is meant to be used as a callback for jQuery event bindings,
@@ -275,7 +275,7 @@ Washago.Wall = (function() {
 
         jQuery.ajax({
             type: "POST",
-            url: self.config.mongo.url + '/roadshow/contributions',
+            url: app.config.mongo.url + '/roadshow/contributions',
             dataType: 'json',
             // do a feeble attempt at checking for uniqueness
             data: postData,
@@ -289,71 +289,71 @@ Washago.Wall = (function() {
         });
     };
 
-    var storeTags = function (tags) {
-        console.log("Storing tags in the database");
+    // var storeTags = function (tags) {
+    //     console.log("Storing tags in the database");
 
-        // {"name":"Tagy tag here", "count":1}
-        _.each(tags, function(tag) {
-            // check if tag is in db
-            jQuery.ajax({
-                type: "GET",
-                url: self.config.mongo.url + '/roadshow/tags',
-                data: { criteria: JSON.stringify({"name":tag})},
-                dataType: 'json',
-                context: this,
-                success: function(data) {
-                    if (data.ok === 1) {
-                        if (data.length > 0) {
-                            console.log("Found tag in database so update count");
+    //     // {"name":"Tagy tag here", "count":1}
+    //     _.each(tags, function(tag) {
+    //         // check if tag is in db
+    //         jQuery.ajax({
+    //             type: "GET",
+    //             url: app.config.mongo.url + '/roadshow/tags',
+    //             data: { criteria: JSON.stringify({"name":tag})},
+    //             dataType: 'json',
+    //             context: this,
+    //             success: function(data) {
+    //                 if (data.ok === 1) {
+    //                     if (data.length > 0) {
+    //                         console.log("Found tag in database so update count");
                             
-                            jQuery.ajax({
-                                type: "PUT",
-                                url: self.config.mongo.url + '/roadshow/tags',
-                                dataType: 'json',
-                                data: { criteria: JSON.stringify({"name":tag}), newobj: JSON.stringify({"$inc":{"count":1}})},
-                                context: this,
-                                success: function(data) {
-                                    console.log("Tag updated");
-                                },
-                                error: function(data) {
-                                    console.warn("Error updating tag in database. Possible reason: " +data.responseText);
-                                }
-                            });
-                        } else {                            
-                            console.log("Tag not in database - store");
+    //                         jQuery.ajax({
+    //                             type: "PUT",
+    //                             url: app.config.mongo.url + '/roadshow/tags',
+    //                             dataType: 'json',
+    //                             data: { criteria: JSON.stringify({"name":tag}), newobj: JSON.stringify({"$inc":{"count":1}})},
+    //                             context: this,
+    //                             success: function(data) {
+    //                                 console.log("Tag updated");
+    //                             },
+    //                             error: function(data) {
+    //                                 console.warn("Error updating tag in database. Possible reason: " +data.responseText);
+    //                             }
+    //                         });
+    //                     } else {                            
+    //                         console.log("Tag not in database - store");
 
-                            var postData = 'docs=[' +JSON.stringify({"name":tag,"count":1})+ ']';
+    //                         var postData = 'docs=[' +JSON.stringify({"name":tag,"count":1})+ ']';
 
-                            jQuery.ajax({
-                                type: "POST",
-                                url: self.config.mongo.url + '/roadshow/tags',
-                                dataType: 'json',
-                                // do a feeble attempt at checking for uniqueness
-                                data: postData,
-                                context: this,
-                                success: function(data) {
-                                    console.log("Tag stored for the first time");
-                                },
-                                error: function(data) {
-                                    console.warn("Error writing tag to database. Possible reason: " +data.responseText);
-                                }
-                            });
-                        }
-                    } else {
-                        console.warn("Error looking for tag :(");
-                    }
-                },
-                error: function(data) {
-                    console.warn("Error looking for tags in database");
-                }
-            });
-            // if not in database store
+    //                         jQuery.ajax({
+    //                             type: "POST",
+    //                             url: app.config.mongo.url + '/roadshow/tags',
+    //                             dataType: 'json',
+    //                             // do a feeble attempt at checking for uniqueness
+    //                             data: postData,
+    //                             context: this,
+    //                             success: function(data) {
+    //                                 console.log("Tag stored for the first time");
+    //                             },
+    //                             error: function(data) {
+    //                                 console.warn("Error writing tag to database. Possible reason: " +data.responseText);
+    //                             }
+    //                         });
+    //                     }
+    //                 } else {
+    //                     console.warn("Error looking for tag :(");
+    //                 }
+    //             },
+    //             error: function(data) {
+    //                 console.warn("Error looking for tags in database");
+    //             }
+    //         });
+    //         // if not in database store
 
-            // if in database update count
-        });    
-    };
+    //         // if in database update count
+    //     });    
+    // };
 
-    self.init = function() {
+    app.init = function() {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
 
         // TODO: move this out to config.json
@@ -373,11 +373,11 @@ Washago.Wall = (function() {
             });
     };
 
-    self.authenticate = function () {
-        jQuery(self).trigger('authenticated');
+    app.authenticate = function () {
+        jQuery(app).trigger('authenticated');
     };
 
-    self.events = {
+    app.events = {
         initialized: function (ev) {
             Washago.Wall.authenticate();
         },
@@ -408,7 +408,7 @@ Washago.Wall = (function() {
             //Sail.app.groupchat.addParticipantLeftHandler(removeAuthorFromList);
 
             
-            jQuery.ajax(self.config.mongo.url + '/roadshow/contributions', {
+            jQuery.ajax(app.config.mongo.url + '/roadshow/contributions', {
                 dataType: 'json',
                 success: function (data) {
                     _.each(data, function (contrib) {
@@ -442,5 +442,5 @@ Washago.Wall = (function() {
         }
     };
 
-    return self;
+    return app;
 })();
