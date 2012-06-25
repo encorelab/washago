@@ -77,10 +77,6 @@ Washago.Participant = (function() {
         //console.log(c.html());
 
         jQuery('#community-contribution').prepend(elemMov);
-
-        // only now show
-        //jQuery('#community-contribution').fadeIn('slow');
-
     };
 
 
@@ -90,6 +86,8 @@ Washago.Participant = (function() {
         It should be every time a poster is selected
     */
     var loadContributions = function() {
+
+        jQuery('#data-loading').fadeIn('fast');
 
         // empty #community-contribution when changing location
         jQuery('#community-contribution').html('');
@@ -110,7 +108,7 @@ Washago.Participant = (function() {
            dataType: 'json',
            success: function (data) {
                console.log("loadContributions ok");
-               jQuery('#data-loading').fadeOut('slow');
+               jQuery('#data-loading').hide();
 
                // check if there are no data in the query
                if(data.length==0){
@@ -144,7 +142,7 @@ Washago.Participant = (function() {
         It make sense to me that the client saves the data, not the wall
         let's discuss this!!
 
-        This function is called when the sail event "contribution" is received
+        This function is called when contribution is submitted
     */
     var writeToDB = function (contribution) {
         console.log("Storeing contribution in database");
@@ -268,7 +266,6 @@ Washago.Participant = (function() {
             });
 
             jQuery('#select-location').change(function() {
-            jQuery('#data-loading').fadeIn('slow');
 
               loadContributions();
 
