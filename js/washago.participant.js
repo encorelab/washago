@@ -261,8 +261,8 @@ Washago.Participant = (function() {
 
 
                 // ANTO: Think this is the right place to save data!!
-                writeToDB(my_contribution);
-                console.log('My Contribution saved', my_contribution);
+                //writeToDB(my_contribution);
+                //console.log('My Contribution saved', my_contribution);
 
                 // add contribution to the view
                 addContribution(my_contribution);
@@ -277,12 +277,12 @@ Washago.Participant = (function() {
 
               loadContributions();
 
-              jQuery('#p-view').show();
+/*              jQuery('#p-view').show();
               jQuery('#p-add').hide();
               
               // reflect change to view in header buttons 
               jQuery('#p-add-btn').removeClass('ui-btn-active');
-              jQuery('#p-view-btn').addClass('ui-btn-active');
+              jQuery('#p-view-btn').addClass('ui-btn-active');*/
 
               //
               //
@@ -420,7 +420,7 @@ Washago.Participant = (function() {
     // set the poster X drop down menu options from getLocations
     self.getLocations = function() {
         
-        locationsArray ='{"locations":["Select a location...", "Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
+        locationsArray ='{"locations":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
         var data = jQuery.parseJSON(locationsArray);
         var firstOption = true;
         //jQuery.post();
