@@ -60,7 +60,7 @@ Washago.Wall = (function() {
         balloon.attr('id', "contribution-" + contribution.id);
         balloon.addClass('author-' + MD5.hexdigest(contribution.author));
         //if (contribution.discourse) { balloon.addClass('discourse-' + contribution.discourse); }      we should probably do some kind of error checking like this
-        balloon.addClass('discourse-' + contribution.discourse);
+        balloon.addClass('discourse-' + contribution.discourse.toLowerCase());
         balloon.addClass('about-' + MD5.hexdigest(contribution.about));
         md5tags = _.map(contribution.tags, function(t) {return MD5.hexdigest(t);});
         _.each(md5tags, function (t) {
@@ -132,10 +132,10 @@ Washago.Wall = (function() {
             jQuery('.balloon').addClass('blurred');
         
             // INTERSECTION (and)
-            //$('.balloon.'+activeKeywordClasses.join(".")).removeClass('blurred')
+            $('.balloon.'+keywordClasses.join(".")).removeClass('blurred')
         
             // UNION (or)
-            jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred');
+            //jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred');
         }
     };
 
@@ -168,6 +168,8 @@ Washago.Wall = (function() {
                 list.append(li);
             }
         });
+
+        sortList(list);
     };
 
     var addAboutToList = function (contribution) {
@@ -187,6 +189,8 @@ Washago.Wall = (function() {
             });
             list.append(li);
         }
+
+        sortList(list);
     };
 
     var addTypeToList = function (contribution) {
@@ -206,6 +210,8 @@ Washago.Wall = (function() {
             });
             list.append(li);
         }
+
+        sortList(list);
     };
 
     var addAuthorToList = function (jid) {
@@ -237,6 +243,14 @@ Washago.Wall = (function() {
             .hide('fade', 'fast', function () {jQuery(this).remove();});
     };
 
+    var sortList = function (list) {
+        var items = jQuery(list).children('li').get();
+        items.sort(function(a, b) {
+           return jQuery(a).text().toUpperCase().localeCompare(jQuery(b).text().toUpperCase());
+        })
+        jQuery.each(items, function(idx, itm) { list.append(itm); });
+    };
+
     // this is kinda sloppy, but it should work
     var toggleFilterOption = function (criteria, keyword) {
         li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + criteria);
@@ -257,12 +271,12 @@ Washago.Wall = (function() {
         delete contribution.id;
 
         // sleepy mongoose requires date being submitted in docs=[{"x":1,"y":2}]
-        var postData = 'docs=[' +JSON.stringify(contribution)+ ']';
+        var postData = JSON.stringify(contribution);
 
-        // Post to mongodb-rest interface to store contribution
         jQuery.ajax({
             type: "POST",
-            url: "/mongo/roadshow/contributions/_insert",
+            url: self.config.mongo.url + '/roadshow/contributions',
+            dataType: 'json',
             // do a feeble attempt at checking for uniqueness
             data: postData,
             context: this,
@@ -283,17 +297,19 @@ Washago.Wall = (function() {
             // check if tag is in db
             jQuery.ajax({
                 type: "GET",
-                url: "/mongo/roadshow/tags/_find",
+                url: self.config.mongo.url + '/roadshow/tags',
                 data: { criteria: JSON.stringify({"name":tag})},
+                dataType: 'json',
                 context: this,
                 success: function(data) {
                     if (data.ok === 1) {
-                        if (data.results.length > 0) {
+                        if (data.length > 0) {
                             console.log("Found tag in database so update count");
                             
                             jQuery.ajax({
-                                type: "POST",
-                                url: "/mongo/roadshow/tags/_update",
+                                type: "PUT",
+                                url: self.config.mongo.url + '/roadshow/tags',
+                                dataType: 'json',
                                 data: { criteria: JSON.stringify({"name":tag}), newobj: JSON.stringify({"$inc":{"count":1}})},
                                 context: this,
                                 success: function(data) {
@@ -310,7 +326,8 @@ Washago.Wall = (function() {
 
                             jQuery.ajax({
                                 type: "POST",
-                                url: "/mongo/roadshow/tags/_insert",
+                                url: self.config.mongo.url + '/roadshow/tags',
+                                dataType: 'json',
                                 // do a feeble attempt at checking for uniqueness
                                 data: postData,
                                 context: this,
@@ -378,22 +395,23 @@ Washago.Wall = (function() {
         connected: function (ev) {
             console.log("Connected...");
             
-            if (Sail.app.groupchat.participants) {
-                for (var p in Sail.app.groupchat.participants) {
-                    addAuthorToList(p);
-                }
-            } else {
-                console.log('no participants yet or connection issues');
-            }
+            // if (Sail.app.groupchat.participants) {
+            //     for (var p in Sail.app.groupchat.participants) {
+            //         addAuthorToList(p);
+            //     }
+            // } else {
+            //     console.log('no participants yet or connection issues');
+            // }
 
             // I don't believe these are working as intended - does the function name actual matter for some reason?
-            Sail.app.groupchat.addParticipantJoinedHandler(addAuthorToList);
-            Sail.app.groupchat.addParticipantLeftHandler(removeAuthorFromList);
+            //Sail.app.groupchat.addParticipantJoinedHandler(addAuthorToList);
+            //Sail.app.groupchat.addParticipantLeftHandler(removeAuthorFromList);
 
             
-            jQuery.ajax("/mongo/roadshow/contributions/_find", {
+            jQuery.ajax(self.config.mongo.url + '/roadshow/contributions', {
+                dataType: 'json',
                 success: function (data) {
-                    _.each(data.results, function (contrib) {
+                    _.each(data, function (contrib) {
                         createBalloon(contrib, true);
                         addTagToList(contrib);
                         addAboutToList(contrib);                
