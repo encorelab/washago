@@ -60,7 +60,7 @@ Washago.Wall = (function() {
         balloon.attr('id', "contribution-" + contribution.id);
         balloon.addClass('author-' + MD5.hexdigest(contribution.author));
         //if (contribution.discourse) { balloon.addClass('discourse-' + contribution.discourse); }      we should probably do some kind of error checking like this
-        balloon.addClass('discourse-' + contribution.discourse);
+        balloon.addClass('discourse-' + contribution.discourse.toLowerCase());
         balloon.addClass('about-' + MD5.hexdigest(contribution.about));
         md5tags = _.map(contribution.tags, function(t) {return MD5.hexdigest(t);});
         _.each(md5tags, function (t) {
