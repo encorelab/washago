@@ -257,12 +257,12 @@ Washago.Wall = (function() {
         delete contribution.id;
 
         // sleepy mongoose requires date being submitted in docs=[{"x":1,"y":2}]
-        var postData = 'docs=[' +JSON.stringify(contribution)+ ']';
+        var postData = JSON.stringify(contribution);
 
-        // Post to mongodb-rest interface to store contribution
         jQuery.ajax({
             type: "POST",
-            url: "/mongo/roadshow/contributions/_insert",
+            url: self.config.mongo.url + '/roadshow/contributions',
+            dataType: 'json',
             // do a feeble attempt at checking for uniqueness
             data: postData,
             context: this,
@@ -283,17 +283,19 @@ Washago.Wall = (function() {
             // check if tag is in db
             jQuery.ajax({
                 type: "GET",
-                url: "/mongo/roadshow/tags/_find",
+                url: self.config.mongo.url + '/roadshow/tags',
                 data: { criteria: JSON.stringify({"name":tag})},
+                dataType: 'json',
                 context: this,
                 success: function(data) {
                     if (data.ok === 1) {
-                        if (data.results.length > 0) {
+                        if (data.length > 0) {
                             console.log("Found tag in database so update count");
                             
                             jQuery.ajax({
-                                type: "POST",
-                                url: "/mongo/roadshow/tags/_update",
+                                type: "PUT",
+                                url: self.config.mongo.url + '/roadshow/tags',
+                                dataType: 'json',
                                 data: { criteria: JSON.stringify({"name":tag}), newobj: JSON.stringify({"$inc":{"count":1}})},
                                 context: this,
                                 success: function(data) {
@@ -310,7 +312,8 @@ Washago.Wall = (function() {
 
                             jQuery.ajax({
                                 type: "POST",
-                                url: "/mongo/roadshow/tags/_insert",
+                                url: self.config.mongo.url + '/roadshow/tags',
+                                dataType: 'json',
                                 // do a feeble attempt at checking for uniqueness
                                 data: postData,
                                 context: this,
@@ -391,9 +394,10 @@ Washago.Wall = (function() {
             Sail.app.groupchat.addParticipantLeftHandler(removeAuthorFromList);
 
             
-            jQuery.ajax("/mongo/roadshow/contributions/_find", {
+            jQuery.ajax(self.config.mongo.url + '/roadshow/contributions', {
+                dataType: 'json',
                 success: function (data) {
-                    _.each(data.results, function (contrib) {
+                    _.each(data, function (contrib) {
                         createBalloon(contrib, true);
                         addTagToList(contrib);
                         addAboutToList(contrib);                

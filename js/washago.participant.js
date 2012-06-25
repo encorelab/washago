@@ -36,9 +36,13 @@ Washago.Participant = (function() {
         jQuery(self).trigger('authenticated');
     };
     
-    var generateID = function(numOfDigits) {
-        var base = 16;
-        return Math.ceil(Math.random() * (Math.pow(base, numOfDigits)-1)).toString(base);
+    var generateID = function() {
+        var base = 16; // hex
+        var randLength = 13;
+        // timeLength is 11
+        var time = (new Date().getTime()).toString(base);
+        var rand = Math.ceil(Math.random() * (Math.pow(base, randLength)-1)).toString(base);
+        return time + (Array(randLength+1).join("0") + rand).slice(-randLength);
 
     	/*var chars = "0123456789abcdef";
     	var randomstring = '';
@@ -105,7 +109,7 @@ Washago.Participant = (function() {
 
             jQuery.ajax(Sail.app.config.mongo.url + '/' + currentLocation + '/contributions?selector={"about":"'+currentLocation+'"}', {
         */
-        jQuery.ajax('http://drowsy.badger.encorelab.org/washago-test/contributions?selector={"about":"'+currentLocation+'"}', {
+        jQuery.ajax(self.config.mongo.url + '/roadshow/contributions?selector={"about":"'+currentLocation+'"}', {
            dataType: 'json',
            success: function (data) {
            console.log("loadContributions ok");
@@ -150,6 +154,7 @@ Washago.Participant = (function() {
         jQuery.ajax({
             type: "POST",
             url: url,
+            dataType: 'json',
             data: contribution,
             success: function(data) {
                 console.log("ok writeToDB");
@@ -210,7 +215,7 @@ Washago.Participant = (function() {
                     return;
                 }
                 
-                lastSentContributeID = generateID(12);// Math.floor((Math.random() * Math.pow(36,16))).toString(16);
+                lastSentContributeID = generateID();// Math.floor((Math.random() * Math.pow(36,16))).toString(16);
                 
                 var sev = new Sail.Event('contribution', {
                     author: Sail.app.nickname,
@@ -491,7 +496,7 @@ Washago.Participant = (function() {
         
         // ANTO: note that his does not work in node server and makes it crash
         //var tagDepotURI = '/mongo/roadshow/contributions/_find?batch_size=10000000000' + ((Sail.app.run)?'&criteria={"run":"' + Sail.app.run.name+ '"}':'');
-        var tagDepotURI = "http://drowsy.badger.encorelab.org/washago-test/contributions";
+        var tagDepotURI = self.config.mongo.url + "/roadshow/contributions";
         
         
         var jqxhr = jQuery.get(tagDepotURI)
@@ -505,7 +510,7 @@ Washago.Participant = (function() {
                         if (data.ok !== 1) { console.log('Problem getting DB Data'); return; }
                         
                         // go through json object returned by GET DB Query and grab the tags
-                        jQuery.each(data.results, function(index, value) {
+                        jQuery.each(data, function(index, value) {
                              if (! value.tags) { return; }
                              jQuery.each(value.tags, function(i, v) {
                                 v = jQuery.trim(v);
