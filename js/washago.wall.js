@@ -228,7 +228,7 @@ Washago.Wall = (function() {
             li.text(contribution.discourse);
             li.addClass("discourse-" + contribution.discourse.toLowerCase());
             li.click(function() {
-                toggleFilterOption(contribution.discourse, "discourse");
+                toggleFilterOption(contribution.discourse.toLowerCase(), "discourse");
             });
             list.append(li);
         }
