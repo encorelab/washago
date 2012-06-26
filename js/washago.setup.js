@@ -18,6 +18,7 @@ Washago.Setup = (function() {
     var DBPrefix = 'roadshow_';
     var configDBName = DBPrefix + 'config';
     var configCollectionName = 'runs';
+    var manualRunID = 'runManual';
     var runData = {};
 
     self.init = function () {
@@ -56,8 +57,11 @@ Washago.Setup = (function() {
     self.saveConfigRun = function() {
         var payload = {};
         var runName = self.getCurrentRunName();
-        var collectionID = '';
+        var collectionID = null;
         var collectionStr = '';
+        
+        // grab the id of the run radio button
+        var runID = jQuery('input[name="runSelector"]:checked').attr('id');
         
         if (runName === false){
             jQuery.mobile.showToast("You must enter in at least 1 character for your Run Name! Please go back to step 1...",false, 4000, true);
@@ -70,10 +74,14 @@ Washago.Setup = (function() {
         payload["tags"] = self.tagsToArray('tags');
         payload["types"] = self.typesToArray();
         
+       
+        // the ID of the radios that show the run are hex values if they come from MongoDB or the global (non-hex) manualRunID value
+        if (runID !== manualRunID) {
+            collectionID = runID;
+        }
         
         // save the collection
-        
-        if (collectionID.length > 2) {
+        if (collectionID !== null) {
             console.log('Saving Existing Collection ID: ' + collectionID);
             collectionStr = '/' + collectionID;
         }
@@ -85,7 +93,23 @@ Washago.Setup = (function() {
         var dbURI = self.config.mongo.url + '/' + configDBName + '/' + configCollectionName + collectionStr;
         
         console.log('Posting to ' + dbURI);
-        
+        if (collectionID !== null) {
+            jQuery.ajax({
+                type: 'PUT',
+                url: dbURI,
+                data: payload,
+                success: function(data) {
+                    console.log('Collection payload updated successfully!');
+                    jQuery.mobile.showToast("Your configuration for this Run has been updated!",false, 3000, false, function(){console.log("toast end"); });
+                },
+                error: function(){
+                    console.log('Collection payload save failure!');
+                    jQuery.mobile.showToast("An Error occured while trying to update your Run Configuration!",false, 4000, true);
+                },
+                dataType: 'json'
+            });
+        }
+        else {
         jQuery.post(dbURI, payload)
             .success(function(data) {
                console.log('Collection payload saved successfully!');
@@ -98,7 +122,7 @@ Washago.Setup = (function() {
             .complete(function(){
                 console.log('');
                 });
-        
+        }
     };
     
     // checks
@@ -115,7 +139,41 @@ Washago.Setup = (function() {
             }
             jQuery.mobile.changePage("#page_config_locations", {transition: 'slidefade'});
         }
+        else { // we have an existing run
+            var currentRun = runData[runName];
+            console.log(currentRun);
+            
+            // set up the corresponding location, tag and type pages
+            
+            // set up locations...
+            jQuery.each(currentRun.locations, function(index, value){
+                self.addTag(value, 'locationParent', 'locations');
+            });
+            
+            // set up tags
+            if (currentRun.tags) {
+                jQuery.each(currentRun.tags, function(index, value){
+                    self.addTag(value, 'tagParent', 'tags');
+                }); 
+            }
+            
+            // set up types
+            if (currentRun.tags) {
+                jQuery.each(currentRun.types, function(index, value){
+                    self.addTypes(value['typeName'], value['toolTip']);
+                }); 
+            }
+            
+            jQuery.mobile.changePage("#page_config_locations", {transition: 'slidefade'});
+        }
         
+        
+    };
+    
+    self.destroyPriorOptions = function() {
+        jQuery('.locations').remove();
+        jQuery('.tags').remove();
+        jQuery('.types').remove();
     };
     
     self.checkLocations = function() {
@@ -153,31 +211,16 @@ Washago.Setup = (function() {
         jQuery("#saveTags").click(self.checkTags);
         jQuery('#saveTypes').click(self.checkTypes);
         
+        // text input listeners
+        // for locations
+        self.initTextInsert('locationName', 'locations', self.addLocation);
         
-        jQuery('input[name="runSelector"]').change(function(){
-           var runName = jQuery('input[name="runSelector"]:checked').val();
-            if (runName === '0') {
-                jQuery("#manualRun").fadeIn('fast');
-            }
-            else {
-                jQuery("#manualRun").fadeOut('fast');
-            }
-            });
+        // for tags
+        self.initTextInsert('tagName', 'tags', self.addCustomTags);
         
-            // text input listeners
-            
-            // for locations
-            self.initTextInsert('locationName', 'locations', self.addLocation);
-            
-            // for tags
-            self.initTextInsert('tagName', 'tags', self.addCustomTags);
-            
-            // for types
-            //self.initTextInsert('typeName', 'types', self.addTypes);
-            self.tooltipInit('typeName');
-            self.tooltipInit('typeTooltip');
-            
-            
+        // for types
+        self.tooltipInit('typeName');
+        self.tooltipInit('typeTooltip');     
     };
     
     self.tooltipInit = function(tooltipID) {
@@ -188,7 +231,7 @@ Washago.Setup = (function() {
                    var termExists = jQuery("#" + searchValue).attr('id') === searchValue;
                    
                    if ((searchValue.length > 0 &&  ! termExists)) {
-                        self.addTypes(searchValue);
+                        self.addTypes(searchValue, null);
                         jQuery('#typeName').val('');
                    }
                    else if (searchValue.length > 0 && termExists) {
@@ -210,9 +253,14 @@ Washago.Setup = (function() {
         self.addTag(val, 'tagParent', 'tags');
     };
     
-    self.addTypes = function(typeVal) {
+    self.addTypes = function(typeVal, tooltipVal) {
         var typeName = self.stripifyString(typeVal);
         var typeTooltip = jQuery.trim(jQuery('#typeTooltip').val());
+        
+        if (tooltipVal !== null) {
+            typeTooltip = tooltipVal;
+        }
+        
         jQuery('#typeTooltip').val('');
         
         jQuery('#typeParent').append('<a data-icon="delete" type_value="' + typeVal + '" type_tooltip="' + typeTooltip  + '" data-iconpos="right" href="#" name="' + typeName  + '" id="' + typeName  + '" button_value="'+  typeVal + '" class="types">'+  typeVal + ' (Tooltip: &quot;' + typeTooltip + '&quot;)</a>');
@@ -241,7 +289,7 @@ Washago.Setup = (function() {
             return false;
         }
         else {
-            // grab the run name from the existing label
+            runName = runNameID;
         }
         
         return runName;
@@ -302,8 +350,25 @@ Washago.Setup = (function() {
                                        runData[runName]['tags'] = value['tags'];
                                        runData[runName]['types'] = value['types'];
                                        
+                                       
+                                       jQuery('#runParent').append('<label for="' +  collectionID + '">' + runName + '</label><input type="radio" name="runSelector" id="' +  collectionID + '" value="' + runName + '"  />');
                                        console.log(runData);
-                                    } )
+                                    } );
+                                    
+                                    jQuery('#existingRuns').trigger('create');
+                                    jQuery('input[name="runSelector"]').checkboxradio("refresh");
+                                    
+                                    jQuery('input[name="runSelector"]').change(function(){
+                                        var runName = jQuery('input[name="runSelector"]:checked').val();
+                                        self.destroyPriorOptions();
+                                        
+                                         if (runName === '0') {
+                                             jQuery("#manualRun").fadeIn('fast');
+                                         }
+                                         else {
+                                             jQuery("#manualRun").fadeOut('fast');
+                                         }
+                                    });
                                 })
                                 .error(function(){})
                                 .complete(function(){
