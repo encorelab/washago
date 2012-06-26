@@ -22,7 +22,7 @@
     <!-- single page -->
     <div data-role="page" id="participant-view-add" class="hide">
         <!-- common header to view and add page -->
-        <div data-theme="b" data-role="header" data-position="fixed">
+        <div data-theme="b" data-role="header">
             <h1 class="washago-header"></h1>
             <div data-role="" style="position:absolute; top:6px; left:8px">
                 <select name="select-location" id="select-location" data-theme="c" >
@@ -75,7 +75,7 @@
                             After selecting a poster, click on the 'add' tab to contribute your own thoughts and ideas to the knowledge community
                         </h3>
                         <div id="data-loading" class="hide"><img src="images/loader-small.gif"></div>
-                        <ul id="community-contribution" data-role="listview" data-divider-theme="b" data-inset="true">
+                        <ul id="community-contribution" data-role="listview" data-divider-theme="b" data-theme="b" data-inset="true" class="ui-listview">
                             <!-- ANTO: it's easier if this starts empty -->
                         </ul>
                     </div>
@@ -117,7 +117,8 @@
                         </div>
                         <div id="chosen-tags"></div>
                         <div  data-role="fieldcontain">
-                            <ul id="tag-list" data-inset="true" data-role="listview" data-theme="b" data-dividertheme="e" data-filter="true" data-filter-theme="c" data-filter-placeholder="Add tags for your post separated by commas...">
+                            <ul id="tag-list" data-inset="true" data-role="listview" data-theme="b" data-dividertheme="b" data-filter="true" data-filter-theme="c" data-filter-placeholder="Add tags for your post separated by commas...">
+                                 
                                  <li id="tag-list-heading" data-role="list-divider" role="heading">
                                     Tags submitted by your peers
                                 </li>
@@ -144,13 +145,20 @@
                             </div>
                         </div>
                     <br /> -->
-                    <input type="submit" value="Submit your post" data-ajax="false" data-theme="b" class="submit-button"/>
+                   <!--  <input type="submit" value="Submit your post" data-ajax="false" data-theme="b" class="submit-button"/> -->
                 </div>
-            </div>
+
+            <div data-role="footer" data-id="foo1" data-position="fixed">
+
+                    <input type="submit" value="Submit your post" data-ajax="false" data-theme="b"  class="submit-button" />
+
+            </div><!-- /footer -->   
+
+            </div>  
         </div>
         <!-- /add page -->
 
     </div>
-        
+
 </body>
 </html>
