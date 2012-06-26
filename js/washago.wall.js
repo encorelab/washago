@@ -12,10 +12,18 @@ Washago.Wall = (function() {
     app.configDB = 'roadshow_config';
 
     // this function returns an (unflattened) array that contain all of the (non-unique) tags to be turned on or off   // this isn't quite working... TODO
-    var activeKeywordClasses = function () {
-        return jQuery('li.selected').map(function() {
+    var activeKeywordClasses = function (type) {
+        return jQuery('.filter-list-container li.selected').map(function() {
             return _.select(jQuery(this).attr('class').split(' '), function(klass) {
-                return klass.match(/(tags|about|discourse|author)-/);
+                return klass.match(type+"-");
+            });
+        }).toArray();
+    };
+
+    var inactiveKeywordClasses = function (type) {
+        return jQuery('.filter-list-container li').not('.selected').map(function() {
+            return _.select(jQuery(this).attr('class').split(' '), function(klass) {
+                return klass.match(type+"-");
             });
         }).toArray();
     };
@@ -23,21 +31,43 @@ Washago.Wall = (function() {
     //"author-1c206b0a8f48aef1217f6e004f10e106"
     //"author-698d51a19d8a121ce581499d7b701668"
     var filterBalloons = function () {
-        var keywordClasses = activeKeywordClasses();    
-        
-        if (keywordClasses.length === 0) {
-            // show all balloons if no filters are active
-            jQuery('.balloon').removeClass('blurred');
-        } else {
-            // TODO: use inactiveKeywordClasses to make this more efficient
-            jQuery('.balloon').addClass('blurred');
-        
-            // INTERSECTION (and)
-            jQuery('.balloon.'+keywordClasses.join(".")).removeClass('blurred');
-        
-            // UNION (or)
-            //jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred');
+        var types = ['tags','about','discourse'];
+        var actives = _.map(types, function (type) {
+            var active = activeKeywordClasses(type);
+            var inactive = inactiveKeywordClasses(type);
+
+            if (active.length === 0)
+                return inactive;
+            else
+                return active;
+        });
+        console.log(actives);
+
+        // form the query by getting all combinations of the different active filters
+        var combos = [];
+        var recurseCombos = function(out, i) {
+            if (i == actives.length) {
+                combos.push(out);
+            } else {
+                if (actives[i] && actives[i].length > 0) {
+                    _.each(actives[i], function (a) {
+                        recurseCombos(_.union(out,[a]), i+1);
+                    });    
+                } else {
+                    recurseCombos(out, i+1);
+                }
+            }
         }
+        recurseCombos([], 0); 
+        
+        var selector = _.map(combos, function (combo) {
+            return '.'+combo.join('.')
+        }).join(', ');
+
+        console.log(selector);
+
+        jQuery('.balloon').addClass('blurred');
+        jQuery(selector).removeClass('blurred');
     };
 
     // this is kinda sloppy, but it should work
@@ -184,6 +214,11 @@ Washago.Wall = (function() {
         });
     };
 
+    var participantUrl = function () {
+        var host = window.location.host;
+        return "http://"+host+"/s"+app.run.name.replace('roadshow_','');
+    };
+
 
     app.requestNickname = function (haveNickname) {
         haveNickname(app.run.name);
@@ -213,6 +248,7 @@ Washago.Wall = (function() {
         this.contributions.fetch({
             data: { 
                 selector: JSON.stringify({
+                    session: app.run.name
                 }) 
             },
             success: function (contributions) {
@@ -245,17 +281,28 @@ Washago.Wall = (function() {
     };
 
     app.authenticate = function () {
-        app.run = {name: 'roadshow'}; // TODO: ask for run from list
-        jQuery(app).trigger('authenticated');
+        var runs = new Washago.Wall.model.Runs();
+        runs.fetch({
+            success: function (runs) {
+                app.view.showRunPicker(runs, function (run) {
+                    app.run = run.toJSON();
+                    Sail.UI.dismissDialog('#run-picker')
+                    jQuery(app).trigger('authenticated');
+                });
+            }
+        });
     };
 
     app.events = {
         initialized: function (ev) {
+            Washago.Model(Washago.Wall);
             Washago.Wall.authenticate();
         },
 
         authenticated: function (ev) {
-            Washago.Model(Washago.Wall);
+            app.view.showParticipantUrl(participantUrl());
+
+            jQuery('.toolbars-left, .toolbars-right').removeClass('out');
         },
 
         'ui.initialized': function (ev) {
@@ -271,9 +318,7 @@ Washago.Wall = (function() {
         connected: function (ev) {
             console.log("Connected...");
 
-
             app.restoreState();
-            
             // if (Sail.app.groupchat.participants) {
             //     for (var p in Sail.app.groupchat.participants) {
             //         addAuthorToList(p);
@@ -309,7 +354,8 @@ Washago.Wall = (function() {
                     about: sev.payload.about,
                     discourse: sev.payload.discourse,
                     timestamp: sev.timestamp,
-                    id: sev.payload.id
+                    id: sev.payload.id,
+                    session: app.run.name
                 });
 
                 app.contributions.add(contrib);

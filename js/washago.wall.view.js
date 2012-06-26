@@ -192,5 +192,28 @@
         dialog.css('width', '400px');
     };
 
+    view.showRunPicker = function(runs, pick) {
+        inContainer = 'body';
+        picker = jQuery("<div id='run-picker' class='auth-box widget-box'></div>");
+        picker.append("<h1 id='run-picker-instructions' class='titlebar'>Select the Roadshow session:</h1>");
+        picker.append("<ul class='runs'></ul>");
+        
+        runs.each(function(r) {
+            li = jQuery("<li id='run-"+r.id+"'>"+r.get('name')+"</li> ");
+            li.data('run', r);
+            li.click(function () { pick(jQuery(this).data('run')); });
+            picker.children(".runs").append(li);
+        });
+        
+        jQuery(inContainer).append(picker);
+        
+        Sail.UI.showDialog(picker);
+    };
+
+    view.showParticipantUrl = function (url) {
+        jQuery('body').prepend("<div id='participant-instructions'>Connect to <strong>ENCORE Roadshow</strong> WiFi, then...</div>");
+        jQuery('body').prepend("<div id='participant-url'>"+url+"</div>");
+    };
+
     app.view = view;
 })(Washago.Wall);

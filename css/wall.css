@@ -1,3 +1,6 @@
+/* FIXME: we're currently using some stuff from this css... need to clean up as this shouldn't be necessary */
+@import url('../js/sail.js/modules/Rollcall.Authenticator.css');
+
 /* this is mostly lifted from common-knowledge-smartboard.css */
 
 body {
@@ -106,9 +109,19 @@ a {
   width: 160px;
   bottom: 0px;
 
+  -moz-transition: all 1s ease-out;
+  -webkit-transition: all 1s ease-out;
+  transition: all 1s ease-out;
+
   -moz-transform: rotateY(20deg) translateY(-2px) translateX(10px);
   -webkit-transform: rotateY(15deg) translateY(-10px) translateX(10px);
-  transform: rotateY(20deg) translateY(-10px);
+  transform: rotateY(20deg) translateY(-10px) translateX(10px);
+}
+
+.toolbars-left.out {
+  -moz-transform: rotateY(20deg) translateY(-2px) translateX(-170px);
+  -webkit-transform: rotateY(15deg) translateY(-10px) translateX(-170px);
+  transform: rotateY(20deg) translateY(-10px) translateX(-170px);
 }
 
 .toolbars-right {
@@ -118,9 +131,19 @@ a {
   width: 160px;
   bottom: 0px;
 
+  -moz-transition: all 1s ease-out;
+  -webkit-transition: all 1s ease-out;
+  transition: all 1s ease-out;
+
   -moz-transform: rotateY(-20deg) translateY(-2px) translateX(-10px);
   -webkit-transform: rotateY(-15deg) translateY(-10px) translateX(-10px);
   transform: rotateY(-20deg) translateY(-10px);
+}
+
+.toolbars-right.out {
+  -moz-transform: rotateY(-20deg) translateY(-2px) translateX(200px);
+  -webkit-transform: rotateY(-15deg) translateY(-10px) translateX(200px);
+  transform: rotateY(-20deg) translateY(-10px) translateX(200px);
 }
 
 .toolbars-top {
@@ -279,7 +302,7 @@ div.none-yet {
 }
 
 .balloon .tag {
-  background: rgba(200,200,200, 0.5);
+  background: rgba(200,200,200, 0.75);
   border-radius: 5px;
   display: inline-block;
   margin-right: 5px;
@@ -298,11 +321,32 @@ div.none-yet {
 }
 
 .balloon.discourse-question {
-  background: rgba(255, 230, 208, 0.9);
+  background: rgba(255, 232, 132, 0.9);
 }
 
 .balloon.discourse-comment {
-  background: rgba(202, 248, 202, 0.9);
+  background: rgba(166, 255, 103, 0.9);
+}
+
+@-webkit-keyframes teleportIn {
+    0% { -webkit-transform:scale(3.0); opacity: 0.0;}
+    100% {-webkit-transform:scale(1.0); opacity: 1.0; }
+}
+@-moz-keyframes teleportIn {
+    0% { -moz-transform:scale(3.0); opacity: 0.0;}
+    100% {-moz-transform:scale(1.0); opacity: 1.0; }
+}
+
+.balloon.new {
+  -webkit-animation-name: teleportIn;
+  -webkit-animation-duration: 0.5s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: ease-out;
+
+  -moz-animation-name: teleportIn;
+  -moz-animation-duration: 0.5s;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-timing-function: ease-out;
 }
 
 .link {
@@ -314,4 +358,26 @@ div.none-yet {
   -ms-transform-origin: 0 0;
   -o-transform-origin: 0 0;
   transform-origin: 0 0;
+}
+
+#participant-instructions {
+  position: absolute;
+  left: 200px;
+  right: 200px;
+  text-align: center;
+  margin-top: 1.5em;
+  font-size: 14px;
+  opacity: 0.2;
+  font-family: Verdana;
+}
+
+#participant-url {
+  position: absolute;
+  left: 200px;
+  right: 200px;
+  text-align: center;
+  margin-top: 1em;
+  font-size: 36px;
+  opacity: 0.2;
+  font-family: Arial Black;
 }
