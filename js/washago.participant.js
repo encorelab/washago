@@ -8,7 +8,7 @@ Washago.Participant = (function() {
     var lastSentContributeID = null;
     var reconstructingTags = false;
     var currentLocation = ''; // ANTO: used only in function loadContributions()    
-    var currentDatabase = 'roadshow';           // FIXME
+    var currentDatabase;
 
     var locationsArray;
     var predefinedTagArray;
@@ -31,6 +31,7 @@ Washago.Participant = (function() {
             });
 
         Sail.app.run = {name: Sail.getURLParameter('s')};
+        currentDatabase = Sail.app.run.name;
     };
 
     self.authenticate = function () {
