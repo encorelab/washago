@@ -34,7 +34,6 @@ Washago.Participant = (function() {
     };
 
     self.authenticate = function () {
-        self.run = {name: 'roadshow'}; // TODO: get run from url
         jQuery(self).trigger('authenticated');
     };
     
