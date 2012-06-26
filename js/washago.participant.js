@@ -32,7 +32,7 @@ Washago.Participant = (function() {
     var currentLocation = ''; // ANTO: used only in function loadContributions()
 
     self.init = function () {
-        Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
+        //Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
 
         // TODO: move this out to config.json
         Sail.app.username = "roadshow";
@@ -49,6 +49,7 @@ Washago.Participant = (function() {
     };
 
     self.authenticate = function () {
+        self.run = {name: 'roadshow'}; // TODO: get run from url
         jQuery(self).trigger('authenticated');
     };
     
@@ -158,10 +159,10 @@ Washago.Participant = (function() {
         This function is called when contribution is submitted
     */
     var writeToDB = function (contribution) {
-        console.log("Storeing contribution in database");
+        console.log("Saving contribution in database");
         
-        // ANTO: TODO: we need to get the URL form somewhere else. Hard-coding it for now
-        var url = "http://drowsy.badger.encorelab.org/washago-test/contributions";
+        // This is now ok
+        var url = self.config.mongo.url + '/' + activeRun + '/' + 'contributions';
 
         jQuery.ajax({
             type: "POST",
@@ -212,7 +213,7 @@ Washago.Participant = (function() {
                  
                 
                 if (myLocation.length < 2) {
-                    jQuery.mobile.showToast("Please choose a location!",false, 4000, true);
+                    jQuery.mobile.showToast("Please choose a poster!",false, 4000, true);
                     return;
                 }
                 
@@ -275,7 +276,7 @@ Washago.Participant = (function() {
                 //console.log('My Contribution saved', my_contribution);
 
                 // add contribution to the view
-                addContribution(my_contribution);
+                //addContribution(my_contribution);
 
 
                 Sail.app.groupchat.sendEvent(sev);
@@ -286,6 +287,8 @@ Washago.Participant = (function() {
             jQuery('#select-location').change(function() {
 
               if(jQuery('#select-location').val()==""){
+                jQuery('#contribution-title').hide();
+                jQuery('#community-contribution').hide();
                 jQuery('#intro-title').show();
               } else {
                   loadContributions();
@@ -341,9 +344,12 @@ Washago.Participant = (function() {
                 //writeToDB(new_contribution);
                 
                 // ANTO: add to the client display only if currently in the location of the incoming contribution
-                if(currentLocation==new_contribution.about){
-                    addContribution(new_contribution)
-                }
+                // This no longer apply. we need to add all the incoming contributions AND not add them when they are submitted.
+/*                if(currentLocation==new_contribution.about){
+                    addContribution(new_contribution);
+                }*/
+
+                addContribution(new_contribution);
 
                 //if (reconstructingTags) return;
                 

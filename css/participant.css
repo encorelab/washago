@@ -92,13 +92,14 @@
 }
 
 .contribution-element{
-    border-bottom: 1px solid #000000;
-    padding: 0 0.8em;
+    border-bottom: 1px dashed #000000;
+    padding: 0.8em;
 }
 
 .ui-header .ui-title, .ui-footer .ui-title {
-    float:right;
-    margin: .6em 5% .8em;
+    float: right;
+    margin: 14px 3% .8em 0;
+    font-size: 18px;
 }
 
 #data-loading{
@@ -108,4 +109,16 @@
 
 .ui-content .ui-listview-inset {
     margin: 0;
+}
+
+#navbar{
+    margin-top: 50px;
+}
+
+#participant-view #participant-add {
+    /*margin-top:;*/
+}
+
+#tag-list-heading {
+    margin-top:1em;
 }

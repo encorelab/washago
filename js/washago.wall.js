@@ -9,115 +9,16 @@ Washago.Wall = (function() {
 
     app.cumulativeTagArray = [];
 
-    // Brings a .ui-draggable element to the front (via z-index).
-    // This is meant to be used as a callback for jQuery event bindings,
-    // so `this` is assumed to refer to the element you want to bring
-    // to the front.
-    var bringDraggableToFront = function () {
-        var zs = jQuery('.ui-draggable').map(function() {
-            var z = jQuery(this).css('z-index'); 
-            return z === 'auto' ? 100 : parseInt(z, 10);
-        }).toArray();
-        var maxZ = Math.max.apply(Math, zs);
-        jQuery(this).css('z-index', maxZ + 1);
-    };
+    app.configDB = 'roadshow_config';
 
-    var positionBalloon = function (balloon) {
-        var left, top;
-        
-        var contrib = balloon.data('contribution');
-
-        var boardWidth = jQuery("#wall").width();
-        var boardHeight = jQuery("#wall").height();
-        
-        if (contrib.pos && contrib.pos.left) {
-            left = contrib.pos.left;
-        } else {
-            left = Math.random() * (boardWidth - balloon.width());
-        }
-        
-        if (contrib.pos && contrib.pos.top) {
-            top = contrib.pos.top;
-        } else {
-            top = Math.random() * (boardHeight - balloon.height());
-        }
-        
-        balloon.css('left', left + 'px');
-        balloon.css('top', top + 'px');
-
-        //if (contrib.id) {
-            //CommonBoard.contribBalloonPositioned(contrib, {left: left, top: top});
-        //}
-    };
-
-    var createBalloon = function (contribution, restoring) {
-        // this function creates the balloon, adds the text, positions it on the board
-        var balloon = jQuery("<div class='balloon contribution'></div>");
-
-        balloon.append("<div class='balloon-shadow'></div>");
-
-        balloon.data('contribution', contribution);
-        balloon.attr('id', "contribution-" + contribution.id);
-        balloon.addClass('author-' + MD5.hexdigest(contribution.author));
-        //if (contribution.discourse) { balloon.addClass('discourse-' + contribution.discourse); }      we should probably do some kind of error checking like this
-        balloon.addClass('discourse-' + contribution.discourse.toLowerCase());
-        balloon.addClass('about-' + MD5.hexdigest(contribution.about));
-        md5tags = _.map(contribution.tags, function(t) {return MD5.hexdigest(t);});
-        _.each(md5tags, function (t) {
-            balloon.addClass('tags-' + t);
-        });
-        balloon.data('tags', md5tags); // used by washago.wall.graph
-
-        balloon.hide(); // initially hidden, we call show() with an effect later
-
-        var about = jQuery("<div class='about author'>");
-        about.text(contribution.about + ' - ' + contribution.author);
-        balloon.prepend(about);
-
-        var text = jQuery("<div class='text'></div>");
-        text.text(contribution.text);
-        balloon.append(text);
-
-        var tags = jQuery("<div class='tags'></div>");
-
-
-        if (contribution.tags) {
-            var tag;
-            _.each(contribution.tags, function(t) {
-                tag = jQuery("<span class='tag'></span>");
-                tag.text(t);
-                tags.append(tag);
+    // this function returns an (unflattened) array that contain all of the (non-unique) tags to be turned on or off   // this isn't quite working... TODO
+    var activeKeywordClasses = function () {
+        return jQuery('li.selected').map(function() {
+            return _.select(jQuery(this).attr('class').split(' '), function(klass) {
+                return klass.match(/(tags|about|discourse|author)-/);
             });
-            balloon.append(tags);
-        }
-
-        balloon.draggable();
-
-        // BANDAID: For some reason in Chrome draggable() makes balloon's position 'relative'...
-        //          Need ot reset it back to absolute for proper positioning within the wall.
-        balloon.css('position', 'absolute');
-
-        // bring the balloon to the top when clicked
-        balloon.mousedown(bringDraggableToFront);
-
-        tags.hide(); // tags are initially collapsed
-
-        balloon.dblclick(function() {
-            jQuery(this).find('.tags').toggle('slideUp');
-        });
-
-        jQuery("#wall").append(balloon);
-        
-        positionBalloon(balloon);
-        
-        if (restoring)
-            balloon.show();
-        else
-            balloon.show('puff', 'fast');
-
-        return balloon;
+        }).toArray();
     };
-
 
     //"author-1c206b0a8f48aef1217f6e004f10e106"
     //"author-698d51a19d8a121ce581499d7b701668"
@@ -132,21 +33,31 @@ Washago.Wall = (function() {
             jQuery('.balloon').addClass('blurred');
         
             // INTERSECTION (and)
-            $('.balloon.'+keywordClasses.join(".")).removeClass('blurred')
+            jQuery('.balloon.'+keywordClasses.join(".")).removeClass('blurred');
         
             // UNION (or)
             //jQuery('.balloon.' + keywordClasses.join(", .balloon.")).removeClass('blurred');
         }
     };
 
+    // this is kinda sloppy, but it should work
+    var toggleFilterOption = function (criteria, keyword) {
+        var li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + criteria);
+        if (li.is('.selected')) {
+            li.removeClass('selected');
+            filterBalloons();
+        } else {
+            li.addClass('selected');
+            filterBalloons();
+        }
+    };
 
-    // this function returns an (unflattened) array that contain all of the (non-unique) tags to be turned on or off   // this isn't quite working... TODO
-    var activeKeywordClasses = function () {
-        return jQuery('li.selected').map(function() {
-            return _.select(jQuery(this).attr('class').split(' '), function(klass) {
-                return klass.match(/(tags|about|discourse|author)-/);
-            });
-        }).toArray();
+    var sortList = function (list) {
+        var items = jQuery(list).children('li').get();
+        items.sort(function(a, b) {
+           return jQuery(a).text().toUpperCase().localeCompare(jQuery(b).text().toUpperCase());
+        });
+        jQuery.each(items, function(idx, itm) { list.append(itm); });
     };
     
     var addTagToList = function (contribution) {
@@ -154,9 +65,9 @@ Washago.Wall = (function() {
         if (none_yet.length > 0) {
             none_yet.remove();
         }
-        
+
         var list = jQuery('#tags-filter ul');
-        _.each(contribution.tags, function (tag) {
+        _.each(contribution.get('tags'), function (tag) {
             var li = list.find('.tags-' + MD5.hexdigest(tag));
             if (li.length === 0) {
                 li = jQuery('<li />');
@@ -178,14 +89,16 @@ Washago.Wall = (function() {
             none_yet.remove();
         }
 
+        var about = contribution.get('about');
+
         var list = jQuery('#about-filter ul');
-        var li = list.find('.about-' + MD5.hexdigest(contribution.about));
+        var li = list.find('.about-' + MD5.hexdigest(about));
         if (li.length === 0) {
             li = jQuery('<li />');
-            li.text(contribution.about);
-            li.addClass("about-" + MD5.hexdigest(contribution.about));
+            li.text(about);
+            li.addClass("about-" + MD5.hexdigest(about));
             li.click(function() {
-                toggleFilterOption(MD5.hexdigest(contribution.about), "about");
+                toggleFilterOption(MD5.hexdigest(about), "about");
             });
             list.append(li);
         }
@@ -199,14 +112,16 @@ Washago.Wall = (function() {
             none_yet.remove();
         }
         
+        var discourse = contribution.get('discourse');
+
         var list = jQuery('#discourse-filter ul');
-        var li = list.find('.discourse-' + contribution.discourse.toLowerCase());
+        var li = list.find('.discourse-' + discourse.toLowerCase());
         if (li.length === 0) {
             li = jQuery('<li />');
-            li.text(contribution.discourse);
-            li.addClass("discourse-" + contribution.discourse.toLowerCase());
+            li.text(discourse);
+            li.addClass("discourse-" + discourse.toLowerCase());
             li.click(function() {
-                toggleFilterOption(contribution.discourse, "discourse");
+                toggleFilterOption(discourse.toLowerCase(), "discourse");
             });
             list.append(li);
         }
@@ -235,32 +150,12 @@ Washago.Wall = (function() {
     };
 
     var removeAuthorFromList = function (jid) {
-        console.log(author + " left...");
+        console.log(jid + " left...");
 
         var nickname = Strophe.getResourceFromJid(jid);
 
         jQuery("#author-filter .author-"+MD5.hexdigest(nickname))
             .hide('fade', 'fast', function () {jQuery(this).remove();});
-    };
-
-    var sortList = function (list) {
-        var items = jQuery(list).children('li').get();
-        items.sort(function(a, b) {
-           return jQuery(a).text().toUpperCase().localeCompare(jQuery(b).text().toUpperCase());
-        })
-        jQuery.each(items, function(idx, itm) { list.append(itm); });
-    };
-
-    // this is kinda sloppy, but it should work
-    var toggleFilterOption = function (criteria, keyword) {
-        li = jQuery('#' + keyword + '-filter li.' + keyword + '-' + criteria);
-        if (li.is('.selected')) {
-            li.removeClass('selected');
-            filterBalloons();
-        } else {
-            li.addClass('selected');
-            filterBalloons();
-        }
     };
 
     var writeToDB = function (contribution) {
@@ -289,72 +184,48 @@ Washago.Wall = (function() {
         });
     };
 
-    // var storeTags = function (tags) {
-    //     console.log("Storing tags in the database");
 
-    //     // {"name":"Tagy tag here", "count":1}
-    //     _.each(tags, function(tag) {
-    //         // check if tag is in db
-    //         jQuery.ajax({
-    //             type: "GET",
-    //             url: app.config.mongo.url + '/roadshow/tags',
-    //             data: { criteria: JSON.stringify({"name":tag})},
-    //             dataType: 'json',
-    //             context: this,
-    //             success: function(data) {
-    //                 if (data.ok === 1) {
-    //                     if (data.length > 0) {
-    //                         console.log("Found tag in database so update count");
-                            
-    //                         jQuery.ajax({
-    //                             type: "PUT",
-    //                             url: app.config.mongo.url + '/roadshow/tags',
-    //                             dataType: 'json',
-    //                             data: { criteria: JSON.stringify({"name":tag}), newobj: JSON.stringify({"$inc":{"count":1}})},
-    //                             context: this,
-    //                             success: function(data) {
-    //                                 console.log("Tag updated");
-    //                             },
-    //                             error: function(data) {
-    //                                 console.warn("Error updating tag in database. Possible reason: " +data.responseText);
-    //                             }
-    //                         });
-    //                     } else {                            
-    //                         console.log("Tag not in database - store");
+    app.requestNickname = function (haveNickname) {
+        haveNickname(app.run.name);
+    };
 
-    //                         var postData = 'docs=[' +JSON.stringify({"name":tag,"count":1})+ ']';
+    app.restoreState = function () {
+        app.contributions = new app.model.Contributions();
 
-    //                         jQuery.ajax({
-    //                             type: "POST",
-    //                             url: app.config.mongo.url + '/roadshow/tags',
-    //                             dataType: 'json',
-    //                             // do a feeble attempt at checking for uniqueness
-    //                             data: postData,
-    //                             context: this,
-    //                             success: function(data) {
-    //                                 console.log("Tag stored for the first time");
-    //                             },
-    //                             error: function(data) {
-    //                                 console.warn("Error writing tag to database. Possible reason: " +data.responseText);
-    //                             }
-    //                         });
-    //                     }
-    //                 } else {
-    //                     console.warn("Error looking for tag :(");
-    //                 }
-    //             },
-    //             error: function(data) {
-    //                 console.warn("Error looking for tags in database");
-    //             }
-    //         });
-    //         // if not in database store
+        app.contributions.on('add', function (contrib) {
+            addTagToList(contrib);
+            addTypeToList(contrib);
+            addAboutToList(contrib);
+        });
 
-    //         // if in database update count
-    //     });    
-    // };
+        app.contributions.on('reset', function (collection) {
+            collection.each(function (contrib) {
+                addTagToList(contrib);
+                addTypeToList(contrib);
+                addAboutToList(contrib);
+            });
+        });
+
+        app.restoreContributions();
+    };
+
+    app.restoreContributions = function () {
+        this.contributions.fetch({
+            data: { 
+                selector: JSON.stringify({
+                }) 
+            },
+            success: function (contributions) {
+                contributions.each(function (contrib) {
+                    new app.view.ContributionView({model: contrib})
+                        .render();
+                });
+            }
+        });
+    };
 
     app.init = function() {
-        Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
+        //Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
 
         // TODO: move this out to config.json
         Sail.app.username = "roadshow";
@@ -374,6 +245,7 @@ Washago.Wall = (function() {
     };
 
     app.authenticate = function () {
+        app.run = {name: 'roadshow'}; // TODO: ask for run from list
         jQuery(app).trigger('authenticated');
     };
 
@@ -382,10 +254,14 @@ Washago.Wall = (function() {
             Washago.Wall.authenticate();
         },
 
+        authenticated: function (ev) {
+            Washago.Model(Washago.Wall);
+        },
+
         'ui.initialized': function (ev) {
             jQuery('.toolbar')
                 //.draggable({handle: '.titlebar'})
-                .mousedown(bringDraggableToFront);
+                .mousedown(app.view.bringDraggableToFront);
 
             jQuery('#cloudify').click(function () {
                 Washago.Wall.Graph.init();
@@ -394,6 +270,9 @@ Washago.Wall = (function() {
 
         connected: function (ev) {
             console.log("Connected...");
+
+
+            app.restoreState();
             
             // if (Sail.app.groupchat.participants) {
             //     for (var p in Sail.app.groupchat.participants) {
@@ -408,36 +287,42 @@ Washago.Wall = (function() {
             //Sail.app.groupchat.addParticipantLeftHandler(removeAuthorFromList);
 
             
-            jQuery.ajax(app.config.mongo.url + '/roadshow/contributions', {
-                dataType: 'json',
-                success: function (data) {
-                    _.each(data, function (contrib) {
-                        createBalloon(contrib, true);
-                        addTagToList(contrib);
-                        addAboutToList(contrib);                
-                        addTypeToList(contrib);
-                    });
-                }
-            });
+            // jQuery.ajax(app.config.mongo.url + '/roadshow/contributions', {
+            //     dataType: 'json',
+            //     success: function (data) {
+            //         _.each(data, function (contrib) {
+            //             createBalloon(contrib, true);
+            //             addTagToList(contrib);
+            //             addAboutToList(contrib);                
+            //             addTypeToList(contrib);
+            //         });
+            //     }
+            // });
         },
 
         sail: {
             contribution: function (sev) {
-                var new_contribution = {
-                    author:sev.payload.author,
-                    text:sev.payload.text,
-                    tags:sev.payload.tags,
-                    about:sev.payload.about,
-                    discourse:sev.payload.discourse,
-                    timestamp:sev.timestamp,
-                    id:sev.payload.id
-                };
-                createBalloon(new_contribution);
-                addTagToList(new_contribution);
-                addAboutToList(new_contribution);                
-                addTypeToList(new_contribution);
-                writeToDB(new_contribution);
-                storeTags(new_contribution.tags);
+                var contrib = new app.model.Contribution({
+                    author: sev.payload.author,
+                    text: sev.payload.text,
+                    tags: sev.payload.tags,
+                    about: sev.payload.about,
+                    discourse: sev.payload.discourse,
+                    timestamp: sev.timestamp,
+                    id: sev.payload.id
+                });
+
+                app.contributions.add(contrib);
+
+                new app.view.ContributionView({model: contrib})
+                        .render();
+
+
+                //addTagToList(new_contribution);
+                //addAboutToList(new_contribution);                
+                //addTypeToList(new_contribution);
+                //writeToDB(new_contribution);
+                //storeTags(new_contribution.tags);
             }
         }
     };
