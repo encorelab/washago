@@ -19,7 +19,7 @@ Washago.Participant = (function() {
 
     /************** the following is dummy data for now, will be dynamic once Mike adds his stuff *****************/
 
-    var predefinedTagArray ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
+    var predefinedTagArray = jQuery.parseJSON('{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}');
 
     var radioTypeArray = [
         {"typeName": "Question", "toolTip": "Some Question tooltip"},
@@ -575,6 +575,16 @@ Washago.Participant = (function() {
                              });
                         });
                         
+                        // ANTO: add predefined tags
+                         jQuery.each(predefinedTagArray.tags, function(pi, pv) {
+                            pv = jQuery.trim(pv);
+                            if (dataTags[pv] > 0) {
+                                dataTags[pv] += 1;
+                            }
+                            else {
+                                dataTags[pv] = 1;
+                            }
+                         });
                        
                         jQuery.each(dataTags, function(index, value) { 
                             //alert(index + ':' + value);
