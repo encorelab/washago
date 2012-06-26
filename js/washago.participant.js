@@ -8,18 +8,11 @@ Washago.Participant = (function() {
     var lastSentContributeID = null;
     var reconstructingTags = false;
     var currentLocation = ''; // ANTO: used only in function loadContributions()    
-    var currentDatabase = 'roadshow';
-    var activeRun;
+    var currentDatabase = 'roadshow';           // FIXME
 
     var locationsArray;
     var predefinedTagArray;
     var radioTypeArray;
-
-
-/*    http://roadshow.encore#a (b|c|d)
-    if (window.location.fragment == 'a') {
-        var activeRun = a;
-    }*/
 
     self.init = function () {
         //Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
@@ -36,6 +29,8 @@ Washago.Participant = (function() {
                 jQuery(Sail.app).trigger('initialized');
                 return true;
             });
+
+        Sail.app.run = {name: Sail.getURLParameter('s')};
     };
 
     self.authenticate = function () {
@@ -184,7 +179,7 @@ Washago.Participant = (function() {
         // Mongo to roadshow_config        
         jQuery.ajax(self.config.mongo.url + '/roadshow_config/runs', {
             dataType: 'json',
-            data: {selector: JSON.stringify({name: activeRun['r']})},
+            data: {selector: JSON.stringify({name: Sail.app.run.name})},
             success: function (data) {
                 console.log("got config data");
                 if (data.length==0) {
@@ -221,8 +216,6 @@ Washago.Participant = (function() {
         connected: function(ev) {
             console.log("Connected...");
 
-            activeRun = self.getUrlVars();
-
             //jQuery("#participant-view").fadeIn(250);
             Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
                 console.log(who + " joined...");
@@ -232,8 +225,7 @@ Washago.Participant = (function() {
 
             jQuery(".washago-header").html(Sail.app.nickname);
 
-            initializeConfig(activeRun['r']);
-
+            initializeConfig(Sail.app.run.name);
         },
 
         'ui.initialized': function(ev) {
