@@ -210,5 +210,10 @@
         Sail.UI.showDialog(picker);
     };
 
+    view.showParticipantUrl = function (url) {
+        jQuery('body').prepend("<div id='participant-instructions'>Connect to <strong>ENCORE Roadshow</strong> WiFi, then...</div>");
+        jQuery('body').prepend("<div id='participant-url'>"+url+"</div>");
+    };
+
     app.view = view;
 })(Washago.Wall);
