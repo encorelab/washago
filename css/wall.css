@@ -1,3 +1,6 @@
+/* FIXME: we're currently using some stuff from this css... need to clean up as this shouldn't be necessary */
+@import url('../js/sail.js/modules/Rollcall.Authenticator.css');
+
 /* this is mostly lifted from common-knowledge-smartboard.css */
 
 body {

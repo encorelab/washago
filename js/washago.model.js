@@ -16,6 +16,24 @@ so probably in 'authenticated' or 'connected'.
 Washago.Model = (function(app) {
   var model = {};
 
+  function createNecessaryDatabase (requiredDatabase, then) {
+    jQuery.ajax(app.config.mongo.url, {
+      type: 'get',
+      dataType: 'json',
+      success: function (existingDatabases) {
+        if (_.include(existingDatabases, requiredDatabase)) {
+          then();
+        } else {
+          jQuery.post(app.config.mongo.url, {db: requiredDatabase}, then);
+        }
+      },
+      error: function (err) {
+        console.error("Couldn't fetch list of databases because: ", JSON.parse(err.responseText));
+        throw err.responseText;
+      }
+    });
+  }
+
   function createNecessaryCollections (requiredCollections) {
     jQuery.ajax(app.drowsyURL, {
       type: 'get',
@@ -29,17 +47,12 @@ Washago.Model = (function(app) {
         });
       },
       error: function (err) {
-        console.error("Couldn't fetch list of collections from because: ", JSOn.parse(err.responseText));
+        console.error("Couldn't fetch list of collections from because: ", JSON.parse(err.responseText));
         throw err.responseText;
       }
-    });   
+    });
   }
   
-  if (!app.run || !app.run.name)
-    throw "Cannot init Washago.model because we authenticated without an app.run.name!";
-
-  app.drowsyURL = app.config.mongo.url + "/" + app.run.name;
-
   var DrowsyModel = Backbone.Model.extend({
     idAttribute: '_id',
     parse: function(data) {
@@ -60,19 +73,30 @@ Washago.Model = (function(app) {
   var DrowsyCollection = Backbone.Collection.extend({
 
   });
-  
-  model.Contribution = DrowsyModel.extend({
-    urlRoot: app.drowsyURL + "/contributions"
-  });
 
-  model.Contributions = DrowsyCollection.extend({
-    model: model.Contribution,
-    url: app.drowsyURL + "/contributions"
-  });
+  jQuery(app).bind('authenticated', function () {
+    if (!app.run || !app.run.name)
+      throw "Cannot init Washago.model because we authenticated without an app.run.name!";
 
-  createNecessaryCollections([
-    'contributions'
-  ]);
+    var db = app.run.name;
+    app.drowsyURL = app.config.mongo.url + "/" + db;
+
+    createNecessaryDatabase(app.run.name, function () {
+      model.Contribution = DrowsyModel.extend({
+        urlRoot: app.drowsyURL + "/contributions"
+      });
+
+      model.Contributions = DrowsyCollection.extend({
+        model: model.Contribution,
+        url: app.drowsyURL + "/contributions"
+      });
+
+      createNecessaryCollections([
+        'contributions'
+      ]);
+    });
+    
+  });
 
   // config stuff
 

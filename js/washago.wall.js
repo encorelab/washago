@@ -245,17 +245,26 @@ Washago.Wall = (function() {
     };
 
     app.authenticate = function () {
-        app.run = {name: 'roadshow'}; // TODO: ask for run from list
-        jQuery(app).trigger('authenticated');
+        var runs = new Washago.Wall.model.Runs();
+        runs.fetch({
+            success: function (runs) {
+                app.view.showRunPicker(runs, function (run) {
+                    app.run = run.toJSON();
+                    Sail.UI.dismissDialog('#run-picker')
+                    jQuery(app).trigger('authenticated');
+                });
+            }
+        });
     };
 
     app.events = {
         initialized: function (ev) {
+            Washago.Model(Washago.Wall);
             Washago.Wall.authenticate();
         },
 
         authenticated: function (ev) {
-            Washago.Model(Washago.Wall);
+
         },
 
         'ui.initialized': function (ev) {
@@ -271,9 +280,7 @@ Washago.Wall = (function() {
         connected: function (ev) {
             console.log("Connected...");
 
-
             app.restoreState();
-            
             // if (Sail.app.groupchat.participants) {
             //     for (var p in Sail.app.groupchat.participants) {
             //         addAuthorToList(p);
