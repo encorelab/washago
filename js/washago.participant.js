@@ -7,29 +7,26 @@ Washago.Participant = (function() {
     var self = {};
     var lastSentContributeID = null;
     var reconstructingTags = false;
+    var currentLocation = ''; // ANTO: used only in function loadContributions()    
+
     var activeRun = 'roadshow';
-    var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
-    
+
 /*    http://roadshow.encore#a (b|c|d)
     if (window.location.fragment == 'a') {
         var activeRun = a;
     }*/
-    /*
-    tags
-    predifined tags
-    locations
-    types
-    */
 
-    //var config//self.config.url.mongo + activeRun + 
+
+    /************** the following is dummy data for now, will be dynamic once Mike adds his stuff *****************/
+
+    var predefinedTagArray ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
 
     var radioTypeArray = [
         {"typeName": "Question", "toolTip": "Some Question tooltip"},
         {"typeName": "Comment", "toolTip": "Some Comment tooltip"}
     ];
-    var locationsArray = [];
+    var locationsArray ='{"locations":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
 
-    var currentLocation = ''; // ANTO: used only in function loadContributions()
 
     self.init = function () {
         //Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
@@ -178,6 +175,21 @@ Washago.Participant = (function() {
         });
     };
 
+    /**************** FUNCTIONS FOR MIKE M ***********/
+
+    var initiatizeConfig = function (run) {
+        // Mongo to roadshow_config
+        // inits all the global vars (ie locationArray)
+        // call loadConfig()
+    };
+
+    var loadConfig = function () {
+        self.getLocations();
+        self.getTypes();
+        self.getTags();
+        self.initSearch();
+    }
+
     self.events = {
         initialized: function(ev) {
             Washago.Participant.authenticate();
@@ -193,12 +205,14 @@ Washago.Participant = (function() {
             jQuery('#participant-view-add').fadeIn(250);
 
             jQuery(".washago-header").html(Sail.app.nickname);
-            self.getLocations();
 
+
+            // initializeConfig (activeRun);
+
+            /************** THIS WILL BE REMOVED, REPLACE WITH THE ABOVE FUNCTION CALL ********************/
+            self.getLocations();
             self.getTypes();
             self.getTags();
-            //self.getTags(); Commenting this until mongo is working ok
-
             self.initSearch();
 
         },
@@ -443,7 +457,6 @@ Washago.Participant = (function() {
     // set the poster X drop down menu options from getLocations
     self.getLocations = function() {
         
-        locationsArray ='{"locations":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
         var data = jQuery.parseJSON(locationsArray);
         var firstOption = true;
         //jQuery.post();
