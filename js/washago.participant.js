@@ -188,9 +188,10 @@ Washago.Participant = (function() {
             //jQuery("#participant-view").fadeIn(250);
             Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
                 console.log(who + " joined...");
-                jQuery('#participant-view-add').fadeIn(250);
             });
             
+            jQuery('#participant-view-add').fadeIn(250);
+
             jQuery(".washago-header").html(Sail.app.nickname);
             self.getLocations();
 
