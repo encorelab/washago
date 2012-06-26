@@ -212,7 +212,7 @@ Washago.Participant = (function() {
                  
                 
                 if (myLocation.length < 2) {
-                    jQuery.mobile.showToast("Please choose a location!",false, 4000, true);
+                    jQuery.mobile.showToast("Please choose a poster!",false, 4000, true);
                     return;
                 }
                 
