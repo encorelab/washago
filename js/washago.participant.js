@@ -7,29 +7,19 @@ Washago.Participant = (function() {
     var self = {};
     var lastSentContributeID = null;
     var reconstructingTags = false;
-    var activeRun = 'roadshow';
-    var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
-    
+    var currentLocation = ''; // ANTO: used only in function loadContributions()    
+    var currentDatabase = 'roadshow';
+    var activeRun = 'roadshow_test1';
+
+    var locationsArray;
+    var predefinedTagArray;
+    var radioTypeArray;
+
+
 /*    http://roadshow.encore#a (b|c|d)
     if (window.location.fragment == 'a') {
         var activeRun = a;
     }*/
-    /*
-    tags
-    predifined tags
-    locations
-    types
-    */
-
-    //var config//self.config.url.mongo + activeRun + 
-
-    var radioTypeArray = [
-        {"typeName": "Question", "toolTip": "Some Question tooltip"},
-        {"typeName": "Comment", "toolTip": "Some Comment tooltip"}
-    ];
-    var locationsArray = [];
-
-    var currentLocation = ''; // ANTO: used only in function loadContributions()
 
     self.init = function () {
         //Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
@@ -79,7 +69,7 @@ Washago.Participant = (function() {
     var addContribution = function(contribution){
         //console.log(contribution.tags);
         var c = jQuery('<div class="contribution-element"></div>');
-        var author = jQuery('<div class="author">'+contribution.author+'</div>');
+        var author = jQuery('<div class="author">'+contribution.discourse+' from '+contribution.author+'</div>');
         var text = jQuery('<div class="'+contribution.discourse+'">'+contribution.text+'</div>');
         var tags = jQuery('<div class="tags"></div>');
         _.each(contribution.tags, function(tag){
@@ -117,7 +107,7 @@ Washago.Participant = (function() {
         currentLocation = jQuery("#select-location").val();
 
         //jQuery.ajax(self.config.mongo.url + '/roadshow/contributions?selector={"about":"'+currentLocation+'"}', {
-        jQuery.ajax(self.config.mongo.url + '/' + activeRun + '/' + 'contributions', {
+        jQuery.ajax(self.config.mongo.url + '/' + currentDatabase + '/' + 'contributions', {
            dataType: 'json',
            data: {selector: JSON.stringify({about: currentLocation})},
            success: function (data) {
@@ -162,7 +152,7 @@ Washago.Participant = (function() {
         console.log("Saving contribution in database");
         
         // This is now ok
-        var url = self.config.mongo.url + '/' + activeRun + '/' + 'contributions';
+        var url = self.config.mongo.url + '/' + currentDatabase + '/' + 'contributions';
 
         jQuery.ajax({
             type: "POST",
@@ -178,6 +168,39 @@ Washago.Participant = (function() {
         });
     };
 
+    var initializeConfig = function (run) {
+        // Mongo to roadshow_config        
+        jQuery.ajax(self.config.mongo.url + '/roadshow_config/runs', {
+            dataType: 'json',
+            data: {selector: JSON.stringify({name: activeRun})},
+            success: function (data) {
+                console.log("got config data");
+                if (data.length==0) {
+                    console.log("no data for this run name in roadshow_config");
+                } else {
+                    // inits all the global vars (ie locationArray)
+                    locationsArray = data[0].locations;
+
+                    predefinedTagArray = data[0].tags;
+
+                    radioTypeArray = data[0].types;
+
+                    loadConfig();
+                }
+            },
+            error: function (data) {
+                console.log("error on initializeConfig", data);
+            }
+        });
+    };
+
+    var loadConfig = function () {
+        self.getLocations();
+        self.getTypes();
+        self.getTags();
+        self.initSearch();
+    };
+
     self.events = {
         initialized: function(ev) {
             Washago.Participant.authenticate();
@@ -188,17 +211,13 @@ Washago.Participant = (function() {
             //jQuery("#participant-view").fadeIn(250);
             Sail.app.groupchat.addParticipantJoinedHandler(function(who, stanza) {
                 console.log(who + " joined...");
-                jQuery('#participant-view-add').fadeIn(250);
             });
             
+            jQuery('#participant-view-add').fadeIn(250);
+
             jQuery(".washago-header").html(Sail.app.nickname);
-            self.getLocations();
 
-            self.getTypes();
-            self.getTags();
-            //self.getTags(); Commenting this until mongo is working ok
-
-            self.initSearch();
+            initializeConfig(activeRun);
 
         },
 
@@ -442,12 +461,11 @@ Washago.Participant = (function() {
     // set the poster X drop down menu options from getLocations
     self.getLocations = function() {
         
-        locationsArray ='{"locations":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
-        var data = jQuery.parseJSON(locationsArray);
+        //var data = jQuery.parseJSON(locationsArray);
         var firstOption = true;
         //jQuery.post();
         var availableLocations = jQuery("#select-location");
-        jQuery.each(data.locations, function(index, value) { 
+        jQuery.each(locationsArray, function(index, value) { 
             //alert(index + ': ' + value);
             //availableLocations.append('<option class="location-option-class" value="' + value + '"' + ((firstOption)?'selected="selected"':'') + '>' + value + '</option>');
             availableLocations.append('<option class="location-option-class" value="' + value + '">' + value + '</option>');
@@ -533,7 +551,7 @@ Washago.Participant = (function() {
     // get the tags from the MongoDB server and add them to the tag stack
     self.getTags = function() {
                 
-        var tagDepotURI = self.config.mongo.url + '/' + activeRun + '/' + 'contributions';
+        var tagDepotURI = self.config.mongo.url + '/' + currentDatabase + '/' + 'contributions';
         
         
         var jqxhr = jQuery.get(tagDepotURI)
@@ -561,6 +579,16 @@ Washago.Participant = (function() {
                              });
                         });
                         
+                        // ANTO: add predefined tags
+                         jQuery.each(predefinedTagArray, function(pi, pv) {
+                            pv = jQuery.trim(pv);
+                            if (dataTags[pv] > 0) {
+                                dataTags[pv] += 1;
+                            }
+                            else {
+                                dataTags[pv] = 1;
+                            }
+                         });
                        
                         jQuery.each(dataTags, function(index, value) { 
                             //alert(index + ':' + value);

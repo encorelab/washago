@@ -15,9 +15,11 @@ var radioTypeArray = [
 Washago.Setup = (function() {
     "use strict";
     var self = {};
-    var configDBName = 'roadshow_config';
+    var DBPrefix = 'roadshow_';
+    var configDBName = DBPrefix + 'config';
     var configCollectionName = 'runs';
-    var runCollectionName = 'contributions';
+    var manualRunID = 'runManual';
+    var runData = {};
 
     self.init = function () {
         Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
@@ -35,55 +37,264 @@ Washago.Setup = (function() {
                 return true;
             });
     };
-
-    self.authenticate = function () {
-        jQuery(self).trigger('authenticated');
-        self.getExistingRuns();
+    
+    self.typesToArray = function() {
+        var typeArray = [];
         
-        jQuery("#saveRun").click(function(){
-            self.checkRun();
-        });
         
-        jQuery('input[name="runSelector"]').change(function(){
-           var runName = jQuery('input[name="runSelector"]:checked').val();
-            if (runName === '0') {
-                jQuery("#manualRun").fadeIn('fast');
-            }
-            else {
-                jQuery("#manualRun").fadeOut('fast');
-            }
+        jQuery.each(jQuery('.types'), function(index, value) { 
+                var typeObject = {};
+                typeObject['typeName'] = jQuery(value).attr('type_value');
+                typeObject['toolTip'] = jQuery(value).attr('type_tooltip');
+                //alert(typeObject['typeName'] + " | " + typeObject['toolTip']);
+                
+                typeArray[index] = typeObject;
             });
         
-            // text input listeners
-            self.initTextInsert('locationName', self.addLocation);
-            self.initTextInsert('tagName', function(str){});
-            
+        return typeArray;
     };
     
-    
-    self.addLocation = function(locationName) {
-        var lName = self.stripifyString(locationName);
-        jQuery('#locationParent').append('<a data-icon="delete" data-iconpos="right" href="#" name="' + lName  + '" id="' + lName  + '" button_value="'+  locationName + '" class="locations">'+  locationName + '</a>');
+    self.saveConfigRun = function() {
+        var payload = {};
+        var runName = self.getCurrentRunName();
+        var collectionID = null;
+        var collectionStr = '';
         
-        jQuery('#' + lName).button();
+        // grab the id of the run radio button
+        var runID = jQuery('input[name="runSelector"]:checked').attr('id');
         
+        if (runName === false){
+            jQuery.mobile.showToast("You must enter in at least 1 character for your Run Name! Please go back to step 1...",false, 4000, true);
+            return;
+        }
+        
+        // construct the payload
+        payload["name"] = runName;
+        payload["locations"] = self.tagsToArray('locations');
+        payload["tags"] = self.tagsToArray('tags');
+        payload["types"] = self.typesToArray();
+        
+       
+        // the ID of the radios that show the run are hex values if they come from MongoDB or the global (non-hex) manualRunID value
+        if (runID !== manualRunID) {
+            collectionID = runID;
+        }
+        
+        // save the collection
+        if (collectionID !== null) {
+            console.log('Saving Existing Collection ID: ' + collectionID);
+            collectionStr = '/' + collectionID;
+        }
+        else {
+            console.log('Saving new collection!');
+        }
+        
+        console.log(payload);
+        var dbURI = self.config.mongo.url + '/' + configDBName + '/' + configCollectionName + collectionStr;
+        
+        console.log('Posting to ' + dbURI);
+        if (collectionID !== null) {
+            jQuery.ajax({
+                type: 'PUT',
+                url: dbURI,
+                data: payload,
+                success: function(data) {
+                    console.log('Collection payload updated successfully!');
+                    jQuery.mobile.showToast("Your configuration for this Run has been updated!",false, 3000, false, function(){console.log("toast end"); });
+                },
+                error: function(){
+                    console.log('Collection payload save failure!');
+                    jQuery.mobile.showToast("An Error occured while trying to update your Run Configuration!",false, 4000, true);
+                },
+                dataType: 'json'
+            });
+        }
+        else {
+        jQuery.post(dbURI, payload)
+            .success(function(data) {
+               console.log('Collection payload saved successfully!');
+               jQuery.mobile.showToast("Your configuration for this Run has been saved!",false, 3000, false, function(){console.log("toast end"); });
+            })
+            .error(function(){
+                console.log('Collection payload save failure!');
+                jQuery.mobile.showToast("An Error occured while trying to save your Run Configuration!",false, 4000, true);
+                })
+            .complete(function(){
+                console.log('');
+                });
+        }
     };
+    
+    // checks
     
     self.checkRun = function(){
         var runName = jQuery('input[name="runSelector"]:checked').val();
         var manualRunName = jQuery('#runName').val();
         
         if (runName === '0') {
-            if (manualRunName.length < 3){
+            if (manualRunName.length < 1){
                // show error for run name being shorter then 2 chars
-               jQuery.mobile.showToast("You must enter in at least 3 characters for your Run Name!",false, 4000, true);
+               jQuery.mobile.showToast("You must enter in at least 1 character for your Run Name!",false, 4000, true);
                return;
             }
             jQuery.mobile.changePage("#page_config_locations", {transition: 'slidefade'});
-            manualRunName = self.stripifyString(manualRunName);
-            alert(manualRunName);
         }
+        else { // we have an existing run
+            var currentRun = runData[runName];
+            console.log(currentRun);
+            
+            // set up the corresponding location, tag and type pages
+            
+            // set up locations...
+            jQuery.each(currentRun.locations, function(index, value){
+                self.addTag(value, 'locationParent', 'locations');
+            });
+            
+            // set up tags
+            if (currentRun.tags) {
+                jQuery.each(currentRun.tags, function(index, value){
+                    self.addTag(value, 'tagParent', 'tags');
+                }); 
+            }
+            
+            // set up types
+            if (currentRun.tags) {
+                jQuery.each(currentRun.types, function(index, value){
+                    self.addTypes(value['typeName'], value['toolTip']);
+                }); 
+            }
+            
+            jQuery.mobile.changePage("#page_config_locations", {transition: 'slidefade'});
+        }
+        
+        
     };
+    
+    self.destroyPriorOptions = function() {
+        jQuery('.locations').remove();
+        jQuery('.tags').remove();
+        jQuery('.types').remove();
+    };
+    
+    self.checkLocations = function() {
+        var locationsCount = jQuery(".locations").length;
+        
+        if (locationsCount == 0) {
+             jQuery.mobile.showToast("You must enter in at least 1 Location!",false, 4000, true);
+            return;
+        }
+        
+        jQuery.mobile.changePage("#page_config_preset_tags", {transition: 'slidefade'});
+    };
+    
+    self.checkTags = function() {    
+        jQuery.mobile.changePage("#page_config_types", {transition: 'slidefade'});
+    };
+    
+    self.checkTypes = function() {
+        var typeCount = jQuery(".types").length;
+        
+        if (typeCount < 2) {
+            jQuery.mobile.showToast("You must enter in at least 2 Types!",false, 4000, true);
+            return;
+        }
+        
+        self.saveConfigRun();
+    };
+
+    self.authenticate = function () {
+        jQuery(self).trigger('authenticated');
+        self.getExistingRuns();
+        
+        jQuery("#saveRun").click(self.checkRun);
+        jQuery("#saveLocations").click(self.checkLocations);
+        jQuery("#saveTags").click(self.checkTags);
+        jQuery('#saveTypes').click(self.checkTypes);
+        
+        // text input listeners
+        // for locations
+        self.initTextInsert('locationName', 'locations', self.addLocation);
+        
+        // for tags
+        self.initTextInsert('tagName', 'tags', self.addCustomTags);
+        
+        // for types
+        self.tooltipInit('typeName');
+        self.tooltipInit('typeTooltip');     
+    };
+    
+    self.tooltipInit = function(tooltipID) {
+        jQuery('#' + tooltipID).keyup(function(e){
+                var searchValue = jQuery.trim(jQuery('#typeName').val());
+            
+                if (e.which === 13) {
+                   var termExists = jQuery("#" + searchValue).attr('id') === searchValue;
+                   
+                   if ((searchValue.length > 0 &&  ! termExists)) {
+                        self.addTypes(searchValue, null);
+                        jQuery('#typeName').val('');
+                   }
+                   else if (searchValue.length > 0 && termExists) {
+                        jQuery.mobile.showToast('The ' + searchValue + " type already exists!",false, 4000, true);
+                   }
+                   else if (searchValue.length === 0) {
+                        jQuery.mobile.showToast("Enter a type value before saving!",false, 4000, true);
+                   }
+                }
+            }
+            );
+    };
+    
+    self.addLocation = function(val) {
+        self.addTag(val, 'locationParent', 'locations');
+    };
+    
+    self.addCustomTags = function(val) {
+        self.addTag(val, 'tagParent', 'tags');
+    };
+    
+    self.addTypes = function(typeVal, tooltipVal) {
+        var typeName = self.stripifyString(typeVal);
+        var typeTooltip = jQuery.trim(jQuery('#typeTooltip').val());
+        
+        if (tooltipVal !== null) {
+            typeTooltip = tooltipVal;
+        }
+        
+        jQuery('#typeTooltip').val('');
+        
+        jQuery('#typeParent').append('<a data-icon="delete" type_value="' + typeVal + '" type_tooltip="' + typeTooltip  + '" data-iconpos="right" href="#" name="' + typeName  + '" id="' + typeName  + '" button_value="'+  typeVal + '" class="types">'+  typeVal + ' (Tooltip: &quot;' + typeTooltip + '&quot;)</a>');
+        jQuery('#' + typeName).button();
+        jQuery('#' + typeName).click(function(){jQuery(this).fadeOut('slow', function(){ jQuery(this).remove(); })});
+    };
+    
+    
+    self.addTag = function(tagName, parentID, classID, extraArgs) {
+        var tName = self.stripifyString(tagName);
+        jQuery('#' + parentID).append('<a data-icon="delete" ' + ((extraArgs)?extraArgs:'') + ' data-iconpos="right" href="#" name="' + tName  + '" id="' + tName  + '" button_value="'+  tagName + '" class="' + classID + '">'+  tagName + '</a>');
+        jQuery('#' + tName).button();
+        jQuery('#' + tName).click(function(){jQuery(this).fadeOut('slow', function(){ jQuery(this).remove(); })});
+    };
+
+
+    self.getCurrentRunName = function() {
+        var runNameID = jQuery('input[name="runSelector"]:checked').val();
+        var manualRunName = jQuery('#runName').val();
+        var runName = '';
+        
+        if (runNameID === '0' && manualRunName.length > 0) {
+            runName = DBPrefix + self.stripifyString(manualRunName);
+        }
+        else if (runNameID === '0' && manualRunName.length == 0) {
+            return false;
+        }
+        else {
+            runName = runNameID;
+        }
+        
+        return runName;
+    };
+    
     
     self.stripifyString = function(str) {
         str = str.toLowerCase().replace(/[\W]/g,"_");
@@ -91,12 +302,8 @@ Washago.Setup = (function() {
         return str;
     };
     
-    self.createRun = function(runName){
-        
-    };
-    
     self.getExistingRuns = function() {
-         var dbListURI = self.config.mongo.url;
+        var dbListURI = self.config.mongo.url;
         
         
         var jqxhr = jQuery.get(dbListURI)
@@ -132,9 +339,36 @@ Washago.Setup = (function() {
                             console.log('Config DB found! Looking up runs... ');
                             jQuery.get(dbListURI + '/' + configDBName + '/' + configCollectionName)
                                 .success(function(data) {
-                                    jQuery.each(function(index,value){
-                                       var runName = data[index]['run'];
-                                    } )
+                                    jQuery.each(data, function(index,value){
+                                       
+                                       var collectionID = value['_id']['$oid'];
+                                       var runName = value['name'];
+                                    
+                                       runData[runName] = {};
+                                       runData[runName]['collectionID'] = collectionID;
+                                       runData[runName]['locations'] = value['locations'];
+                                       runData[runName]['tags'] = value['tags'];
+                                       runData[runName]['types'] = value['types'];
+                                       
+                                       
+                                       jQuery('#runParent').append('<label for="' +  collectionID + '">' + runName + '</label><input type="radio" name="runSelector" id="' +  collectionID + '" value="' + runName + '"  />');
+                                       console.log(runData);
+                                    } );
+                                    
+                                    jQuery('#existingRuns').trigger('create');
+                                    jQuery('input[name="runSelector"]').checkboxradio("refresh");
+                                    
+                                    jQuery('input[name="runSelector"]').change(function(){
+                                        var runName = jQuery('input[name="runSelector"]:checked').val();
+                                        self.destroyPriorOptions();
+                                        
+                                         if (runName === '0') {
+                                             jQuery("#manualRun").fadeIn('fast');
+                                         }
+                                         else {
+                                             jQuery("#manualRun").fadeOut('fast');
+                                         }
+                                    });
                                 })
                                 .error(function(){})
                                 .complete(function(){
@@ -169,87 +403,6 @@ Washago.Setup = (function() {
 
         'ui.initialized': function(ev) {
             console.log("UI initialized, doing bindings...");
-            
-            // binding for submit button - TODO: all of the sev hashes need to be dynamically filled with jQuery etc.
-            jQuery(".submit-button").click(function () {
-                var myText = jQuery.trim(jQuery("#text-contribution").val());
-                var myLocation = jQuery("#select-location").val();
-                var myTags = null;
-                 
-                
-                if (myLocation.length < 2) {
-                    jQuery.mobile.showToast("Please choose a location!",false, 4000, true);
-                    return;
-                }
-                
-                if (myText.length < 4) {
-                    jQuery.mobile.showToast("You must enter in at least 4 characters in the text field!",false, 4000, true);
-                    return;
-                }
-                
-                // done checking base error case - now grab the tags
-                myTags = self.tagsToArray();
-                
-                ///MIKE:: uncomment if you want to check the tags length!!
-                /*if (myTags.length === 0) {
-                    jQuery.mobile.showToast("You must select at least ONE tag!",false, 4000, true);
-                    return;
-                }*/
-                
-                
-                lastSentContributeID = generateID();// Math.floor((Math.random() * Math.pow(36,16))).toString(16);
-                
-                var sev = new Sail.Event('contribution', {
-                    author: Sail.app.nickname,
-                    text:myText,
-                    tags:myTags,
-                    id: lastSentContributeID,
-                    about: myLocation,
-                    discourse: jQuery('input[name="radioType"]:checked').val().toLowerCase()
-                });
-
-                /*
-                    ANTO: saving contribution from client
-                */
-                
-                
-                // ANTO: keeping the working structure for saving and displaying
-                
-                var my_contribution = {
-                    author: Sail.app.nickname,
-                    text:myText,
-                    tags:myTags,
-                    id: lastSentContributeID,
-                    about: jQuery("#select-location").val(),
-                    discourse: jQuery('input[name="radioType"]:checked').val().toLowerCase()
-
-                    /*
-                    author:sev.payload.author,
-                    text:sev.payload.text,
-                    tags:sev.payload.tags,
-                    about:sev.payload.about,
-                    discourse:sev.payload.discourse,
-                    timestamp:sev.timestamp,
-                    id:sev.payload.id
-                    */
-                };
-                
-
-
-                // ANTO: Think this is the right place to save data!!
-                writeToDB(my_contribution);
-                console.log('My Contribution saved', my_contribution);
-
-                // add contribution to the view
-                addContribution(my_contribution);
-
-
-                Sail.app.groupchat.sendEvent(sev);
-                jQuery.mobile.showToast("Sending your contribution...", false)
-                 
-            });
-
-
         }
     };
 
@@ -265,15 +418,38 @@ Washago.Setup = (function() {
     };
     
     
+    // check to see if the tag is in the set of prefilled or custom tags
+    self.tagExists = function(val, classID) {
+        
+        var isTagFound = false;
+        var tag = jQuery.trim(val).toLowerCase();
+        
+        jQuery.each(jQuery("." + classID),  function(index, value) {
+                var tagVal = jQuery.trim(jQuery(value).text()).toLowerCase();
+                
+                if (tagVal === tag) {
+                    //alert('yo tag same');
+                    isTagFound = true;
+                }
+            });
+        
+        return isTagFound;
+    };
+    
     // initialize the search field to swallow and create custom selection tag on enter key in the search field
-    self.initTextInsert = function(textID, callbackFunc) {
+    self.initTextInsert = function(textID, itemsContainerClassID, callbackFunc, bypassChecks) {
        jQuery('#' + textID).keyup(function(e){
             var searchValue = jQuery.trim(jQuery(this).val());
             
             if (e.which === 13) {
-               if (searchValue.length > 0 && callbackFunc) {
+               var termExists = self.tagExists(searchValue, itemsContainerClassID);
+               
+               if ((searchValue.length > 0 &&  ! termExists && callbackFunc) || bypassChecks === true) {
                     callbackFunc(searchValue);
                     jQuery(this).val('');
+               }
+               else if (searchValue.length > 0 && termExists) {
+                    jQuery.mobile.showToast(searchValue + " already exists!",false, 4000, true);
                }
             }
 
@@ -284,21 +460,13 @@ Washago.Setup = (function() {
        };
        
        // convert the selected tag list to an array in order to send it as Sail event (in the event payload)
-       self.tagsToArray = function(){
+       self.tagsToArray = function(classID){
             var myTags = [];
             
-            jQuery.each(jQuery(".tag_button"), function(index, value) { 
+            jQuery.each(jQuery('.' + classID), function(index, value) { 
                 myTags[index] = jQuery.trim(jQuery(value).text().toLowerCase());
             });
             
-            var searchValueObj = jQuery('input[data-type="search"]');
-            var searchValue = jQuery.trim(jQuery(searchValueObj).val().toLowerCase());
-            
-            if (searchValue.length > 1) {
-                myTags[myTags.length] = searchValue;
-                jQuery(searchValueObj).val('');
-                jQuery(searchValueObj).trigger("change");
-            }
                 
             return myTags;
        };

@@ -64,14 +64,14 @@
     display: none;
 }
 
-/*.comment {
+.comment {
     background: orange;
 }
 
 .question {
     background: yellow;
 }
-*/
+
 .tags{
     margin-top:5px;
 }
@@ -92,34 +92,11 @@
 }
 
 .contribution-element{
-    border-bottom: 1px dashed #000000;
-    padding: 0.8em;
+    border-bottom: 1px solid #000000;
+    padding: 0 0.8em;
 }
-
+/*
 .ui-header .ui-title, .ui-footer .ui-title {
-    float: right;
-    margin: 0.8em 1em .8em 0;
-    font-size: 18px;
-}
-
-#data-loading{
-    margin: 0 30% 0;
-    text-align: center;
-}
-
-.ui-content .ui-listview-inset {
-    margin: 0;
-}
-
-#navbar{
-    clear:both;                 /* clearing float from header (part name) */
-    margin-top: 50px;
-}
-
-#participant-view #participant-add {
-    /*margin-top:;*/
-}
-
-#tag-list-heading {
-    margin-top:1em;
-}
+    float:right;
+    margin: .6em 5% .8em;
+}*/

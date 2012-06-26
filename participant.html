@@ -20,7 +20,7 @@
 </head>
 <body>
     <!-- single page -->
-    <div data-role="page" id="participant-view-add" class="hide">
+    <div data-role="page" id="participant-view-add" style="display:none;" class="">
         <!-- common header to view and add page -->
         <div data-theme="b" data-role="header">
             <h1 class="washago-header"></h1>
@@ -116,13 +116,16 @@
                             </b>
                         </div>
                         <div id="chosen-tags"></div>
-                        <div  data-role="fieldcontain">
-                            <ul id="tag-list" data-inset="true" data-role="listview" data-theme="b" data-dividertheme="b" data-filter="true" data-filter-theme="c" data-filter-placeholder="Add tags for your post separated by commas...">
-                                 
-                                 <li id="tag-list-heading" data-role="list-divider" role="heading">
-                                    Tags submitted by your peers
-                                </li>
-                            </ul>
+                        <div data-role="fieldcontain">
+                            <div data-theme="b" data-content-theme="b" data-role="collapsible" data-collapsed="false" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d">
+                                <h3>Tags</h3>
+                                <p>
+                                    <ul id="tag-list" data-inset="true" data-role="listview" data-theme="b" data-dividertheme="b" data-filter="true" data-filter-theme="c" data-filter-placeholder="Press enter after each tag">
+                                        <br />
+                                        <li id="tag-list-heading">Community submitted tags</li>
+                                    </ul>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -146,12 +149,9 @@
                         </div>
                     <br /> -->
                    <!--  <input type="submit" value="Submit your post" data-ajax="false" data-theme="b" class="submit-button"/> -->
-                </div>
 
-            <div data-role="footer" data-id="foo1" data-position="fixed">
-
-                    <input type="submit" value="Submit your post" data-ajax="false" data-theme="b"  class="submit-button" />
-
+            <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+                <input type="submit" value="Submit your post" data-ajax="false" data-theme="b" class="submit-button" />
             </div><!-- /footer -->   
 
             </div>  
