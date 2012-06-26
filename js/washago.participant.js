@@ -16,7 +16,7 @@ Washago.Participant = (function() {
     var currentLocation = ''; // ANTO: used only in function loadContributions()
 
     self.init = function () {
-        Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
+        //Sail.app.groupchatRoom = 'washago@conference.' + Sail.app.xmppDomain;
 
         // TODO: move this out to config.json
         Sail.app.username = "roadshow";
@@ -33,6 +33,7 @@ Washago.Participant = (function() {
     };
 
     self.authenticate = function () {
+        self.run = {name: 'roadshow'}; // TODO: get run from url
         jQuery(self).trigger('authenticated');
     };
     

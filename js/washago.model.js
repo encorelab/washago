@@ -8,8 +8,8 @@ To use this code, initializes it with a Sail app object like so:
   Washago.Model(Washago.Wall);
 
 This will add a .model property to Washago.Wall (i.e. Washago.Wall.model).
-You must do this early on in your app (before 'authenticated' but after 'configured',
-so ideally in the 'configured' event handler).
+You must do this after the app has been configured and a run has been selected,
+so probably in 'authenticated' or 'connected'.
 
 ***/
 
@@ -29,66 +29,61 @@ Washago.Model = (function(app) {
         });
       },
       error: function (err) {
-        console.error("Couldn't fetch list of collections from because: ", err);
-        throw err;
+        console.error("Couldn't fetch list of collections from because: ", JSOn.parse(err.responseText));
+        throw err.responseText;
       }
-    });
-      
+    });   
   }
+  
+  if (!app.run || !app.run.name)
+    throw "Cannot init Washago.model because we authenticated without an app.run.name!";
 
-  function init () {
-    if (!app.run || !app.run.name)
-        throw "Cannot init Washago.model because we authenticated without an app.run.name!";
+  app.drowsyURL = app.config.mongo.url + "/" + app.run.name;
 
-    app.drowsyURL = app.config.mongo.url + "/" + app.run.name;
-
-    var DrowsyModel = Backbone.Model.extend({
-      idAttribute: '_id',
-      parse: function(data) {
-        data._id = data._id.$oid;
-        return data;
-      },
-      initialize: function () {
-        if (!this.get(this.idAttribute)) {
-          this.set(this.idAttribute, model.generateMongoObjectId());
-        }
-
-        if (!this.get('timestamp')) {
-          this.set('timestamp', Date());
-        }
+  var DrowsyModel = Backbone.Model.extend({
+    idAttribute: '_id',
+    parse: function(data) {
+      data._id = data._id.$oid;
+      return data;
+    },
+    initialize: function () {
+      if (!this.get(this.idAttribute)) {
+        this.set(this.idAttribute, model.generateMongoObjectId());
       }
-    });
 
-    var DrowsyCollection = Backbone.Collection.extend({
+      if (!this.get('timestamp')) {
+        this.set('timestamp', Date());
+      }
+    }
+  });
 
-    });
-    
-    model.Contribution = DrowsyModel.extend({
-      urlRoot: app.drowsyURL + "/contributions"
-    });
+  var DrowsyCollection = Backbone.Collection.extend({
 
-    model.Contributions = DrowsyCollection.extend({
-      model: model.Contribution,
-      url: app.drowsyURL + "/contributions"
-    });
+  });
+  
+  model.Contribution = DrowsyModel.extend({
+    urlRoot: app.drowsyURL + "/contributions"
+  });
 
-    createNecessaryCollections([
-      'contributions'
-    ]);
+  model.Contributions = DrowsyCollection.extend({
+    model: model.Contribution,
+    url: app.drowsyURL + "/contributions"
+  });
 
-    // config stuff
+  createNecessaryCollections([
+    'contributions'
+  ]);
 
-    model.Run = DrowsyModel.extend({
-      urlRoot: app.config.mongo.url + "/" + app.configDB + "/runs"
-    });
+  // config stuff
 
-    model.Contributions = DrowsyCollection.extend({
-      model: model.Run,
-      url: app.config.mongo.url + "/" + app.configDB + "/runs"
-    });
-  }
+  model.Run = DrowsyModel.extend({
+    urlRoot: app.config.mongo.url + "/" + app.configDB + "/runs"
+  });
 
-  jQuery(app).bind('authenticated', init);
+  model.Runs = DrowsyCollection.extend({
+    model: model.Run,
+    url: app.config.mongo.url + "/" + app.configDB + "/runs"
+  });
 
   model.generateMongoObjectId = function () {
     var base = 16; // hex

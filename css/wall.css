@@ -30,6 +30,14 @@ a {
   -webkit-transform-style: preserve-3d;
   perspective: 900px;
   transform-style: preserve-3d;
+
+  /* disable text selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .toolbar {
@@ -37,6 +45,14 @@ a {
   position: absolute;
   text-align: center;
   background: rgba(0,0,0,0.85);
+
+  /* disable text selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .toolbar ul {
