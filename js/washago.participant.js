@@ -7,6 +7,22 @@ Washago.Participant = (function() {
     var self = {};
     var lastSentContributeID = null;
     var reconstructingTags = false;
+    var activeRun = 'roadshow';
+    var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
+    
+/*    http://roadshow.encore#a (b|c|d)
+    if (window.location.fragment == 'a') {
+        var activeRun = a;
+    }*/
+    /*
+    tags
+    predifined tags
+    locations
+    types
+    */
+
+    //var config//self.config.url.mongo + activeRun + 
+
     var radioTypeArray = [
         {"typeName": "Question", "toolTip": "Some Question tooltip"},
         {"typeName": "Comment", "toolTip": "Some Comment tooltip"}
@@ -100,16 +116,10 @@ Washago.Participant = (function() {
         // get current location from top dropdown list
         currentLocation = jQuery("#select-location").val();
 
-        /*  ANTO: 
-            If we load the config.json and use currentLocation as mongo db name, 
-            this should be the way it works ;)
-            note we are rollcall-free in this app, so Sail.app.config.mongo.url does not seem to be loaded??????
-            
-            TODO: FIXME!
-            jQuery.ajax(Sail.app.config.mongo.url + '/' + currentLocation + '/contributions?selector={"about":"'+currentLocation+'"}', {
-        */
-        jQuery.ajax(self.config.mongo.url + '/roadshow/contributions?selector={"about":"'+currentLocation+'"}', {
+        //jQuery.ajax(self.config.mongo.url + '/roadshow/contributions?selector={"about":"'+currentLocation+'"}', {
+        jQuery.ajax(self.config.mongo.url + '/' + activeRun + '/' + 'contributions', {
            dataType: 'json',
+           data: {selector: JSON.stringify({about: currentLocation})},
            success: function (data) {
                console.log("loadContributions ok");
                jQuery('#data-loading').hide();
@@ -149,10 +159,10 @@ Washago.Participant = (function() {
         This function is called when contribution is submitted
     */
     var writeToDB = function (contribution) {
-        console.log("Storeing contribution in database");
+        console.log("Saving contribution in database");
         
-        // ANTO: TODO: we need to get the URL form somewhere else. Hard-coding it for now
-        var url = "http://drowsy.badger.encorelab.org/washago-test/contributions";
+        // This is now ok
+        var url = self.config.mongo.url + '/' + activeRun + '/' + 'contributions';
 
         jQuery.ajax({
             type: "POST",
@@ -203,7 +213,7 @@ Washago.Participant = (function() {
                  
                 
                 if (myLocation.length < 2) {
-                    jQuery.mobile.showToast("Please choose a location!",false, 4000, true);
+                    jQuery.mobile.showToast("Please choose a poster!",false, 4000, true);
                     return;
                 }
                 
@@ -262,11 +272,11 @@ Washago.Participant = (function() {
 
 
                 // ANTO: Think this is the right place to save data!!
-                writeToDB(my_contribution);
-                console.log('My Contribution saved', my_contribution);
+                //writeToDB(my_contribution);
+                //console.log('My Contribution saved', my_contribution);
 
                 // add contribution to the view
-                addContribution(my_contribution);
+                //addContribution(my_contribution);
 
 
                 Sail.app.groupchat.sendEvent(sev);
@@ -276,14 +286,22 @@ Washago.Participant = (function() {
 
             jQuery('#select-location').change(function() {
 
-              loadContributions();
+              if(jQuery('#select-location').val()==""){
+                jQuery('#contribution-title').hide();
+                jQuery('#community-contribution').hide();
+                jQuery('#intro-title').show();
+              } else {
+                  loadContributions();
+                  jQuery('#intro-title').hide();
+                  jQuery('#contribution-title').show();
+              }
 
-              jQuery('#p-view').show();
+/*              jQuery('#p-view').show();
               jQuery('#p-add').hide();
               
               // reflect change to view in header buttons 
               jQuery('#p-add-btn').removeClass('ui-btn-active');
-              jQuery('#p-view-btn').addClass('ui-btn-active');
+              jQuery('#p-view-btn').addClass('ui-btn-active');*/
 
               //
               //
@@ -294,7 +312,7 @@ Washago.Participant = (function() {
                     actually decided to force load contributions when clicked on view. 
                     It provides positive feedback to the user ;)
                 */
-                loadContributions();
+                //loadContributions();
 
                 jQuery('#p-add').hide();
                 jQuery('#p-view').show();
@@ -326,9 +344,12 @@ Washago.Participant = (function() {
                 //writeToDB(new_contribution);
                 
                 // ANTO: add to the client display only if currently in the location of the incoming contribution
-                if(currentLocation==new_contribution.about){
-                    addContribution(new_contribution)
-                }
+                // This no longer apply. we need to add all the incoming contributions AND not add them when they are submitted.
+/*                if(currentLocation==new_contribution.about){
+                    addContribution(new_contribution);
+                }*/
+
+                addContribution(new_contribution);
 
                 //if (reconstructingTags) return;
                 
@@ -409,7 +430,7 @@ Washago.Participant = (function() {
         jQuery('.tag_button').each(function() {jQuery(this).remove();});
         
         // get the tags from MongoDB
-        self.getTags();
+        //self.getTags();
     };
     
     // perform a refresh of the options - used when resetting the form (doesn't do much now but later can be extended to automagically update locations)
@@ -421,7 +442,7 @@ Washago.Participant = (function() {
     // set the poster X drop down menu options from getLocations
     self.getLocations = function() {
         
-        locationsArray ='{"locations":["Select a location...", "Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
+        locationsArray ='{"locations":["Poster 1", "Poster 2", "Poster 3", "Poster 4", "Poster 5", "Poster 6", "Poster 7", "Poster 8"]}';
         var data = jQuery.parseJSON(locationsArray);
         var firstOption = true;
         //jQuery.post();
@@ -511,23 +532,19 @@ Washago.Participant = (function() {
     
     // get the tags from the MongoDB server and add them to the tag stack
     self.getTags = function() {
-        
-        var dataStr ='{"tags":["addage", "collaboration", "embedded", "tablets", "bugs", "batman", "mobile", "science", "knowledge building","knowledge community", "inquiry"]}';
-        
-        // ANTO: note that his does not work in node server and makes it crash
-        //var tagDepotURI = '/mongo/roadshow/contributions/_find?batch_size=10000000000' + ((Sail.app.run)?'&criteria={"run":"' + Sail.app.run.name+ '"}':'');
-        var tagDepotURI = self.config.mongo.url + "/roadshow/contributions";
+                
+        var tagDepotURI = self.config.mongo.url + '/' + activeRun + '/' + 'contributions';
         
         
         var jqxhr = jQuery.get(tagDepotURI)
                     .success(function(data) {
-                        console.log("grabbing tags for mongoDB");
+                        console.log("grabbing tags for mongoDB", data);
                         var availableTags = jQuery("#tag-list-heading");
                         var dataTags = {};
                         var tagStr = '';
                         var i = 0;
                         
-                        if (data.ok !== 1) { console.log('Problem getting DB Data'); return; }
+                        if (!data) { console.log('Problem getting DB Data'); return; }                  // checking to see if tag data is returned from mongo
                         
                         // go through json object returned by GET DB Query and grab the tags
                         jQuery.each(data, function(index, value) {

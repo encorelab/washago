@@ -24,49 +24,56 @@
         <!-- common header to view and add page -->
         <div data-theme="b" data-role="header" data-position="fixed">
             <h1 class="washago-header"></h1>
-            <div data-role="" style="position:absolute; top:0px">
-                <select name="select-location" id="select-location">
-                    <option value="">Select Loc.</option>
+            <div data-role="" style="position:absolute; top:6px; left:8px">
+                <select name="select-location" id="select-location" data-theme="c" >
+                    <option value="">Select Poster</option>
                 </select>
             </div>
+        
+            <div id="navbar" data-role="navbar" data-iconpos="top">
+                <ul>
+                    <li>
+                    <!--
+                        <a href="#participant-view" data-transition="none" data-theme="b" data-icon="" class="ui-btn-active ui-state-persist">
+                            view
+                        </a>
+                    -->
+                        <a id="p-view-btn" data-theme="b" data-icon="" class="ui-btn-active ui-state-persist">
+                            view
+                        </a>
+
+                    </li>
+                    <li>
+                    <!--
+                        <a href="#participant-add" data-transition="none" data-theme="b" data-icon="" class="">
+                            add
+                        </a>
+                    -->
+                        <a id="p-add-btn" data-theme="b" data-icon="" class="">
+                            add
+                        </a>
+
+                    </li>
+                </ul>
+            </div> 
         </div>
-        <div data-role="navbar" data-iconpos="top">
-            <ul>
-                <li>
-                <!--
-                    <a href="#participant-view" data-transition="none" data-theme="b" data-icon="" class="ui-btn-active ui-state-persist">
-                        view
-                    </a>
-                -->
-                    <a id="p-view-btn" data-theme="b" data-icon="" class="ui-btn-active ui-state-persist">
-                        view
-                    </a>
-
-                </li>
-                <li>
-                <!--
-                    <a href="#participant-add" data-transition="none" data-theme="b" data-icon="" class="">
-                        add
-                    </a>
-                -->
-                    <a id="p-add-btn" data-theme="b" data-icon="" class="">
-                        add
-                    </a>
-
-                </li>
-            </ul>
-        </div> 
         <!-- /common header -->
     
-        <!-- view page/navebar -->
-        <div id="p-view" class="hide">
+        <div style="clear: both;">
+
+        <!-- view page -->
+        <div id="p-view" class="">
             <div data-role="" id="participant-view">
                 <!-- content -->
                 <div data-role="content" style="padding: 15px">
-                    <div id="main-region"  data-theme="b" data-content-theme="d" data-role="collapsible" data-collapsed="false">
-                        <h2>
+                    <div id="main-region"  data-theme="b" data-content-theme="d" data-role="fieldcontain">
+                        <h2 id="contribution-title" class="hide">
                             List of Contributions
                         </h2>
+                        <h3 id="intro-title">
+                            Select a poster from the dropdown at the top of your screen to view what others have contributed.<br /><br />
+                            After selecting a poster, click on the 'add' tab to contribute your own thoughts and ideas to the knowledge community
+                        </h3>
                         <div id="data-loading" class="hide"><img src="images/loader-small.gif"></div>
                         <ul id="community-contribution" data-role="listview" data-divider-theme="b" data-inset="true">
                             <!-- ANTO: it's easier if this starts empty -->
@@ -76,16 +83,12 @@
                 <!-- /content -->
             </div>    
         </div>
-        <!-- /view page/navebar -->
+        <!-- /view page -->
 
-        <!-- add page/navebar -->
+        <!-- add page -->
         <div id="p-add" class="hide">
             <div data-role="" id="participant-add">
                 <div data-role="content">
-                    <div id="main-region"  data-theme="b" data-content-theme="d" data-role="collapsible" data-collapsed="false">
-                        <h2>
-                            Your contribution
-                        </h2>
                     <div data-role="fieldcontain" id="parentTypeContainer">
                         <fieldset data-role="controlgroup" data-type="horizontal">
                             <legend>
@@ -103,9 +106,27 @@
                             <textarea id="text-contribution" placeholder=""></textarea>
                         </fieldset>
                     </div>
+                    <div data-role="fieldcontain">
+                        <!-- <h2 id="tags-header"><span style="float:left">Click here to add Tags</span><span style="float:right">(<span id="tag-count">0</span> Total)</span></h2> -->
+                        <div>
+                            <b>
+                                <br />
+                                Use the text&nbsp;field to add your own tags to the post and/or select
+                                from the tag list generated by the community below:<span style="float:right">(<span id="tag-count">0</span> Total)
+                            </b>
+                        </div>
+                        <div id="chosen-tags"></div>
+                        <div  data-role="fieldcontain">
+                            <ul id="tag-list" data-inset="true" data-role="listview" data-theme="b" data-dividertheme="e" data-filter="true" data-filter-theme="c" data-filter-placeholder="Add tags for your post separated by commas...">
+                                 <li id="tag-list-heading" data-role="list-divider" role="heading">
+                                    Tags submitted by your peers
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                    <div id="tag-region"  data-theme="b" data-content-theme="b" data-role="collapsible" data-collapsed-icon="arrow-r"  data-expanded-icon="arrow-d">
-                        <h2 id="tags-header"><span style="float:left">Click here to add Tags</span><span style="float:right">(<span id="tag-count">0</span> Total)</span></h2>
+<!--                    <div id="tag-region"  data-theme="b" data-content-theme="b" data-role="collapsible" data-collapsed-icon="arrow-r"  data-expanded-icon="arrow-d">
+                         <h2 id="tags-header"><span style="float:left">Click here to add Tags</span><span style="float:right">(<span id="tag-count">0</span> Total)</span></h2>
                             <div>
                                 <b>
                                     <br />
@@ -122,12 +143,12 @@
                                 </ul>
                             </div>
                         </div>
-                    <br />
-                    <input type="submit" value="Submit your post" data-ajax="false" class="submit-button"/>
+                    <br /> -->
+                    <input type="submit" value="Submit your post" data-ajax="false" data-theme="b" class="submit-button"/>
                 </div>
             </div>
         </div>
-        <!-- /add page/navebar -->
+        <!-- /add page -->
 
     </div>
         
