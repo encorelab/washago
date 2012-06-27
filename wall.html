@@ -51,11 +51,11 @@
         </div>
     </div>
 
-    <div class="toolbars-bottom">
+    <!--<div class="toolbars-bottom">
         <div class="widget-box">
             <a id="cloudify" href="#">Cloudify</a>
         </div>
-    </div>
+    </div>-->
     
     <footer> 
     </footer> 
@@ -65,8 +65,8 @@
             .then('js/sail.js/deps/backbone-0.9.2.js')
             .then('js/washago.wall.js')
             .then('js/washago.model.js', 'js/washago.wall.view.js')
-            .then('https://raw.github.com/mbostock/d3/master/d3.v2.js',
-                'js/washago.wall.graph.js')
+            //.then('https://raw.github.com/mbostock/d3/master/d3.v2.js',
+            //    'js/washago.wall.graph.js')
             .thenRun(function() { return Sail.init(Washago.Wall); });
     </script>
         
