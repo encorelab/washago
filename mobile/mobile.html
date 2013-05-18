@@ -4,6 +4,11 @@
     <title>Washago Mobile</title> 
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <!-- Suppress IE compatibility mode - should not be an issue for us, but who knows if there is a MS tablet that has that mode -->
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+    <!-- CSS for Mozilla Persona buttons by http://sawyerhollenshead.com/ from here https://developer.mozilla.org/files/3973/persona-css-buttons.zip -->
+    <link href="../shared/libs/persona-buttons.css" rel="stylesheet">
 
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 
@@ -22,5 +27,11 @@
 </head>
 
 <body>
+    <div class="user-authentication">
+      <a href="#" class="persona-button dark"><span>Sign in with your email address</span></a>
+      <a href="#" class="persona-button dark"><span>Sign out</span></a>
+    </div>
+    <!-- According to Mozilla this should go to the bottom of the body tag. I obey-->
+    <script src="https://login.persona.org/include.js"></script>
 </body>
 </html>
