@@ -4,7 +4,7 @@
     "description": "...",
     "main": "server.js",
     "scripts": {
-        "start": "node server.js"
+        "start": "http-server ."
     },
     "repository": {
         "type": "git",
@@ -21,7 +21,8 @@
         "grunt": "~0.4.0",
         "grunt-contrib": "~0.4.0",
         "grunt-jsonlint": "~1.0.0",
-        "grunt-contrib-csslint": "~0.1.2"
+        "grunt-contrib-csslint": "~0.1.2",
+        "http-server": "latest"
     },
     "author": "ENCORE Lab",
     "license": "MIT"
