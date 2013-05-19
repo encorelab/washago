@@ -203,7 +203,7 @@
 
       /** State **/
 
-      this.State = this.db.Collection('states').extend({
+      this.State = this.db.Document('states').extend({
 
       });
       
