@@ -105,6 +105,12 @@ input:disabled {
 
 /* BODY - ALL */
 
+/* hide a row */
+.row .hidden {
+    /* TODO: this is a crude way of hiding right now and should be improved */
+    display: none;
+}
+
 /* LIST SCREEN */
 
 .icon-chevron-right {
