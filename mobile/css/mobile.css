@@ -1,11 +1,16 @@
-/* ========================================================
- *    Styles for Person login buttons
- * ===================================================== */
-.user-authentication{
-  margin: 100px auto;
-  text-align: center;
-  width: 300px;
+
+/* This hides any element with class alert directly after an input field with a pattern (regex) */
+input[pattern] + .alert {
+  display: none;
 }
-.user-authentication a{
-  margin-bottom: 40px;
+
+/* If pattern (regex) is violated alert is shown */
+input[pattern]:invalid + .alert {
+  display: inline-block;
+}
+
+.input-alert {
+  position: absolute;
+  margin-top: 20%;
+  width: 28em;
 }

@@ -20,16 +20,31 @@
     <script src="../node_modules/backbone.drowsy/backbone.drowsy.js"></script>
     <script src="../node_modules/backbone.drowsy/wakeful.js"></script>
     <script src="../shared/model.js"></script>
+    <script src="../shared/libs/jquery.cookie.js"></script>
     <script src="js/mobile.js"></script>
 </head>
 
 <body>
-    <script type="text/javascript">
-        Washago.Mobile.setup();
-    </script>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <ul class="nav">
+                <form class="navbar-form pull-right">
+                    <input type="text" name="user_name" autocomplete="on" placeholder="Please enter name" title="error" pattern="^[a-zA-Z0-9]+$"></input>
+                    <div class="alert alert-error input-alert">
+                        <strong>Error!</strong> Name can only be alphanumerical without whitespace!
+                    </div>
+                    <button type="submit" class="btn">Get me in!</button>
+                </form>
+            </ul>
+        </div>
+    </div>
+
 
     <div id="index-screen">
     </div>
-    
+
+    <script type="text/javascript">
+        Washago.Mobile.setup();
+    </script>
 </body>
 </html>
