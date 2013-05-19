@@ -9,6 +9,20 @@ input[pattern]:invalid + .alert {
   display: inline-block;
 }
 
+input:disabled
+{
+  display: none;
+}
+
+#login-button:disabled
+{
+  display: none;
+}
+
+.username-display .hide {
+  display: none;
+}
+
 .input-alert {
   position: absolute;
   margin-top: 20%;
