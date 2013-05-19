@@ -40,7 +40,7 @@
         jQuery.cookie('washago_mobile_username', app.username, { expires: 1, path: '/' });
         jQuery('.username-display a').text(app.username);
 
-        //hideLogin();
+        hideLogin();
         showUsername();
       } else {
         console.error('Username invalid');
