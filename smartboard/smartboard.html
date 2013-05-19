@@ -7,6 +7,7 @@
     <link href="css/smartboard.css" rel="stylesheet">
 
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 
     <script src="../node_modules/underscore/underscore.js"></script>
     <script src="../node_modules/backbone/backbone.js"></script>
@@ -19,16 +20,18 @@
     
     <script src="js/smartboard.js"></script>
     <script src="js/smartboard.view.js"></script>
+    <script src="js/smartboard.view.wall.js"></script>
+    <script src="js/smartboard.view.balloons.js"></script>
 </head>
 
 <body>
-    <div id="wall">
+    <div id="wall" class="loading">
         <!-- <div id="tags-panel">
             <div id="tags-tab">Tags</div>
             <div id="tags-editor">...</div>
         </div> -->
 
-        <div id="watermark">Washago</div>
+        <div id="watermark"><img src="loader.gif" alt="Loading..." style="width: 400px" /></div>
 
         <div id="add-tag-container">
             <button id="add-tag-opener">Add Tag</button>

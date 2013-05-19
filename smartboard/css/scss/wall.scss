@@ -1,3 +1,5 @@
+/*csslint gradients: false, font-sizes: false */
+
 @import url(http://fonts.googleapis.com/css?family=Ubuntu:400,700,400italic,700italic);
 
 // color theme: https://kuler.adobe.com/#themeID/2129122
@@ -49,6 +51,8 @@ body {
         text-transform: uppercase;
         color: white;
         opacity: 0.4;
+
+        @include transition-property(4s, opacity);
     }
 
     #add-tag-container {
@@ -173,4 +177,4 @@ button {
 }
 
 @import 'animations.scss';
-
+@import 'balloons.scss';
