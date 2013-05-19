@@ -13,7 +13,7 @@ module.exports = function(grunt) {
     //   }
     // }
     jshint: {
-      all: ['Gruntfile.js', 'smartboard/js/*.js', 'mobile/js/mobile.js', 'mobile/js/mobile.view.js', 'shared/js/*.js']
+      all: ['Gruntfile.js', 'shared/js/*.js', 'smartboard/js/*.js', 'mobile/js/mobile.js', 'mobile/js/mobile.view.js']
     },
     csslint: {
       dev: {
@@ -35,6 +35,13 @@ module.exports = function(grunt) {
       dev: {
         src: ['./*.json' ]
       }
+    },
+    sass: {
+      compile: {
+        files: {
+          'smartboard/css/smartboard.css': 'smartboard/css/scss/wall.scss'
+        }
+      }
     }
   });
 
@@ -49,8 +56,10 @@ module.exports = function(grunt) {
 
   // Default task(s).
   // grunt.registerTask('default', ['uglify']);
-  grunt.registerTask('default', ['jshint', 'csslint', 'jsonlint']);
+  grunt.registerTask('default', ['jshint', 'sass', 'csslint', 'jsonlint']);
   grunt.registerTask('lint', ['jshint', 'csslint', 'jsonlint']);
+  grunt.registerTask('compile', ['sass']);
+
   grunt.registerTask('test', 'run mocha-phantomjs', function () {
     var done = this.async();
     var child_process = require('child_process');
