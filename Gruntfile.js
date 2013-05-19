@@ -42,6 +42,10 @@ module.exports = function(grunt) {
           'smartboard/css/smartboard.css': 'smartboard/css/scss/wall.scss'
         }
       }
+    },
+    watch: {
+      files: ['smartboard/**/*.{js,scss}','shared/**/*.{js,scss}','mobile/**/*.{js,scss}','test/**/*.{js,scss}'],
+      tasks: ['default'],
     }
   });
 
@@ -53,6 +57,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-csslint');
   grunt.loadNpmTasks('grunt-jsonlint');
   grunt.loadNpmTasks('grunt-mocha');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Default task(s).
   // grunt.registerTask('default', ['uglify']);
