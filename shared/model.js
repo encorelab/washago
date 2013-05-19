@@ -75,12 +75,12 @@
     };
 
     Model.defineModelClasses = function() {
-      var BuildOnableMixin, TaggableMixin, VotableMixin;
-      VotableMixin = (function() {
+      var BuildOnableTrait, TaggableTrait, VotableTrait;
+      VotableTrait = (function() {
 
-        function VotableMixin() {}
+        function VotableTrait() {}
 
-        VotableMixin.prototype.addVote = function(username) {
+        VotableTrait.prototype.addVote = function(username) {
           var votes;
           votes = _.clone(this.get('votes'));
           if (votes == null) {
@@ -90,20 +90,23 @@
           return this.set('votes', votes);
         };
 
-        VotableMixin.prototype.removeVote = function(username) {
+        VotableTrait.prototype.removeVote = function(username) {
           var votes;
           votes = _.without(this.get('votes'), username);
           return this.set('votes', votes);
         };
 
-        return VotableMixin;
+        return VotableTrait;
 
       })();
-      BuildOnableMixin = (function() {
 
-        function BuildOnableMixin() {}
+      /** BuildOnable Trait **/
 
-        BuildOnableMixin.prototype.addBuildOn = function(author, content) {
+      BuildOnableTrait = (function() {
+
+        function BuildOnableTrait() {}
+
+        BuildOnableTrait.prototype.addBuildOn = function(author, content) {
           var bo, build_ons;
           build_ons = _.clone(this.get('build_ons'));
           if (build_ons == null) {
@@ -118,12 +121,15 @@
           return this.set('build_ons', build_ons);
         };
 
-        return BuildOnableMixin;
+        return BuildOnableTrait;
 
       })();
-      TaggableMixin = (function() {
 
-        function TaggableMixin() {
+      /** Taggable Trait **/
+
+      TaggableTrait = (function() {
+
+        function TaggableTrait() {
           this.hasTag = __bind(this.hasTag, this);
 
           this.removeTag = __bind(this.removeTag, this);
@@ -132,7 +138,7 @@
 
         }
 
-        TaggableMixin.prototype.addTag = function(tag, tagger) {
+        TaggableTrait.prototype.addTag = function(tag, tagger) {
           var existingTagRelationships, tagRel,
             _this = this;
           if (!(tag instanceof Washago.Model.Tag)) {
@@ -156,7 +162,7 @@
           return this;
         };
 
-        TaggableMixin.prototype.removeTag = function(tag, tagger) {
+        TaggableTrait.prototype.removeTag = function(tag, tagger) {
           var reducedTags,
             _this = this;
           reducedTags = _.reject(this.get('tags'), function(t) {
@@ -166,27 +172,30 @@
           return this;
         };
 
-        TaggableMixin.prototype.hasTag = function(tag, tagger) {
+        TaggableTrait.prototype.hasTag = function(tag, tagger) {
           var _this = this;
           return _.any(this.get('tags'), function(t) {
             return t.id.toLowerCase() === tag.id && (!(tagger != null) || t.tagger === tagger);
           });
         };
 
-        return TaggableMixin;
+        return TaggableTrait;
 
       })();
-      this.Contribution = (function(_super) {
 
-        __extends(Contribution, _super);
+      /** Note **/
 
-        function Contribution() {
-          return Contribution.__super__.constructor.apply(this, arguments);
+      this.Note = (function(_super) {
+
+        __extends(Note, _super);
+
+        function Note() {
+          return Note.__super__.constructor.apply(this, arguments);
         }
 
-        _.extend(Contribution.prototype, TaggableMixin.prototype);
+        _.extend(Note.prototype, TaggableTrait.prototype);
 
-        Contribution.prototype.tagRel = function(tag, tagger) {
+        Note.prototype.tagRel = function(tag, tagger) {
           return {
             id: tag.id.toLowerCase(),
             name: tag.get('name'),
@@ -195,146 +204,28 @@
           };
         };
 
-        return Contribution;
+        return Note;
 
       })(this.db.Document('notes'));
-      this.Proposal = (function(_super) {
 
-        __extends(Proposal, _super);
+      /** Notes **/
 
-        function Proposal() {
-          return Proposal.__super__.constructor.apply(this, arguments);
+      this.Notes = (function(_super) {
+
+        __extends(Notes, _super);
+
+        function Notes() {
+          return Notes.__super__.constructor.apply(this, arguments);
         }
 
-        _.extend(Proposal.prototype, VotableMixin.prototype);
+        Notes.prototype.model = Washago.Model.Note;
 
-        Proposal.prototype.validate = function(attrs) {
-          if (!_.all(attrs.votes, function(a) {
-            return typeof a === 'string';
-          })) {
-            return "'votes' must be an array of strings but is " + (JSON.stringify(attrs.votes));
-          }
-        };
-
-        Proposal.prototype.setTag = function(tag) {
-          this._tag = null;
-          return this.set('tag', {
-            id: tag.id.toLowerCase(),
-            name: tag.get('name'),
-            colorClass: tag.get('colorClass')
-          });
-        };
-
-        Proposal.prototype.getColorClass = function() {
-          if (this.has('tag')) {
-            return this.get('tag').colorClass;
-          } else {
-            return null;
-          }
-        };
-
-        Proposal.prototype.getTag = function() {
-          var _ref;
-          if (!this.has('tag')) {
-            return null;
-          }
-          return (_ref = this._tag) != null ? _ref : this._tag = Washago.Model.awake.tags.get(this.get('tag').id);
-        };
-
-        return Proposal;
-
-      })(this.db.Document('proposals'));
-      this.Investigation = (function(_super) {
-
-        __extends(Investigation, _super);
-
-        function Investigation() {
-          return Investigation.__super__.constructor.apply(this, arguments);
-        }
-
-        _.extend(Investigation.prototype, VotableMixin.prototype);
-
-        _.extend(Investigation.prototype, BuildOnableMixin.prototype);
-
-        Investigation.prototype.validate = function(attrs) {
-          if (!_.all(attrs.authors, function(a) {
-            return typeof a === 'string';
-          })) {
-            return "'authors' must be an array of strings but is " + (JSON.stringify(attrs.authors));
-          }
-        };
-
-        Investigation.prototype.addAuthor = function(username) {
-          var authors;
-          authors = _.clone(this.get('authors'));
-          authors.push(username);
-          return this.set('authors', authors);
-        };
-
-        Investigation.prototype.removeAuthor = function(username) {
-          var authors;
-          authors = _.without(this.get('authors'), username);
-          return this.set('authors', authors);
-        };
-
-        Investigation.prototype.hasAuthor = function(username) {
-          return _.contains(this.get('authors'), username);
-        };
-
-        Investigation.prototype.getProposal = function() {
-          var _ref;
-          if (!this.get('proposal_id')) {
-            return null;
-          }
-          return (_ref = this._proposal) != null ? _ref : this._proposal = Washago.Model.awake.proposals.get(this.get('proposal_id'));
-        };
-
-        Investigation.prototype.getTag = function() {
-          return this.getProposal().getTag();
-        };
-
-        return Investigation;
-
-      })(this.db.Document('investigations'));
-      this.Contributions = (function(_super) {
-
-        __extends(Contributions, _super);
-
-        function Contributions() {
-          return Contributions.__super__.constructor.apply(this, arguments);
-        }
-
-        Contributions.prototype.model = Washago.Model.Contribution;
-
-        return Contributions;
+        return Notes;
 
       })(this.db.Collection('notes'));
-      this.Proposals = (function(_super) {
 
-        __extends(Proposals, _super);
+      /** Tag **/
 
-        function Proposals() {
-          return Proposals.__super__.constructor.apply(this, arguments);
-        }
-
-        Proposals.prototype.model = Washago.Model.Proposal;
-
-        return Proposals;
-
-      })(this.db.Collection('proposals'));
-      this.Investigations = (function(_super) {
-
-        __extends(Investigations, _super);
-
-        function Investigations() {
-          return Investigations.__super__.constructor.apply(this, arguments);
-        }
-
-        Investigations.prototype.model = Washago.Model.Investigation;
-
-        return Investigations;
-
-      })(this.db.Collection('investigations'));
       this.Tag = (function(_super) {
 
         __extends(Tag, _super);
@@ -346,6 +237,9 @@
         return Tag;
 
       })(this.db.Document('tags'));
+
+      /** Tags **/
+
       this.Tags = (function(_super) {
 
         __extends(Tags, _super);
@@ -359,6 +253,9 @@
         return Tags;
 
       })(this.db.Collection('tags'));
+
+      /** State **/
+
       this.State = (function(_super) {
 
         __extends(State, _super);
@@ -370,6 +267,9 @@
         return State;
 
       })(this.db.Document('states'));
+
+      /** States **/
+
       return this.States = (function(_super) {
 
         __extends(States, _super);
