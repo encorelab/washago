@@ -105,6 +105,11 @@ input:disabled {
 
 /* BODY - ALL */
 
+.row-fluid {
+    width: 98%;
+    padding-left: 1%;
+}
+
 /* hide a row */
 .row-fluid .hidden {
     /* TODO: this is a crude way of hiding right now and should be improved */
