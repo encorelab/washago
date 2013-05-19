@@ -3,39 +3,30 @@
 
 (function() {
   "use strict";
+
+  var Washago = this.Washago || {};
     
-  var Mobile.View = (function() {
-    var app = {};
-
-    app.something = function() {
-    };
-
-    return app;
-  });
-}).call(this);
-
-
-
-
+  Washago.Mobile.View.setup = function() {
+  }
 
   /**
     MobileView
   **/
-  app.MobileView = Backbone.View.extend({
+  Washago.Mobile.View.MobileView = Backbone.View.extend({
     events: {
       'keyup :input': function (ev) {
         var view = this,
           inputKey = ev.target.name,
           userValue = jQuery('#'+ev.target.id).val();
-        // If we hit a key clear intervals so that during typing intervals don't kick in
-        window.clearTimeout(Sail.app.autoSaveTimer);
+        // if we hit a key clear intervals so that during typing intervals don't kick in
+        window.clearTimeout(Washago.Mobile.autoSaveTimer);
 
         // save after 10 keystrokes
         Washago.Mobile.autoSave(view.model, inputKey, userValue, false);
 
         // setting up a timer so that if we stop typing we save stuff after 5 seconds
         Washago.Mobile.autoSaveTimer = setTimeout( function(){
-          Sail.app.autoSave(view.model, inputKey, userValue, true);
+          Washago.Mobile.autoSave(view.model, inputKey, userValue, true);
         }, 5000);
       }
   });
@@ -43,20 +34,24 @@
   /**
     ListView
   **/
-  app.ListView = Backbone.View.extend({
+  Washago.Mobile.View.ListView = Backbone.View.extend({
 
   });
 
   /**
   	DetailsView
   **/
-  app.DetailsView = Backbone.View.extend({
+  Washago.Mobile.View.DetailsView = Backbone.View.extend({
 
   });
 
   /**
   	InputView
   **/
-  app.InputView = Backbone.View.extend({
+  Washago.Mobile.View.InputView = Backbone.View.extend({
 
   });
+
+
+  this.Washago = Washago;
+}).call(this);
