@@ -1,4 +1,6 @@
 (function() {
+  "use strict";
+
   var Backbone, Washago, Drowsy, jQuery, _,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -22,15 +24,14 @@
   }
 
   Washago.Model = (function() {
-
     function Model() {}
 
     Model.requiredCollections = ['notes', 'tags', 'states'];
 
     Model.init = function(url, db) {
-      var deferredConfigure,
+      var dfrInit,
         _this = this;
-      deferredConfigure = jQuery.Deferred();
+      dfrInit = jQuery.Deferred();
       if (!url) {
         throw new Error("Cannot configure model because no DrowsyDromedary URL was given!");
       }
@@ -40,12 +41,33 @@
       this.baseURL = url;
       this.dbURL = "" + url + "/" + db;
       this.server = new Drowsy.Server(url);
-      this.db = this.server.database(db);
-      this.createNecessaryCollections(this.requiredCollections).then(function() {
-        _this.defineModelClasses();
-        return deferredConfigure.resolve();
+
+      this.checkThatDatabaseExists(db)
+      .then(function () {
+        _this.db = _this.server.database(db);
+        return _this.createNecessaryCollections(_this.requiredCollections);
+      })
+      .then(function() {
+          _this.defineModelClasses();
+          dfrInit.resolve();
+      });      
+
+      return dfrInit.promise();
+    };
+
+    Model.checkThatDatabaseExists = function(dbName) {
+      var _this = this;
+      var dfrCheck = jQuery.Deferred();
+
+      this.server.databases()
+      .done(function (dbs) {
+        if (_.pluck(dbs, 'name').indexOf(dbName) < 0) {
+          throw new Error("Database '"+dbName+"' does not exist in '"+_this.baseURL+"'!");
+        }
+        dfrCheck.resolve();
       });
-      return deferredConfigure;
+
+      return dfrCheck.promise();
     };
 
     Model.createNecessaryCollections = function(requiredCollections) {
@@ -57,7 +79,7 @@
       this.db.collections(function(colls) {
         var col, existingCollections, _i, _len;
         existingCollections = _.pluck(colls, 'name');
-        _.each(existingCollections, function (coll) {
+        _.each(requiredCollections, function (coll) {
           if (existingCollections.indexOf(coll) < 0) {
             console.log("Creating collection '" + coll + "' under " + Washago.Model.dbURL);
             dfs.push(_this.db.createCollection(coll));
@@ -68,7 +90,7 @@
       jQuery.when.apply(jQuery, dfs).done(function() {
         return df.resolve();
       });
-      return df;
+      return df.promise();
     };
 
     Model.defineModelClasses = function() {
@@ -282,6 +304,17 @@
       })(this.db.Collection('states'));
     };
 
+    Model.wake = function(wakefulUrl) {
+      var dfrWake = jQuery.Deferred();
+      Wakeful.loadFayeClient(wakefulUrl).then(function () {
+        return Model.initWakefulCollections(wakefulUrl)
+      }).then(function () {
+        dfrWake.resolve();
+      });
+
+      return dfrWake.promise();
+    };
+
     Model.initWakefulCollections = function(wakefulUrl) {
       var camelCase, coll, collName, deferreds, _i, _len, _ref;
       deferreds = [];
@@ -291,11 +324,10 @@
         });
       };
       this.awake = {};
-      _.each(this.requiredCollections, function (colName) {
-        collName = _ref[_i];
-        coll = new this[camelCase(collName)]();
+      _.each(this.requiredCollections, function (collName) {
+        coll = new Washago.Model[camelCase(collName)]();
         coll.wake(wakefulUrl);
-        this.awake[collName] = coll;
+        Washago.Model.awake[collName] = coll;
         deferreds.push(coll.fetch());
       });
       return jQuery.when.apply(jQuery, deferreds);
