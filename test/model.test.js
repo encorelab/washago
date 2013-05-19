@@ -10,7 +10,7 @@ describe('Washago.Model', function() {
     .then(function () {
       return Washago.Model.wake(TEST_WAKEFUL_URL);
     }).done(function () { 
-      done(); 
+      done();
     });
   });
 

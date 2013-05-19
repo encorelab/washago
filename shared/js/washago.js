@@ -2,5 +2,5 @@
     "use strict";
 
     this.Washago = {};
-    
-})(this);
+
+}).call(this);
