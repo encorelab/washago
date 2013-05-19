@@ -46,6 +46,7 @@ module.exports = function(grunt) {
     watch: {
       files: ['smartboard/**/*.{js,scss}','shared/**/*.{js,scss}','mobile/**/*.{js,scss}','test/**/*.{js,scss}'],
       tasks: ['default'],
+      options: { nospawn: true }
     }
   });
 
