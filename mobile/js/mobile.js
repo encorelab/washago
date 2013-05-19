@@ -109,7 +109,7 @@
   };
 
   app.hideAllRows = function () {
-    jQuery('.row').each(function (){
+    jQuery('.row-fluid').each(function (){
       jQuery(this).addClass('hidden');
     });
   };

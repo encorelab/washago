@@ -90,7 +90,7 @@ input:disabled {
 /* BODY - ALL */
 
 /* hide a row */
-.row .hidden {
+.row-fluid .hidden {
     /* TODO: this is a crude way of hiding right now and should be improved */
     display: none;
 }
