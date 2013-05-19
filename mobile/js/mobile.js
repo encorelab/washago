@@ -24,6 +24,7 @@
     app.username = jQuery.cookie('washago_mobile_username');
 
     if (app.username) {
+      // We have a user in cookies so we show stuff
       console.log('We found user: '+app.username);
       jQuery('.username-display a').text(app.username);
 
@@ -34,6 +35,7 @@
       hideUsername();
     }
 
+    // click listener that sets username
     jQuery('#login-button').click(function() {
       app.username = jQuery('#username').val();
       if (app.username && app.username !== '') {
@@ -45,6 +47,12 @@
       } else {
         console.error('Username invalid');
       }
+    });
+
+    // click listener that log user ou
+    jQuery('.logout-user').click(function() {
+      jQuery.removeCookie('washago_mobile_username',  { path: '/' });
+      window.location.reload();
     });
 
     /* VIEW/MODEL SETUP */
