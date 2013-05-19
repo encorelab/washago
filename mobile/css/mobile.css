@@ -30,15 +30,21 @@ input {
 	right: 3px;
 }
 
+.top-btn-container {
+	position: absolute;
+	top: 3px;
+	right: 3px;
+}
+
 .view-container {
 	height: 300px;
 	border: 1px solid;
 	padding: 5px;
 	margin-bottom: 10px;
 	position: relative;
-	background-color: #FCFCFF;
 	border-radius: 7px;
 	box-shadow: rgba(0,0,0,0.2) 1px 4px 15px;
+	background-color: #ddd
 }
 
 /*.container-header {
@@ -50,6 +56,16 @@ input {
 	overflow-y: auto;
 	font-weight: bold;
 }*/
+
+.body-text-entry {
+	width: 85%;
+	height: 120px;
+}
+
+.headline-text-entry {
+	width: 65%;
+}
+
 
 /* NAVBAR */
 
