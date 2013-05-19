@@ -9,6 +9,11 @@ input[pattern]:invalid + .alert {
   display: inline-block;
 }
 
+/* If pattern (regex) is violated submit button is hidden */
+input[pattern]:invalid ~ button {
+  display: none;
+}
+
 input:disabled
 {
   display: none;
