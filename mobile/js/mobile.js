@@ -10,6 +10,7 @@
   app.keyCount = 0;
   app.autoSaveTimer = window.setTimeout(function() { console.log("timer activated"); } ,10);
   app.user = 'TODO';
+  app.username = null;
 
   app.runState = null;
   app.userState = null;
@@ -17,24 +18,30 @@
   app.indexView = null;     // TODO - think about how necessary making these global is going to be
 
   app.setup = function() {
-    /* setup function */
+    /* CONFIG */
 
-    /* loading config.json should go here */
+    // retrieve user name from cookie if possible otherwise ask user to choose name
+    Washago.Mobile.username = jQuery.cookie('washago_mobile_user_name');
 
-    /* view/model setup */
-    // RUN
-    // USER
-    // MOBILE
+    if (Washago.Mobile.username) {
+      console.log('We found user: '+Washago.Mobile.username);
+    } else {
+      console.log('No user found so prompt for username');
+    }
+
+    /* VIEW/MODEL SETUP */
+    // run
+    // user
+    // mobile
     app.indexView = new app.View.IndexView({
       el: jQuery('#index-screen')
     });
 
-    /* misc setup stuff */
+    /* MISC */
     jQuery().toastmessage({
       position : 'middle-center'
     });
   };
-
 
   app.autoSave = function(model, inputKey, inputValue, instantSave) {
     app.keyCount++;
@@ -62,7 +69,6 @@
         app.keyCount = 0;
       }
     //}
-  };
 
   this.Washago = Washago;
 

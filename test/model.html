@@ -4,6 +4,8 @@
     <title>Washago Model Tests</title> 
     <meta charset="utf-8">
 
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 
     <script src="../node_modules/underscore/underscore.js"></script>
@@ -12,7 +14,8 @@
     <script src="../node_modules/backbone.drowsy/backbone.drowsy.js"></script>
     <script src="../node_modules/backbone.drowsy/wakeful.js"></script>
 
-    <script src="../shared/model.js"></script>
+    <script src="../shared/js/washago.js"></script>
+    <script src="../shared/js/model.js"></script>
 </head>
 
 <body>
@@ -25,6 +28,8 @@
       mocha.reporter('html');
       expect = chai.expect;
     </script>
+
+    <script src="model.test.js"></script>
 
     <script>
       if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
