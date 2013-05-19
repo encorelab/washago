@@ -31,6 +31,7 @@
       showUsername();
     } else {
       console.log('No user found so prompt for username');
+      hideUsername();
     }
 
     jQuery('#login-button').click(function() {
@@ -68,6 +69,10 @@
 
   var showUsername = function () {
     jQuery('.username-display').removeClass('hide');
+  };
+
+  var hideUsername = function() {
+    jQuery('.username-display').addClass('hide');
   };
 
   app.autoSave = function(model, inputKey, inputValue, instantSave) {
