@@ -45,9 +45,17 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-csslint');
   grunt.loadNpmTasks('grunt-jsonlint');
+  grunt.loadNpmTasks('grunt-mocha');
 
   // Default task(s).
   // grunt.registerTask('default', ['uglify']);
   grunt.registerTask('default', ['jshint', 'csslint', 'jsonlint']);
   grunt.registerTask('lint', ['jshint', 'csslint', 'jsonlint']);
+  grunt.registerTask('test', 'run mocha-phantomjs', function () {
+    var done = this.async();
+    require('child_process').exec('mocha-phantomjs ./test/client.html', function (err, stdout) {
+      grunt.log.write(stdout);
+      done(err);
+    });
+  });
 };

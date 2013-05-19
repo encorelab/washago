@@ -22,7 +22,10 @@
         "grunt-contrib": "~0.4.0",
         "grunt-jsonlint": "~1.0.0",
         "grunt-contrib-csslint": "~0.1.2",
-        "http-server": "latest"
+        "grunt-mocha": "0.3.1",
+        "phantomjs": "~1.9.0",
+        "mocha-phantomjs": "2.0.2",
+        "http-server": "*"
     },
     "author": "ENCORE Lab",
     "license": "MIT"
