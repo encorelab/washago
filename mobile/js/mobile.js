@@ -69,6 +69,7 @@
         app.keyCount = 0;
       }
     //}
+  };
 
   this.Washago = Washago;
 
