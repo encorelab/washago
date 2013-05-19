@@ -31,10 +31,10 @@
       var deferredConfigure,
         _this = this;
       deferredConfigure = jQuery.Deferred();
-      if (url == null) {
+      if (!url) {
         throw new Error("Cannot configure model because no DrowsyDromedary URL was given!");
       }
-      if (db == null) {
+      if (!db) {
         throw new Error("Cannot configure model because no database name was given!");
       }
       this.baseURL = url;
@@ -53,21 +53,18 @@
         _this = this;
       dfs = [];
       df = jQuery.Deferred();
+
       this.db.collections(function(colls) {
-        var col, existingCollections, _i, _len, _results;
+        var col, existingCollections, _i, _len;
         existingCollections = _.pluck(colls, 'name');
-        _results = [];
-        for (_i = 0, _len = requiredCollections.length; _i < _len; _i++) {
-          col = requiredCollections[_i];
-          if (__indexOf.call(existingCollections, col) < 0) {
-            console.log("Creating collection '" + col + "' under " + Washago.Model.dbURL);
-            _results.push(dfs.push(_this.db.createCollection(col)));
-          } else {
-            _results.push(void 0);
+        _.each(existingCollections, function (coll) {
+          if (existingCollections.indexOf(coll) < 0) {
+            console.log("Creating collection '" + coll + "' under " + Washago.Model.dbURL);
+            dfs.push(_this.db.createCollection(coll));
           }
-        }
-        return _results;
+        });
       });
+
       jQuery.when.apply(jQuery, dfs).done(function() {
         return df.resolve();
       });
@@ -83,7 +80,7 @@
         VotableTrait.prototype.addVote = function(username) {
           var votes;
           votes = _.clone(this.get('votes'));
-          if (votes == null) {
+          if (!votes) {
             votes = [];
           }
           votes.push(username);
@@ -109,7 +106,7 @@
         BuildOnableTrait.prototype.addBuildOn = function(author, content) {
           var bo, build_ons;
           build_ons = _.clone(this.get('build_ons'));
-          if (build_ons == null) {
+          if (!build_ons) {
             build_ons = [];
           }
           bo = {
@@ -166,7 +163,7 @@
           var reducedTags,
             _this = this;
           reducedTags = _.reject(this.get('tags'), function(t) {
-            return (t.id === tag.id || t.name === tag.get('name')) && (!(tagger != null) || t.tagger === tagger);
+            return (t.id === tag.id || t.name === tag.get('name')) && (!tagger || t.tagger === tagger);
           });
           this.set('tags', reducedTags);
           return this;
@@ -175,7 +172,7 @@
         TaggableTrait.prototype.hasTag = function(tag, tagger) {
           var _this = this;
           return _.any(this.get('tags'), function(t) {
-            return t.id.toLowerCase() === tag.id && (!(tagger != null) || t.tagger === tagger);
+            return t.id.toLowerCase() === tag.id && (!tagger || t.tagger === tagger);
           });
         };
 
@@ -270,7 +267,7 @@
 
       /** States **/
 
-      return this.States = (function(_super) {
+      this.States = (function(_super) {
 
         __extends(States, _super);
 
@@ -294,14 +291,13 @@
         });
       };
       this.awake = {};
-      _ref = this.requiredCollections;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      _.each(this.requiredCollections, function (colName) {
         collName = _ref[_i];
         coll = new this[camelCase(collName)]();
         coll.wake(wakefulUrl);
         this.awake[collName] = coll;
         deferreds.push(coll.fetch());
-      }
+      });
       return jQuery.when.apply(jQuery, deferreds);
     };
 
