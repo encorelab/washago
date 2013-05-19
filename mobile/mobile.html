@@ -63,7 +63,7 @@
 
     <div id="index-screen" class="row">
 
-        <div id="list-screen" class="span7 view-container bs-docs-sidebar">
+        <div id="list-screen" class="span6 view-container bs-docs-sidebar">
             <ul class="nav nav-list bs-docs-sidenav affix-top scrollable">
                 <!-- filled by some ListView -->
             </ul>
@@ -74,24 +74,24 @@
             </div>
         </div>
 
-        <div id="input-screen" class="span7 view-container">
-            <div class="control-group">
-                <label id="note-body-label" for="note-body-entry">
-                    Note
-                </label>
-                <textarea class="field" id="note-body-entry" name="content"></textarea>
-            </div>
+        <div id="input-screen" class="span6 view-container">
             <div class="control-group">
                 <label for="note-headline-entry">
                     <b>Headline</b>
                 </label>
-                <input class="field" id="note-headline-entry" name="headline" placeholder="Enter headline..."
+                <input class="field headline-text-entry" id="note-headline-entry" name="headline" placeholder="Enter headline..."
                 type="text" />
+            </div>            
+            <div class="control-group">
+                <label id="note-body-label" for="note-body-entry">
+                    <b>Note</b>
+                </label>
+                <textarea class="field body-text-entry" id="note-body-entry" name="content"></textarea>
             </div>
             <div id="tag-container">
                 <!-- filled by TagListView  -->
             </div>
-            <div class="bottom-btn-container">
+            <div class="top-btn-container">
                 <a id="share-note-btn" class="btn btn-success">
                     Share
                 </a>
