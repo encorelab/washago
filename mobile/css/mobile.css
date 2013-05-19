@@ -89,6 +89,11 @@ input:disabled {
 
 /* BODY - ALL */
 
+/* hide a row */
+.row .hidden {
+    display: none;
+}
+
 /* LIST SCREEN */
 
 .icon-chevron-right {

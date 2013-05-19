@@ -20,6 +20,9 @@
   app.setup = function() {
     /* CONFIG */
 
+    // hide all rows initially
+    app.hideAllRows();
+
     // retrieve user name from cookie if possible otherwise ask user to choose name
     app.username = jQuery.cookie('washago_mobile_username');
 
@@ -27,6 +30,9 @@
       // We have a user in cookies so we show stuff
       console.log('We found user: '+app.username);
       jQuery('.username-display a').text(app.username);
+
+      // show index-screen aka home
+      jQuery('#index-screen').removeClass('hidden');
 
       hideLogin();
       showUsername();
@@ -42,6 +48,9 @@
         jQuery.cookie('washago_mobile_username', app.username, { expires: 1, path: '/' });
         jQuery('.username-display a').text(app.username);
 
+        // show index-screen aka home
+        jQuery('#index-screen').removeClass('hidden');
+
         hideLogin();
         showUsername();
       } else {
@@ -53,6 +62,22 @@
     jQuery('.logout-user').click(function() {
       jQuery.removeCookie('washago_mobile_username',  { path: '/' });
       window.location.reload();
+    });
+
+    // Show home / input screen
+    jQuery('.home').click(function() {
+      if (app.username) {
+        app.hideAllRows();
+        jQuery('#index-screen').removeClass('hidden');
+      }
+    });
+
+    // Show dashboard
+    jQuery('.dashboard').click(function() {
+      if (app.username) {
+        app.hideAllRows();
+        jQuery('#dashboard-screen').removeClass('hidden');
+      }
     });
 
     /* VIEW/MODEL SETUP */
@@ -81,6 +106,12 @@
 
   var hideUsername = function() {
     jQuery('.username-display').addClass('hide');
+  };
+
+  app.hideAllRows = function () {
+    jQuery('.row').each(function (){
+      jQuery(this).addClass('hidden');
+    });
   };
 
   app.autoSave = function(model, inputKey, inputValue, instantSave) {
