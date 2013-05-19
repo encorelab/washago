@@ -1,36 +1,36 @@
 /*** ANIMATIONS ***/
 
 @-webkit-keyframes pulseGrow {
-    0% { @include vendorize(transform, scale(1.0)); }
-    70% { @include vendorize(transform, scale(1.5)); }
-    100% { @include vendorize(transform, scale(1.0)); }
+  0% { @include vendorize(transform, scale(1.0)); }
+  70% { @include vendorize(transform, scale(1.5)); }
+  100% { @include vendorize(transform, scale(1.0)); }
 }
 @keyframes pulseGrow {
-    0% { transform:scale(1.0); }
-    70% { transform:scale(1.5); }
-    100% { transform:scale(1.0); }
+  0% { transform:scale(1.0); }
+  70% { transform:scale(1.5); }
+  100% { transform:scale(1.0); }
 }
 
 @-webkit-keyframes pulseFade {
-    0% { opacity: 1.0; }
-    50% { opacity: 0.2; }
-    100% { opacity: 1.0; }
+  0% { opacity: 1.0; }
+  50% { opacity: 0.2; }
+  100% { opacity: 1.0; }
 }
 @keyframes pulseFade {
-    0% { opacity: 1.0; }
-    50% { opacity: 0.2; }
-    100% { opacity: 1.0; }
+  0% { opacity: 1.0; }
+  50% { opacity: 0.2; }
+  100% { opacity: 1.0; }
 }
 
 @-webkit-keyframes teleportIn {
-    0% { @include vendorize(transform, scale(0.3)); opacity: 0.0; }
-    70% { @include vendorize(transform, scale(2.0)); opacity: 1.0; }
-    100% { @include vendorize(transform, scale(1.0)); }
+  0% { @include vendorize(transform, scale(0.3)); opacity: 0.0; }
+  70% { @include vendorize(transform, scale(2.0)); opacity: 1.0; }
+  100% { @include vendorize(transform, scale(1.0)); }
 }
 @keyframes teleportIn {
-    0% { transform:scale(0.3); opacity: 0.0; }
-    70% { transform:scale(2.0); opacity: 1.0; }
-    100% { transform:scale(1.0); }
+  0% { transform:scale(0.3); opacity: 0.0; }
+  70% { transform:scale(2.0); opacity: 1.0; }
+  100% { transform:scale(1.0); }
 }
 
 @-webkit-keyframes glow {
