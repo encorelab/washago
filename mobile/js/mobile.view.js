@@ -3,54 +3,58 @@
 
 (function() {
   "use strict";
-
   var Washago = this.Washago || {};
-    
-  // Washago.Mobile.View.setup = function() {
-  // };
+  this.Washago.Mobile = this.Washago.Mobile || {};
+  var app = this.Washago.Mobile;
+  app.View = {};
 
-  // /**
-  //   MobileView
-  // **/
-  // Washago.Mobile.View.MobileView = Backbone.View.extend({
-  //   events: {
-  //     'keyup :input': function(ev) {
-  //       var view = this,
-  //         field = ev.target.name,
-  //         input = jQuery('#'+ev.target.id).val();
-  //       // if we hit a key clear intervals so that during typing intervals don't kick in
-  //       window.clearTimeout(Washago.Mobile.autoSaveTimer);
+  /**
+    MobileView
+  **/
+  app.View.IndexView = Backbone.View.extend({
+    events: {
+      'keyup :input': function(ev) {
+        var view = this,
+          field = ev.target.name,
+          input = jQuery('#'+ev.target.id).val();
+        // clear timer on keyup so that a save doesn't happen while typing
+        window.clearTimeout(app.autoSaveTimer);
 
-  //       // save after 10 keystrokes
-  //       Washago.Mobile.autoSave(view.model, field, input, false);
+        // save after 10 keystrokes
+        app.autoSave(view.model, field, input, false);
 
-  //       // setting up a timer so that if we stop typing we save stuff after 5 seconds
-  //       Washago.Mobile.autoSaveTimer = setTimeout(function(){
-  //         Washago.Mobile.autoSave(view.model, field, input, true);
-  //       }, 5000);
-  //     }
-  // });
+        // setting up a timer so that if we stop typing we save stuff after 5 seconds
+        app.autoSaveTimer = setTimeout(function(){
+          app.autoSave(view.model, field, input, true);
+        }, 5000);
+      }
+    },
 
-  // /**
-  //   ListView
-  // **/
-  // Washago.Mobile.View.ListView = Backbone.View.extend({
+    initialize: function () {
+      console.log("Initializing IndexView...",this.el);
+    }
+  });
 
-  // });
+  /**
+    ListView
+  **/
+  app.View.ListView = Backbone.View.extend({
 
-  // /**
-  //   DetailsView
-  // **/
-  // Washago.Mobile.View.DetailsView = Backbone.View.extend({
+  });
 
-  // });
+  /**
+    DetailsView
+  **/
+  app.View.DetailsView = Backbone.View.extend({
 
-  // /**
-  //   InputView
-  // **/
-  // Washago.Mobile.View.InputView = Backbone.View.extend({
+  });
 
-  // });
+  /**
+    InputView
+  **/
+  app.View.InputView = Backbone.View.extend({
+
+  });
 
 
   this.Washago = Washago;

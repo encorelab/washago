@@ -4,8 +4,7 @@
   var Backbone, Washago, Drowsy, jQuery, _,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __hasProp = {}.hasOwnProperty;
 
   if (typeof exports !== "undefined" && exports !== null) {
     jQuery = require("jquery");
@@ -94,12 +93,9 @@
     };
 
     Model.defineModelClasses = function() {
-      var BuildOnableTrait, TaggableTrait, VotableTrait;
-      VotableTrait = (function() {
-
-        function VotableTrait() {}
-
-        VotableTrait.prototype.addVote = function(username) {
+      
+      var VotableTrait = {
+        addVote: function(username) {
           var votes;
           votes = _.clone(this.get('votes'));
           if (!votes) {
@@ -107,25 +103,17 @@
           }
           votes.push(username);
           return this.set('votes', votes);
-        };
+        },
 
-        VotableTrait.prototype.removeVote = function(username) {
+        removeVote: function(username) {
           var votes;
           votes = _.without(this.get('votes'), username);
           return this.set('votes', votes);
-        };
+        }
+      };
 
-        return VotableTrait;
-
-      })();
-
-      /** BuildOnable Trait **/
-
-      BuildOnableTrait = (function() {
-
-        function BuildOnableTrait() {}
-
-        BuildOnableTrait.prototype.addBuildOn = function(author, content) {
+      var BuildOnableTrait = {
+        addBuildOn: function(author, content) {
           var bo, build_ons;
           build_ons = _.clone(this.get('build_ons'));
           if (!build_ons) {
@@ -138,26 +126,13 @@
           };
           build_ons.push(bo);
           return this.set('build_ons', build_ons);
-        };
-
-        return BuildOnableTrait;
-
-      })();
+        }
+      };
 
       /** Taggable Trait **/
 
-      TaggableTrait = (function() {
-
-        function TaggableTrait() {
-          this.hasTag = __bind(this.hasTag, this);
-
-          this.removeTag = __bind(this.removeTag, this);
-
-          this.addTag = __bind(this.addTag, this);
-
-        }
-
-        TaggableTrait.prototype.addTag = function(tag, tagger) {
+      var TaggableTrait = {
+        addTag: function(tag, tagger) {
           var existingTagRelationships, tagRel,
             _this = this;
           if (!(tag instanceof Washago.Model.Tag)) {
@@ -179,9 +154,9 @@
           existingTagRelationships.push(tagRel);
           this.set('tags', existingTagRelationships);
           return this;
-        };
+        },
 
-        TaggableTrait.prototype.removeTag = function(tag, tagger) {
+        removeTag: function(tag, tagger) {
           var reducedTags,
             _this = this;
           reducedTags = _.reject(this.get('tags'), function(t) {
@@ -189,125 +164,58 @@
           });
           this.set('tags', reducedTags);
           return this;
-        };
+        },
 
-        TaggableTrait.prototype.hasTag = function(tag, tagger) {
+        hasTag: function(tag, tagger) {
           var _this = this;
           return _.any(this.get('tags'), function(t) {
             return t.id.toLowerCase() === tag.id && (!tagger || t.tagger === tagger);
           });
-        };
-
-        return TaggableTrait;
-
-      })();
+        }
+      };
 
       /** Note **/
 
-      this.Note = (function(_super) {
-
-        __extends(Note, _super);
-
-        function Note() {
-          return Note.__super__.constructor.apply(this, arguments);
-        }
-
-        _.extend(Note.prototype, TaggableTrait.prototype);
-
-        Note.prototype.tagRel = function(tag, tagger) {
+      this.Note = this.db.Document('notes').extend({
+        tagRel: function(tag, tagger) {
           return {
             id: tag.id.toLowerCase(),
             name: tag.get('name'),
             tagger: tagger,
             tagged_at: new Date()
           };
-        };
-
-        return Note;
-
-      })(this.db.Document('notes'));
-
-      /** Notes **/
-
-      this.Notes = (function(_super) {
-
-        __extends(Notes, _super);
-
-        function Notes() {
-          return Notes.__super__.constructor.apply(this, arguments);
         }
+      });
 
-        Notes.prototype.model = Washago.Model.Note;
-
-        return Notes;
-
-      })(this.db.Collection('notes'));
+      this.Notes = this.db.Collection('notes').extend({
+        model: Washago.Model.Note
+      });
 
       /** Tag **/
 
-      this.Tag = (function(_super) {
+      this.Tag = this.db.Document('tags').extend({
 
-        __extends(Tag, _super);
+      });
 
-        function Tag() {
-          return Tag.__super__.constructor.apply(this, arguments);
-        }
-
-        return Tag;
-
-      })(this.db.Document('tags'));
-
-      /** Tags **/
-
-      this.Tags = (function(_super) {
-
-        __extends(Tags, _super);
-
-        function Tags() {
-          return Tags.__super__.constructor.apply(this, arguments);
-        }
-
-        Tags.prototype.model = Washago.Model.Tag;
-
-        return Tags;
-
-      })(this.db.Collection('tags'));
+      this.Tags = this.db.Collection('tags').extend({
+        model: Washago.Model.Tag
+      });
 
       /** State **/
 
-      this.State = (function(_super) {
+      this.State = this.db.Collection('states').extend({
 
-        __extends(State, _super);
-
-        function State() {
-          return State.__super__.constructor.apply(this, arguments);
-        }
-
-        return State;
-
-      })(this.db.Document('states'));
-
-      /** States **/
-
-      this.States = (function(_super) {
-
-        __extends(States, _super);
-
-        function States() {
-          return States.__super__.constructor.apply(this, arguments);
-        }
-
-        States.prototype.model = Washago.Model.State;
-
-        return States;
-
-      })(this.db.Collection('states'));
+      });
+      
+      this.States = this.db.Collection('states').extend({
+        model: Washago.Model.State
+      });
     };
 
     Model.wake = function(wakefulUrl) {
       var dfrWake = jQuery.Deferred();
       Wakeful.loadFayeClient(wakefulUrl).then(function () {
-        return Model.initWakefulCollections(wakefulUrl)
+        return Model.initWakefulCollections(wakefulUrl);
       }).then(function () {
         dfrWake.resolve();
       });

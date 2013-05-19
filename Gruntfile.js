@@ -13,7 +13,7 @@ module.exports = function(grunt) {
     //   }
     // }
     jshint: {
-      all: ['Gruntfile.js', 'smartboard/js/*.js', 'mobile/js/mobile.js', 'mobile/js/mobile.view.js']
+      all: ['Gruntfile.js', 'smartboard/js/*.js', 'mobile/js/mobile.js', 'mobile/js/mobile.view.js', 'shared/js/*.js']
     },
     csslint: {
       dev: {
