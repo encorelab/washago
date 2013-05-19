@@ -53,7 +53,7 @@ module.exports = function(grunt) {
   grunt.registerTask('lint', ['jshint', 'csslint', 'jsonlint']);
   grunt.registerTask('test', 'run mocha-phantomjs', function () {
     var done = this.async();
-    var child_process = require('child_process')
+    var child_process = require('child_process');
 
     child_process.exec('mocha-phantomjs ./test/model.html', function (err, stdout) {
       grunt.log.write(stdout);
