@@ -27,4 +27,37 @@
     }
   });
 
+  View.Wall = View.Base.extend({
+    events: {
+      'click #add-tag-opener': function(ev) {
+        var addTagContainer,
+          _this = this;
+
+        
+        addTagContainer = this.$el.find('#add-tag-container');
+        addTagContainer.toggleClass('opened');
+        if (addTagContainer.hasClass('opened')) {
+          return setTimeout(function() {
+            return _this.$el.find('#new-tag').focus();
+          }, 1000);
+        }
+      },
+      'click #submit-new-tag': function(ev) {
+        return this.submitNewTag();
+      },
+      'keydown #new-tag': function(ev) {
+        if (ev.keyCode === 13) {
+          return this.submitNewTag();
+        }
+      },
+      'click #toggle-pause': function(ev) {
+        var paused;
+        paused = this.runState.get('paused');
+        return this.runState.save({
+          paused: !paused
+        });
+      }
+    }
+  });
+
 }).call(this);
