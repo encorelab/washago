@@ -81,9 +81,7 @@ input:disabled {
 }
 
 .input-alert {
-	position: absolute;
-	margin-top: 20%;
-	width: 28em;
+	margin-top: 2%;
 }
 
 
