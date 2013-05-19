@@ -4,9 +4,7 @@
     <title>Washago Mobile</title> 
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <!-- Suppress IE compatibility mode - should not be an issue for us, but who knows if there is a MS tablet that has that mode -->
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-
+    
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <link href="css/mobile.css" rel="stylesheet">
     <link href="css/jquery.toastmessage.css" rel="stylesheet">
@@ -35,13 +33,15 @@
         <div class="navbar-inner">
             <ul class="nav nav-pills">
                 <li class="active username-display"><a></a></li>
-                <form class="navbar-form pull-right">
-                    <input id="username" type="text" name="username" autocomplete="on" placeholder="Please enter name" title="error" pattern="^[a-zA-Z0-9]+$" maxlength="25"></input>
-                    <div class="alert alert-error input-alert">
-                        <strong>Error!</strong> Name can only be alphanumerical without whitespace!
-                    </div>
-                    <button id="login-button" type="submit" class="btn btn-primary">Get me in!</button>
-                </form>
+                <li>
+                    <form class="navbar-form pull-right">
+                        <input id="username" type="text" name="username" autocomplete="on" placeholder="Please enter name" title="error" pattern="^[a-zA-Z0-9]+$" maxlength="25" />
+                        <div class="alert alert-error input-alert">
+                            <strong>Error!</strong> Name can only be alphanumerical without whitespace!
+                        </div>
+                        <button id="login-button" type="submit" class="btn btn-primary">Get me in!</button>
+                    </form>
+                </li>
             </ul>
         </div>
     </div>
