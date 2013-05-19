@@ -21,11 +21,11 @@
     /* CONFIG */
 
     // retrieve user name from cookie if possible otherwise ask user to choose name
-    Washago.Mobile.username = jQuery.cookie('washago_mobile_username');
+    app.username = jQuery.cookie('washago_mobile_username');
 
-    if (Washago.Mobile.username) {
-      console.log('We found user: '+Washago.Mobile.username);
-      jQuery('.username-display a').text(Washago.Mobile.username);
+    if (app.username) {
+      console.log('We found user: '+app.username);
+      jQuery('.username-display a').text(app.username);
 
       hideLogin();
       showUsername();
@@ -34,10 +34,10 @@
     }
 
     jQuery('#login-button').click(function() {
-      Washago.Mobile.username = jQuery('#username').val();
-      if (Washago.Mobile.username && Washago.Mobile.username !== '') {
-        jQuery.cookie('washago_mobile_username', Washago.Mobile.username, { expires: 1, path: '/' });
-        jQuery('.username-display a').text(Washago.Mobile.username);
+      app.username = jQuery('#username').val();
+      if (app.username && app.username !== '') {
+        jQuery.cookie('washago_mobile_username', app.username, { expires: 1, path: '/' });
+        jQuery('.username-display a').text(app.username);
 
         hideLogin();
         showUsername();
