@@ -8,8 +8,7 @@ describe('Washago.Model', function() {
   before(function (done) {
     Washago.Model.init(TEST_DROWSY_URL, TEST_DB)
     .then(function () {
-      foo = Washago.Model.wake(TEST_WAKEFUL_URL);
-      return foo
+      return Washago.Model.wake(TEST_WAKEFUL_URL);
     }).done(function () { 
       done(); 
     });
@@ -18,7 +17,7 @@ describe('Washago.Model', function() {
   describe('Note', function () {
     it('should create a new Note when .saved()', function (done) {
       var note = new Washago.Model.Note();
-      note.save().then(function () { done() });
+      note.save().then(function () { done(); });
     });
   });
 });
