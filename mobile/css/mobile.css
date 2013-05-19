@@ -1,0 +1,11 @@
+/* ========================================================
+ *    Styles for Person login buttons
+ * ===================================================== */
+.user-authentication{
+  margin: 100px auto;
+  text-align: center;
+  width: 300px;
+}
+.user-authentication a{
+  margin-bottom: 40px;
+}

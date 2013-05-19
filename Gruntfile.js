@@ -13,7 +13,7 @@ module.exports = function(grunt) {
     //   }
     // }
     jshint: {
-      all: ['Gruntfile.js', 'smartboard/js/*.js']
+      all: ['Gruntfile.js', 'smartboard/js/*.js', 'mobile/js/mobile.js', 'mobile/js/mobile.view.js']
     },
     csslint: {
       dev: {
@@ -28,7 +28,7 @@ module.exports = function(grunt) {
           'adjoining-classes': false,
           'import': false
         },
-        src: ['mobile/css/*.css', 'smartboard/css/*.css']
+        src: ['mobile/css/mobile.css', 'smartboard/css/*.css']
       }
     },
     jsonlint: {
