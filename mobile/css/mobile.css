@@ -1,35 +1,102 @@
+/* ALL */
+
+@import url(http://fonts.googleapis.com/css?family=Ubuntu:400,700,400italic,700italic);
+
+body {
+	font-family: Ubuntu, sans-serif;
+}
+
+textarea {
+	-moz-user-select: text;
+	-webkit-user-select: text;
+	user-select: text;
+	color: #333;
+}
+
+input {
+	-moz-user-select: text;
+	-webkit-user-select: text;
+	user-select: text;
+	color: #333;
+}
+
+.scrollable {
+	overflow-y: auto;
+}
+
+.bottom-btn-container {
+	position: absolute;
+	bottom: 3px;
+	right: 3px;
+}
+
+.view-container {
+	height: 380px;
+	border: 1px solid;
+	padding: 5px;
+	margin-bottom: 10px;
+	position: relative;
+	background-color: #FCFCFF;
+	border-radius: 7px;
+	box-shadow: rgba(0,0,0,0.2) 1px 4px 15px;
+}
+
+.container-header {
+	height: 40px;
+	padding: 10px 5px 5px 5px;
+	margin-bottom: 15px;
+	background-color: #CDCBD4;
+	text-align: center;
+	overflow-y: auto;
+	font-weight: bold;
+}
+
+/* NAVBAR */
 
 /* This hides any element with class alert directly after an input field with a pattern (regex) */
 input[pattern] + .alert {
-  display: none;
+	display: none;
 }
 
 /* If pattern (regex) is violated alert is shown */
 input[pattern]:invalid + .alert {
-  display: inline-block;
+	display: inline-block;
 }
 
 /* If pattern (regex) is violated submit button is hidden */
 input[pattern]:invalid ~ button {
-  display: none;
+	display: none;
 }
 
-input:disabled
-{
-  display: none;
+input:disabled {
+	display: none;
 }
 
-#login-button:disabled
-{
-  display: none;
+#login-button:disabled {
+	display: none;
 }
 
 .username-display .hide {
-  display: none;
+	display: none;
 }
 
 .input-alert {
-  position: absolute;
-  margin-top: 20%;
-  width: 28em;
+	position: absolute;
+	margin-top: 20%;
+	width: 28em;
 }
+
+
+
+
+/* BODY - ALL */
+
+/* LIST SCREEN */
+
+.icon-chevron-right {
+	float: right;
+}
+
+/* DETAILS SCREEN */
+
+/* INPUT SCREEN */

@@ -1,0 +1,176 @@
+@import url(http://fonts.googleapis.com/css?family=Ubuntu:400,700,400italic,700italic);
+
+// color theme: https://kuler.adobe.com/#themeID/2129122
+
+$wall-color: #ab2;
+
+$widget-background-color: #ffa100;
+$widget-accent-color: #c8271a;
+
+@mixin transition-property($duration, $property: all, $timing: ease, $delay: 0) {
+    @include vendorize(transition, $property $duration $timing $delay);
+}
+
+@mixin vendorize($property, $value) {
+    -webkit-#{$property}: $value;
+    -moz-#{$property}: $value;
+    #{$property}: $value;
+}
+
+body {
+    font-family: Ubuntu, sans-serif;
+    overflow: hidden;
+}
+
+#wall {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+
+    background-color: $wall-color;
+    @include transition-property(3s, background-color);
+
+    @include vendorize(user-select, none);
+
+    &.paused {
+        background-color: #aaa;
+    }
+
+    #watermark {
+        z-index: 0;
+        position: absolute;
+        width: 100%;
+        top: 35%;
+        text-align: center;
+        font-size: 120px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: white;
+        opacity: 0.4;
+    }
+
+    #add-tag-container {
+        $font-size: 20px;
+
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        border-radius: 1em;
+        background-color: $widget-background-color;
+        padding: 0;
+        box-shadow: 2px 1px 8px rgba(0, 0, 0, 0.3);
+        font-size: $font-size;
+        min-width: 106px;
+
+        #add-tag-opener {
+            position: absolute;
+            left: 0;
+            font-size: $font-size;
+            margin: 0;
+            white-space: nowrap;
+            z-index: 1;
+            box-shadow: inset -1px -2px 8px rgba(0, 0, 0, 0.6);
+
+            @include transition-property(0.5s);
+        }
+
+        #add-tag-opener:hover {
+            cursor: pointer;
+        }
+
+        #submit-new-tag {
+            border: none;
+            display: inline-block;
+            padding: 4px 10px;
+            background-color: $widget-accent-color;
+            color: lighten($widget-background-color, 20%);
+            font-weight: bold;
+            font-size: $font-size;
+            border-radius: 1em;
+            box-shadow: inset -1px -2px 8px rgba(0, 0, 0, 0.6);
+            margin: 0;
+            position: absolute;
+            top: 0;
+            right: 0;
+
+            visibility: hidden;
+
+            @include transition-property(0.5s);
+        }
+
+        #new-tag {
+            font-size: $font-size;
+            margin: 0;
+            margin-left: 10px;
+            margin-right: 1em;
+
+            @include transition-property(0.5s);
+
+            width: 0;
+        }
+
+        &.opened #add-tag-opener {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        &.opened #submit-new-tag {
+            visibility: visible;
+        }
+
+        &.opened #new-tag {
+            display: inline-block;
+            width: 14em;
+            margin-left: 106px;
+        }
+    }
+}
+
+
+button {
+    display: inline-block;
+    border: none;
+    padding: 4px 10px;
+    background-color: $widget-accent-color;
+    color: $widget-background-color;
+    font-weight: bold;
+    box-shadow: inset -1px -2px 8px rgba(0, 0, 0, 0.6),
+                2px 1px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 1em;
+
+    font-size: 20px;
+
+    @include transition-property(1s, opacity);
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+#action-buttons-container {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}
+
+#toggle-pause {
+    margin-right: 60px;
+    width: 140px;
+
+    &.paused {
+        -webkit-animation-name: pulseFade;
+        -webkit-animation-duration: 1s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-timing-function: ease-out;
+
+        -moz-animation-name: pulseFade;
+        -moz-animation-duration: 1s;
+        -moz-animation-iteration-count: infinite;
+        -moz-animation-timing-function: ease-out;
+    }
+}
+
+@import 'animations.scss';
+
