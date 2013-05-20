@@ -111,15 +111,15 @@
 
       wall.$el.append(bv.$el);
       note.on('change:pos', function() {
-        bv.pos = note.get('pos');
+        bv.pos = note.getPos();
       });
 
       note.on('change:z-index', function() {
         bv.$el.zIndex(note.get('z-index'));
       });
 
-      if (note.has('pos')) {
-        bv.pos = note.get('pos');
+      if (note.hasPos()) {
+        bv.pos = note.getPos();
       } else {
         wall.assignRandomPositionToBalloon(note, bv);
       }
@@ -147,7 +147,7 @@
       wallHeight = this.$el.height;
       left = Math.random() * (wallWidth - view.width);
       top = Math.random() * (wallHeight - view.height);
-      doc.set('pos', {
+      doc.setPos({
         left: left,
         top: top
       });
@@ -174,11 +174,8 @@
         containment: '#wall'
       }).css('position', 'absolute');
       view.$el.on('dragstop', function(ev, ui) {
-        return doc.save({
-          pos: ui.position
-        }, {
-          patch: true
-        });
+        doc.setPos(ui.position);
+        return doc.save(null, { patch: true });
       });
       view.$el.on('drag', function(ev, ui) {
         if (view.renderConnectors !== null) {

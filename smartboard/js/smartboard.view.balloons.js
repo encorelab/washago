@@ -106,8 +106,8 @@
     render: function() {
       var balloon = this;
 
-      if (balloon.model.has('pos')) {
-        balloon.pos = balloon.model.get('pos');
+      if (balloon.model.hasPos()) {
+        balloon.pos = balloon.model.getPos();
       }
       if (balloon.model.has('z-index')) {
         return balloon.$el.zIndex(balloon.model.get('z-index'));
