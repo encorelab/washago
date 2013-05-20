@@ -21,11 +21,12 @@ $widget-accent-color: #c8271a;
 
 body {
     font-family: Ubuntu, sans-serif;
-    overflow: hidden;
 }
 
 #wall {
     position: absolute;
+    overflow: hidden;
+
     top: 0;
     bottom: 0;
     right: 0;

@@ -43,7 +43,7 @@
       });
       Object.defineProperty(balloon, 'width', {
         get: function() {
-          return balloon.$el.outerWidth();
+          return balloon.$el.outerWidth(); // TODO: cache
         },
         set: function(w) {
           return balloon.$el.css('width', w + 'px');
@@ -51,7 +51,7 @@
       });
       Object.defineProperty(balloon, 'height', {
         get: function() {
-          return balloon.$el.outerHeight();
+          return balloon.$el.outerHeight(); // TODO: cache
         },
         set: function(h) {
           return balloon.$el.css('height', h + 'px');
@@ -97,6 +97,10 @@
           return balloon.render();
         }
       });
+
+      // balloon.$el.on('drag', function(ev, ui) {
+      //   balloon.adjustForPerspective(ui.position);
+      // });
     },
 
     render: function() {
@@ -108,6 +112,29 @@
       if (balloon.model.has('z-index')) {
         return balloon.$el.zIndex(balloon.model.get('z-index'));
       }
+
+      // this.adjustForPerspective();
+    },
+
+    // this is currently unused
+    adjustForPerspective: function (balloonPos) {
+      var wallWidth = this.wall.width;
+      var wallHeight = this.wall.height;
+      var balloonWidth = this.width;
+      var balloonHeight = this.height;
+
+      var pos = balloonPos || this.$el.offset();
+
+      var xMid = wallWidth / 2;
+      var perspX = ((pos.left + balloonWidth/2) - xMid) / xMid;
+
+      var yMid = wallHeight / 2;
+      var perspY = ((pos.top + balloonHeight/2) - yMid) / yMid;
+      
+      var shadowY = Math.round(8 * perspY);
+      var shadowX = Math.round(8 * perspX);
+      console.log(shadowY, shadowX, "rgba(0, 0, 0, 0.1) "+shadowX+"px "+shadowY+"px 4px");
+      this.$el.css('box-shadow', "rgba(0, 0, 0, 0.1) "+shadowX+"px "+shadowY+"px 4px");
     }
   });
 

@@ -1,11 +1,11 @@
 @import url(http://fonts.googleapis.com/css?family=Ubuntu:400,700,400italic,700italic);
 /*csslint gradients: false, font-sizes: false */
 body {
-  font-family: Ubuntu, sans-serif;
-  overflow: hidden; }
+  font-family: Ubuntu, sans-serif; }
 
 #wall {
   position: absolute;
+  overflow: hidden;
   top: 0;
   bottom: 0;
   right: 0;
@@ -374,8 +374,6 @@ button {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.1) 4px 4px 4px;
-  -moz-box-shadow: rgba(0, 0, 0, 0.1) 4px 4px 4px;
   box-shadow: rgba(0, 0, 0, 0.1) 4px 4px 4px;
   -webkit-transition: height 0.5s, box-shadow 0.25s, opacity 1s;
   -moz-transition: height 0.5s, box-shadow 0.25s, opacity 1s;

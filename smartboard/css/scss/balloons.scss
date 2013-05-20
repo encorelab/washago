@@ -233,7 +233,8 @@ $tag-balloon-text-color: black;
 
 .balloon {
     @include vendorize(user-select, none);
-    @include vendorize(box-shadow, rgba(0,0,0,0.1) 4px 4px 4px);
+    
+    box-shadow: rgba(0,0,0,0.1) 4px 4px 4px;
     
     -webkit-transition: height 0.5s, box-shadow 0.25s, opacity 1s;
     -moz-transition: height 0.5s, box-shadow 0.25s, opacity 1s;

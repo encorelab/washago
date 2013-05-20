@@ -44,6 +44,7 @@
     },
 
     ready: function () {
+      this.render();
       this.$el.removeClass('loading');
       this.changeWatermark('Brainstorm');
     },
@@ -142,10 +143,10 @@
 
     assignRandomPositionToBalloon: function(doc, view) {
       var left, top, wallHeight, wallWidth;
-      wallWidth = this.$el.width();
-      wallHeight = this.$el.height();
-      left = Math.random() * (wallWidth - view.$el.outerWidth());
-      top = Math.random() * (wallHeight - view.$el.outerHeight());
+      wallWidth = this.$el.width;
+      wallHeight = this.$el.height;
+      left = Math.random() * (wallWidth - view.width);
+      top = Math.random() * (wallHeight - view.height);
       doc.set('pos', {
         left: left,
         top: top
@@ -228,55 +229,55 @@
     render: function() {
       var elementsToRemove, fadeoutStyle, hideStyle, ig, paused, phase,
         _this = this;
-      phase = this.runState.get('phase');
+
+      this.width = this.$el.outerWidth();
+      this.height = this.$el.outerHeight();
+
+      phase = Smartboard.runState.get('phase');
       if (phase !== this.$el.data('phase')) {
-        switch (phase) {
-          case 'tagging':
-            jQuery('body').removeClass('mode-brainstorm').addClass('mode-tagging').removeClass('mode-exploration').removeClass('mode-propose').removeClass('mode-investigate');
-            this.changeWatermark("tagging");
-            break;
-          case 'exploration':
-            jQuery('body').removeClass('mode-brainstorm').removeClass('mode-tagging').addClass('mode-exploration').removeClass('mode-propose').removeClass('mode-investigate');
-            this.changeWatermark("exploration");
-            break;
-          case 'propose':
-            jQuery('body').removeClass('mode-brainstorm').removeClass('mode-tagging').removeClass('mode-exploration').addClass('mode-propose').removeClass('mode-investigate');
-            this.changeWatermark("propose");
-            setTimeout((function() {
-              return _this.$el.find('.contribution, .contribution-connector').remove();
-            }), 1100);
-            break;
-          case 'investigate':
-            ig = Sail.app.interestGroup;
-            if (ig !== null) {
-              this.changeWatermark(ig.get('name'));
-              jQuery('body').addClass('mode-investigate-with-topic').addClass(ig.get('colorClass'));
-              elementsToRemove = ".balloon.contribution, .connector.contribution-connector, .balloon.tag, .connector.proposal-connector, " + (".balloon.proposal:not(.ig-" + ig.id + "), .balloon.investigation:not(.ig-" + ig.id + "), .connector:not(.ig-" + ig.id + ")");
-            } else {
-              this.changeWatermark("investigate");
-              jQuery('body').removeClass('mode-investigate-with-topic');
-              elementsToRemove = '.balloon.contribution, .connector.contribution-connector';
-            }
-            fadeoutStyle = jQuery("<style>                            " + elementsToRemove + " {                                opacity: 0.0;                            }                        </style>");
-            hideStyle = jQuery("<style>                            " + elementsToRemove + " {                                display: none;                            }                        </style>");
-            jQuery('head').append(fadeoutStyle);
-            jQuery('body').removeClass('mode-brainstorm').removeClass('mode-tagging').removeClass('mode-exploration').removeClass('mode-propose').addClass('mode-investigate');
-            setTimeout((function() {
-              return jQuery('head').append(hideStyle);
-            }), 1100);
-            break;
-          default:
-            jQuery('body').addClass('mode-brainstorm').removeClass('mode-tagging').removeClass('mode-exploration').removeClass('mode-propose').removeClass('mode-investigate');
-            this.changeWatermark("brainstorm");
-        }
+        // switch (phase) {
+        //   case 'tagging':
+        //     jQuery('body').removeClass('mode-brainstorm').addClass('mode-tagging').removeClass('mode-exploration').removeClass('mode-propose').removeClass('mode-investigate');
+        //     this.changeWatermark("tagging");
+        //     break;
+        //   case 'exploration':
+        //     jQuery('body').removeClass('mode-brainstorm').removeClass('mode-tagging').addClass('mode-exploration').removeClass('mode-propose').removeClass('mode-investigate');
+        //     this.changeWatermark("exploration");
+        //     break;
+        //   case 'propose':
+        //     jQuery('body').removeClass('mode-brainstorm').removeClass('mode-tagging').removeClass('mode-exploration').addClass('mode-propose').removeClass('mode-investigate');
+        //     this.changeWatermark("propose");
+        //     setTimeout((function() {
+        //       return _this.$el.find('.contribution, .contribution-connector').remove();
+        //     }), 1100);
+        //     break;
+        //   case 'investigate':
+        //     ig = Sail.app.interestGroup;
+        //     if (ig !== null) {
+        //       this.changeWatermark(ig.get('name'));
+        //       jQuery('body').addClass('mode-investigate-with-topic').addClass(ig.get('colorClass'));
+        //       elementsToRemove = ".balloon.contribution, .connector.contribution-connector, .balloon.tag, .connector.proposal-connector, " + (".balloon.proposal:not(.ig-" + ig.id + "), .balloon.investigation:not(.ig-" + ig.id + "), .connector:not(.ig-" + ig.id + ")");
+        //     } else {
+        //       this.changeWatermark("investigate");
+        //       jQuery('body').removeClass('mode-investigate-with-topic');
+        //       elementsToRemove = '.balloon.contribution, .connector.contribution-connector';
+        //     }
+        //     fadeoutStyle = jQuery("<style>                            " + elementsToRemove + " {                                opacity: 0.0;                            }                        </style>");
+        //     hideStyle = jQuery("<style>                            " + elementsToRemove + " {                                display: none;                            }                        </style>");
+        //     jQuery('head').append(fadeoutStyle);
+        //     jQuery('body').removeClass('mode-brainstorm').removeClass('mode-tagging').removeClass('mode-exploration').removeClass('mode-propose').addClass('mode-investigate');
+        //     setTimeout((function() {
+        //       return jQuery('head').append(hideStyle);
+        //     }), 1100);
+        //     break;
+        //   default:
+        //     jQuery('body').addClass('mode-brainstorm').removeClass('mode-tagging').removeClass('mode-exploration').removeClass('mode-propose').removeClass('mode-investigate');
+        //     this.changeWatermark("brainstorm");
+        // }
         this.$el.data('phase', phase);
       }
-      if (Smartboard.tags.length >= 4) {
-        jQuery("#add-tag-opener").css({
-          opacity: 0.4
-        });
-      }
-      paused = this.runState.get('paused');
+
+      paused = Smartboard.runState.get('paused');
       if (paused !== this.$el.data('paused')) {
         if (paused) {
           this.pause();
