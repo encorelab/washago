@@ -1,18 +1,33 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+    <title>Washago Mobile</title> 
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1">
+    
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="css/mobile.css" rel="stylesheet">
+    <link href="css/jquery.toastmessage.css" rel="stylesheet">
+
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.js"></script>
+    <script src="../node_modules/underscore/underscore.js"></script>
+    <script src="../node_modules/backbone/backbone.js"></script>
+    <script src="../node_modules/backbone.drowsy/backbone.drowsy.js"></script>
+    <script src="../node_modules/backbone.drowsy/wakeful.js"></script>
+    <script src="js/jquery.toastmessage.js"></script>
+    <script src="../shared/js/libs/jquery.cookie.js"></script>
+    <script src="../shared/js/model.js"></script>
+    <script src="js/mobile.view.js"></script>
+    <script src="js/mobile.js"></script>
+</head>
+
 <body>
     <script type="text/javascript">
         jQuery(document).ready(function() {
           Washago.Mobile.setup();
         }); 
     </script>
-
-    <!-- <div class="user-authentication">
-        % if this.login?
-            {{email}}
-            <a href="#" id="signout" class="persona-button dark"><span>Sign out</span></a>
-        % else
-            <a href="#" id="signin" class="persona-button dark"><span>Sign in with your email address</span></a>
-        % end
-    </div> -->
 
     <div class="navbar navbar-inverse">
         <div class="navbar-inner">
@@ -26,33 +41,28 @@
                 <a class="brand" href="#">Washago</a>
                 <div class="nav-collapse collapse navbar-responsive-collapse">
                     <ul class="nav nav-pills">
-                        % if this.login?
-                            <li class="active home"><a href="#">Home</a></li>
-                            <li class="active dashboard"><a href="#">My Stuff</a></li>
-                        % end
+                        <li class="active home"><a href="#">Home</a></li>
+                        <li class="active dashboard"><a href="#">My Stuff</a></li>
+                        
                     </ul>
-                    <!-- <form class="navbar-form pull-right">
+                    <form class="navbar-form pull-right">
                         <input id="username" type="text" name="username" autocomplete="on" placeholder="Please enter name" title="error" pattern="^[a-zA-Z0-9]+$" maxlength="25" />
                         <div class="alert alert-error input-alert">
                             <strong>Error!</strong> Name can only be alphanumerical without whitespace!
                         </div>
                         <button id="login-button" type="submit" class="btn btn-primary">Get me in!</button>
-                    </form> -->
-                    <ul class="nav pull-right">
-                        % if this.login?
-                            <li class="active username-display"><a href="#">{{email}}</a></li>
-                            <li class="active"><button type="submit" id="signout" class="btn btn-primary">Logout</button></li>
-                        % else
-                            <button id="signin" type="submit" class="btn btn-primary">Get me in!</button>
-                        % end
+                    </form>
+                    <ul class="nav pull-right">   
+                        <li class="active username-display"><a></a></li>
+                        <li class="active logout-user"><a>Logout</a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    % if this.login?
     <div id="index-screen" class="row-fluid">
+
         <div id="list-screen" class="span6 view-container bs-docs-sidebar">
             <ul class="nav nav-list bs-docs-sidenav affix-top scrollable">
                 <!-- filled by some ListView -->
@@ -105,56 +115,9 @@
         </div>
 
     </div>
-    % end
-    
-    <!-- According to Mozilla this should go to the bottom of the body tag. I obey-->
-    <script src="https://login.persona.org/include.js"></script>
 
-    <script>
-        navigator.id.watch({
-            % if this.login?
-                loggedInUser:   '{{ email }}',
-            % else
-                loggedInUser:   null,
-            % end
-            onlogin: function(assertion) {
-                // A user has logged in! Here you need to:
-                // 1. Send the assertion to your backend for verification and to create a session.
-                // 2. Update your UI.
-                jQuery.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
-                  type: 'POST',
-                  url: '/login', // This is a URL on your website.
-                  data: {assertion: assertion},
-                  success: function(res, status, xhr) {
-                    console.log('login success');
-                    window.location.reload();
-                  },
-                  error: function(xhr, status, err) {
-                    navigator.id.logout();
-                    alert("Login failure: " + err);
-                  }
-                });
-            },
-            onlogout: function() {
-                // A user has logged out! Here you need to:
-                // Tear down the user's session by redirecting the user or making a call to your backend.
-                // Also, make sure loggedInUser will get set to null on the next page load.
-                // (That's a literal JavaScript null. Not false, 0, or undefined. null.)
-                jQuery.ajax({
-                  type: 'POST',
-                  url: '/logout', // This is a URL on your website.
-                  success: function(res, status, xhr) {
-                    console.log('logout success');
-                    window.location.reload();
-                  },
-                  error: function(xhr, status, err) { alert("Logout failure: " + err); }
-                });
-            }
-        });
-    </script>
-
-    <!--<script type="text/javascript">
+    <script type="text/javascript">
         Washago.Mobile.setup();
-    </script> -->
+    </script>
 </body>
 </html>

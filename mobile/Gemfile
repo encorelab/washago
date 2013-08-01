@@ -1,8 +1,0 @@
-source 'https://rubygems.org'
-
-gem 'cuba'
-gem 'cuba-contrib'
-gem 'tilt'
-gem 'mote'
-gem 'rack-protection'
-gem 'rest-client'
