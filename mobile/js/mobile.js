@@ -7,6 +7,18 @@
   this.Washago.Mobile = this.Washago.Mobile || {};
   var app = this.Washago.Mobile;
 
+  app.config = null;
+  app.requiredConfig = {
+    drowsy: {
+      url: 'string',
+      db: 'string'
+    },
+    wakeful: {
+      url: 'string'
+    },
+    curnit:'string'
+  };
+
   app.keyCount = 0;
   app.autoSaveTimer = window.setTimeout(function() { console.log("timer activated"); } ,10);
   app.user = 'TODO';
@@ -15,10 +27,13 @@
   app.runState = null;
   app.userState = null;
 
+  // app.indexModel = null;
   app.indexView = null;     // TODO - think about how necessary making these global is going to be
 
   app.setup = function() {
     /* CONFIG */
+    Washago.loadConfig();
+    Washago.verifyConfig(app.config, this.requiredConfig);
 
     // hide all rows initially
     app.hideAllRows();
@@ -36,6 +51,21 @@
 
       hideLogin();
       showUsername();
+
+      // now we call a class function (configure) and hand in the drowsy url and the run name so we don't need
+      // to do this config again for each model instantiation
+      // app.Model = new Washago.Model();
+      // app.Model.init(app.config.drowsy.url, app.config.drowsy.db)
+      // .done(function() {
+      //   Wakeful.loadFayeClient(app.config.wakeful.url)
+      //   .done(function() {
+      //     Washago.Model.initWakefulCollections(app.config.wakeful.url)
+      //     .done(function() {
+      //       app.trigger('ready');
+      //     });
+      //   });
+      // });
+
     } else {
       console.log('No user found so prompt for username');
       hideUsername();
@@ -84,9 +114,12 @@
     // run
     // user
     // mobile
-    app.indexView = new app.View.IndexView({
-      el: jQuery('#index-screen')
-    });
+    
+    if (app.indexView === null) {
+      app.indexView = new app.View.IndexView({
+        el: jQuery('#index-screen')
+      });
+    }
 
     /* MISC */
     jQuery().toastmessage({
