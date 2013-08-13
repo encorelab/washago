@@ -53,6 +53,33 @@
     InputView
   **/
   app.View.InputView = Backbone.View.extend({
+    initialize: function () {
+      console.log('Initializing InputView...', this.el);
+    },
+
+    events: {
+      'click #share-note-btn': 'shareNewNote'
+    },
+
+    shareNewNote: function () {
+      var newHeadline = this.$el.find('#note-headline-entry').val();
+      var newNoteText = this.$el.find('#note-body-entry').val();
+      var newNote = {};
+      newNote.headline = newHeadline;
+      newNote.text = newNoteText;
+      // if (jQuery.trim(newTag).length < 2) {
+      //   return; // don't allow tags shorter than 2 characters
+      // }
+      Washago.Mobile.createNewNote(newNote);
+      
+      this.$el.find('#note-headline-entry').val('');
+      this.$el.find('#note-body-entry').val('');
+    },
+
+    render: function () {
+      console.log('Rendering InputView');
+    }
+
 
   });
 
