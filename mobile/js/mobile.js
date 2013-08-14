@@ -160,8 +160,9 @@
   app.createNewNote = function (note) {
     note.created_at = new Date();
     var noteModel = new Model.Note(note);
-    noteModel.save();
+    
     noteModel.wake(app.config.wakeful.url);
+    noteModel.save();
 
     return Model.awake.notes.add(noteModel);
   };

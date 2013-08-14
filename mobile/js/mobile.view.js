@@ -66,7 +66,7 @@
       var newNoteText = this.$el.find('#note-body-entry').val();
       var newNote = {};
       newNote.headline = newHeadline;
-      newNote.text = newNoteText;
+      newNote.body = newNoteText;
       // if (jQuery.trim(newTag).length < 2) {
       //   return; // don't allow tags shorter than 2 characters
       // }
