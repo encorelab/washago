@@ -47,6 +47,7 @@
       this.render();
       this.$el.removeClass('loading');
       this.changeWatermark('Brainstorm');
+      this.trigger('ready');
     },
 
     toggleTagInputter: function () {
