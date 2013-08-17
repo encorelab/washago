@@ -30,4 +30,51 @@
     return state;
   };
 
+  /**
+  Retrieves a JSON config file from "/config.json" and configures
+  the given Sail app accordingly.
+  */
+  Washago.loadConfig = function() {
+    var configUrl = '../config.json';
+    jQuery.ajax(
+      {
+        url: configUrl, 
+        dataType: 'json',
+        async: false,
+        cache: false,
+        success: function(data) {
+          Washago.Mobile.config = data;
+        },
+        error: function(xhr, code, error) {
+          console.error("Couldn't load `"+configUrl+"`: ", code, error, xhr);
+          alert("Couldn't load `"+configUrl+"` because:\n\n"+error+" ("+code+")");
+        }
+      }
+    );
+  };
+
+  Washago.verifyConfig = function(config, required, path) {
+    var curPath = path || null;
+
+    _.each(_.keys(required), function (req) {
+      if (typeof required[req] == 'object') {
+        Washago.verifyConfig(config[req], required[req], (curPath ? curPath + "." : "") + req);
+      } else {
+        var err;
+        if (!config) {
+          err = "Missing configuration value for key '"+curPath+"'! Check your config.json";
+        } else if (!config[req]) {
+          err = "Missing configuration value for key '"+curPath+"."+req+"'! Check your config.json";
+        } else if (typeof config[req] != required[req]) {
+          err = "Configuration value for '"+req+"' must be a "+(typeof required[req])+" but is a "+(typeof config[req])+"! Check your config.json";
+        }
+
+        if (err) {
+          console.error(err);
+          throw err;
+        }
+      }
+    });
+  };
+
 }).call(this);

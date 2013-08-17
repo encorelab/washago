@@ -21,7 +21,7 @@
       Washago.Model.awake.notes.on('add', function(n) {
         wall.registerBalloon(n, Smartboard.View.NoteBalloon, wall.balloons);
       });
-      Washago.Model.awake.notes.each(function(c) {
+      Washago.Model.awake.notes.each(function(n) {
         wall.registerBalloon(n, Smartboard.View.NoteBalloon, wall.balloons);
       });
       

@@ -16,19 +16,16 @@
     <script src="../node_modules/backbone.drowsy/backbone.drowsy.js"></script>
     <script src="../node_modules/backbone.drowsy/wakeful.js"></script>
     <script src="js/jquery.toastmessage.js"></script>
+    
     <script src="../shared/js/libs/jquery.cookie.js"></script>
+    <script src="../shared/js/washago.js"></script>
     <script src="../shared/js/model.js"></script>
-    <script src="js/mobile.view.js"></script>
+
     <script src="js/mobile.js"></script>
+    <script src="js/mobile.view.js"></script>
 </head>
 
 <body>
-    <script type="text/javascript">
-        jQuery(document).ready(function() {
-          Washago.Mobile.setup();
-        }); 
-    </script>
-
     <div class="navbar navbar-inverse">
         <div class="navbar-inner">
             <div class="container-fluid">
@@ -117,7 +114,9 @@
     </div>
 
     <script type="text/javascript">
-        Washago.Mobile.setup();
+        jQuery(document).ready(function() {
+          Washago.Mobile.init();
+        }); 
     </script>
 </body>
 </html>

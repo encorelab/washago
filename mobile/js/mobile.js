@@ -5,7 +5,20 @@
   "use strict";
   var Washago = this.Washago || {};
   this.Washago.Mobile = this.Washago.Mobile || {};
+  var Model = this.Washago.Model;
   var app = this.Washago.Mobile;
+
+  app.config = null;
+  app.requiredConfig = {
+    drowsy: {
+      url: 'string',
+      db: 'string'
+    },
+    wakeful: {
+      url: 'string'
+    },
+    curnit:'string'
+  };
 
   app.keyCount = 0;
   app.autoSaveTimer = window.setTimeout(function() { console.log("timer activated"); } ,10);
@@ -15,14 +28,32 @@
   app.runState = null;
   app.userState = null;
 
+  // app.indexModel = null;
   app.indexView = null;     // TODO - think about how necessary making these global is going to be
 
-  app.setup = function() {
+  app.init = function() {
     /* CONFIG */
+    Washago.loadConfig();
+    Washago.verifyConfig(app.config, this.requiredConfig);
+
+    // TODO: should ask at startup
+    var DATABASE = app.config.drowsy.db;
 
     // hide all rows initially
     app.hideAllRows();
 
+    /* initialize the model and wake it up */
+    Washago.Model.init(app.config.drowsy.url, DATABASE)
+    .then(function () {
+      console.log('model initialized - now waking up');
+      return Washago.Model.wake(app.config.wakeful.url);
+    }).done(function () {
+      console.log('model awake - now calling setup');
+      app.setup();
+    });
+  };
+
+  app.setup = function() {
     // retrieve user name from cookie if possible otherwise ask user to choose name
     app.username = jQuery.cookie('washago_mobile_username');
 
@@ -36,6 +67,8 @@
 
       hideLogin();
       showUsername();
+
+      app.ready();
     } else {
       console.log('No user found so prompt for username');
       hideUsername();
@@ -58,7 +91,7 @@
       }
     });
 
-    // click listener that log user ou
+    // click listener that log user out
     jQuery('.logout-user').click(function() {
       jQuery.removeCookie('washago_mobile_username',  { path: '/' });
       window.location.reload();
@@ -80,19 +113,29 @@
       }
     });
 
-    /* VIEW/MODEL SETUP */
-    // run
-    // user
-    // mobile
-    app.indexView = new app.View.IndexView({
-      el: jQuery('#index-screen')
-    });
 
     /* MISC */
     jQuery().toastmessage({
       position : 'middle-center'
     });
 
+  };
+
+  app.ready = function() {
+    /* VIEW/MODEL SETUP */
+    // run
+    // user
+    // mobile
+    
+    if (app.indexView === null) {
+      app.indexView = new app.View.IndexView({
+        el: jQuery('#index-screen')
+      });
+    }
+
+    app.inputView = new app.View.InputView({
+      el: '#input-screen'
+    });
   };
 
   var hideLogin = function () {
@@ -112,6 +155,16 @@
     jQuery('.row-fluid').each(function (){
       jQuery(this).addClass('hidden');
     });
+  };
+
+  app.createNewNote = function (note) {
+    note.created_at = new Date();
+    var noteModel = new Model.Note(note);
+    
+    noteModel.wake(app.config.wakeful.url);
+    noteModel.save();
+
+    return Model.awake.notes.add(noteModel);
   };
 
   app.autoSave = function(model, inputKey, inputValue, instantSave) {

@@ -215,6 +215,7 @@
           };
         }
       })
+      .extend(TaggableTrait)
       .extend(MultiposTrait)
       .extend(VotableTrait)
       .extend(BuildOnableTrait);

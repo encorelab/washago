@@ -287,7 +287,15 @@
       // call parent's render
       Smartboard.View.Balloon.prototype.render.apply(this, arguments);
 
-      balloon.addClass('note');
+      // WARNING: This is now coding out what exists in a note. Maybe this should come from a user definition in the future??!!
+      var headline = balloon.findOrCreate('.headline', "<h3 class='headline'></h3>");
+      headline.text(balloon.model.get('headline'));
+
+      var noteBody = balloon.findOrCreate('.body', "<div class='body'></div>");
+      noteBody.text(balloon.model.get('body'));
+
+      // balloon.addClass('note');
+      balloon.$el.addClass('note');
     }
   });
 
