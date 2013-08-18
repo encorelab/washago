@@ -137,17 +137,10 @@ rollcall.userExists('akrauss')
   };
 
   Rollcall.prototype.user = function(username) {
-    var users = new this.Users();
-    var usersPromise = users.fetch({
-      selector: JSON.stringify({"username":username}),
-      strict: false
-    });
-
-    var userPromise = usersPromise.then(function () {
+    return this.users({"username": username})
+    .then(function (users) {
       return users.at(0);
     });
-
-    return userPromise;
   };
 
   Rollcall.prototype.userExists = function(username) {
