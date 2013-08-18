@@ -1,0 +1,10 @@
+{
+  "drowsy": {
+        "url": "http://drowsy.badger.encorelab.org",
+        "db":"washago-dev"
+    },
+    "wakeful": {
+        "url": "http://badger.encorelab.org:7777/faye"
+    },
+    "curnit": "cktest"
+}
