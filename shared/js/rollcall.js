@@ -100,7 +100,7 @@ rollcall.userExists('akrauss')
       addTag: function (tag) {
         var tags = _.clone(this.get('tags'));
         tags.push(tag);
-        this.set('tags', tags);
+        this.set('tags', _.uniq(tags));
       },
 
       removeTag: function (tag) {
