@@ -6,7 +6,7 @@
 
 // first parameter is the base DrowsyDromedary url, the second
 // is the database name
-var rollcall = new Rollcall('http://drowsy.badger.encrelab.org', 'rollcall');
+var rollcall = new Rollcall('http://drowsy.badger.encorelab.org', 'rollcall');
 
 ## Get all users with tags 'foo' and 'bar'
 
