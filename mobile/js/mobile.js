@@ -30,14 +30,24 @@
 
   // app.indexModel = null;
   app.indexView = null;     // TODO - think about how necessary making these global is going to be
+  app.inputView = null;
+  app.listView = null;
 
   app.init = function() {
     /* CONFIG */
-    Washago.loadConfig();
-    Washago.verifyConfig(app.config, this.requiredConfig);
+    // Washago.loadConfig();
+    // Washago.verifyConfig(app.config, this.requiredConfig);
+
+    app.config = {
+      drowsy: {url: "http://drowsy.badger.encorelab.org"},
+      wakeful: {url: "http://wakeful.badger.encorelab.org:7777/faye"}
+    };
 
     // TODO: should ask at startup
-    var DATABASE = app.config.drowsy.db;
+    var DATABASE = "washago-dev";
+
+    // // TODO: should ask at startup
+    // var DATABASE = app.config.drowsy.db;
 
     // hide all rows initially
     app.hideAllRows();
@@ -133,9 +143,17 @@
       });
     }
 
-    app.inputView = new app.View.InputView({
-      el: '#input-screen'
-    });
+    if (app.inputView === null) {
+      app.inputView = new app.View.InputView({
+        el: '#input-screen'
+      });
+    }
+
+    if (app.listView === null) {
+      app.listView = new app.View.ListView({
+        el: '#list-screen'
+      });
+    }
   };
 
   var hideLogin = function () {
@@ -157,19 +175,19 @@
     });
   };
 
-  app.createNewNote = function (note) {
-    note.created_at = new Date();
-    var noteModel = new Model.Note(note);
+  app.createNewNote = function (noteData) {
+    noteData.created_at = new Date();
+    var noteModel = new Model.Note(noteData);
     
     noteModel.wake(app.config.wakeful.url);
-    noteModel.save();
+    // noteModel.save();
 
     return Model.awake.notes.add(noteModel);
   };
 
   app.autoSave = function(model, inputKey, inputValue, instantSave) {
     app.keyCount++;
-    //console.log("saving stuff as we go at", app.keyCount);
+    //console.log("  saving stuff as we go at", app.keyCount);
 
     // if (model.kind === 'buildOn') {
     //   if (instantSave || app.keyCount > 9) {

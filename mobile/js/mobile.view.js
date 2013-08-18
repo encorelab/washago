@@ -39,7 +39,30 @@
     ListView
   **/
   app.View.ListView = Backbone.View.extend({
+    initialize: function () {
+      console.log('Initializing InputView...', this.el);
 
+      Washago.Model.awake.notes.on('add', function(n) {
+        console.log('Note added...');
+        // wall.registerBalloon(n, Smartboard.View.NoteBalloon, wall.balloons);
+      });
+      Washago.Model.awake.notes.each(function(n) {
+        console.log('Show each note...');
+        // wall.registerBalloon(n, Smartboard.View.NoteBalloon, wall.balloons);
+      });
+    },
+
+    events: {
+      'click #new-note-btn': 'createNewNote'
+    },
+
+    createNewNote: function() {
+      console.log('New note clicked');
+    },
+
+    render: function () {
+      console.log('Rendering InputView');
+    }
   });
 
   /**
