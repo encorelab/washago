@@ -1,59 +1,69 @@
 (function () {
   "use strict";
 
-  this.Washago = this.Washago || {};
-  this.Washago.Smartboard = this.Washago.Smartboard || {};
-  var Smartboard = this.Washago.Smartboard;
+  var smartboard = new this.Washago.App();
   var Model = this.Washago.Model;
 
-  Smartboard.init = function() {
+
+  smartboard.init = function() {
     _.extend(this, Backbone.Events);
 
-    // TODO: load this from config.json
-    Smartboard.config = {
-      drowsy: {url: "http://drowsy.badger.encorelab.org"},
-      wakeful: {url: "http://wakeful.badger.encorelab.org:7777/faye"}
+    var requiredConfig = {
+      drowsy: {
+        url: 'string',
+        db: 'string'
+      },
+      wakeful: {
+        url: 'string'
+      },
+      curnit:'string'
     };
 
-    // TODO: should ask at startup
-    var DATABASE = "washago-dev";
+    // TODO: load this from config.json
+    smartboard.loadConfig();
+    smartboard.verifyConfig(smartboard.config, requiredConfig);
 
-    Washago.Model.init(Smartboard.config.drowsy.url, DATABASE)
+    // TODO: should ask at startup
+    var DATABASE = smartboard.config.drowsy.db;
+
+    Washago.Model.init(smartboard.config.drowsy.url, DATABASE)
     .then(function () {
-      return Washago.Model.wake(Smartboard.config.wakeful.url);
+      return Washago.Model.wake(smartboard.config.wakeful.url);
     }).done(function () {
-      Smartboard.ready();
+      smartboard.ready();
     });
   };
 
-  Smartboard.ready = function() {
-    Smartboard.runState = Washago.getState('RUN');
-    if (!Smartboard.runState) {
-      Smartboard.runState = Washago.setState('RUN', {
+  smartboard.ready = function() {
+    smartboard.runState = Washago.getState('RUN');
+    if (!smartboard.runState) {
+      smartboard.runState = Washago.setState('RUN', {
         phase: 'brainstorm'
       });
     }
-    Smartboard.runState.wake(Smartboard.config.wakeful.url);
+    smartboard.runState.wake(smartboard.config.wakeful.url);
 
-    Smartboard.wall = new Smartboard.View.Wall({
+    smartboard.wall = new smartboard.View.Wall({
       el: '#wall'
     });
 
-    Smartboard.wall.on('ready', function () { 
-      Smartboard.trigger('ready');
+    smartboard.wall.on('ready', function () { 
+      smartboard.trigger('ready');
     });
 
-    Smartboard.wall.ready();
+    smartboard.wall.ready();
   };
 
-  Smartboard.createNewTag = function (tagName) {
+  smartboard.createNewTag = function (tagName) {
     var tag = new Model.Tag({
       name: tagName,
       created_at: new Date()
     });
-    tag.wake(Smartboard.config.wakeful.url);
+    tag.wake(smartboard.config.wakeful.url);
 
     return Model.awake.tags.add(tag);
   };
+
+  this.Washago.Smartboard = smartboard;
 
 }).call(this);

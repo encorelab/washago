@@ -1,9 +1,7 @@
 (function () {
   "use strict";
-
-  this.Washago = {};
-
-  Washago = this.Washago;
+  
+  var Washago = {}
 
   Washago.getState = function(forEntity) {
     var state;
@@ -30,12 +28,16 @@
     return state;
   };
 
+  // basc class for Washago-based apps; inherit from this!
+  Washago.App = function () { }
+
   /**
   Retrieves a JSON config file from "/config.json" and configures
   the given Sail app accordingly.
   */
-  Washago.loadConfig = function() {
-    var configUrl = '../config.json';
+  Washago.App.prototype.loadConfig = function(configUrl) {
+    var _this = this;
+    configUrl = configUrl || '../../config.json';
     jQuery.ajax(
       {
         url: configUrl, 
@@ -43,7 +45,7 @@
         async: false,
         cache: false,
         success: function(data) {
-          Washago.Mobile.config = data;
+          _this.config = data;
         },
         error: function(xhr, code, error) {
           console.error("Couldn't load `"+configUrl+"`: ", code, error, xhr);
@@ -53,12 +55,13 @@
     );
   };
 
-  Washago.verifyConfig = function(config, required, path) {
+  Washago.App.prototype.verifyConfig = function(config, required, path) {
+    var _this = this;
     var curPath = path || null;
 
     _.each(_.keys(required), function (req) {
       if (typeof required[req] == 'object') {
-        Washago.verifyConfig(config[req], required[req], (curPath ? curPath + "." : "") + req);
+        _this.verifyConfig(config[req], required[req], (curPath ? curPath + "." : "") + req);
       } else {
         var err;
         if (!config) {
@@ -76,5 +79,7 @@
       }
     });
   };
+
+  this.Washago = Washago;
 
 }).call(this);
