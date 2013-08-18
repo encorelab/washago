@@ -57,6 +57,14 @@ rollcall.user('akrauss')
   user.save();
 });
 
+## Remove a tag from user
+
+rollcall.user('akrauss')
+.done(function (user) {
+  user.removeTag('mytag');
+  user.save();
+});
+
 ## Replace all of a user's tags
 
 rollcall.user('akrauss')
@@ -104,6 +112,7 @@ rollcall.userExists('akrauss')
       },
 
       removeTag: function (tag) {
+        var tags = this.get('tags');
         this.set('tags', _.without(tags, tag));
       }
     });
