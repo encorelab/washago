@@ -129,6 +129,23 @@ rollcall.userExists('akrauss')
     });
   };
 
+  Rollcall.prototype.authenticate = function(username, password) {
+    var authenticatePromise this.user(username)
+      .then(function (user) {
+        if (!user) {
+          return false;
+        }
+
+        if (user.get('password') != password) {
+          return false;
+        }
+
+        return true;
+      });
+
+    return authenticatePromise;
+  };
+
   Rollcall.prototype.usersWithTags = function(tags) {
     tags = tags || [];
     var selector = {"tags":{"$all": tags}};
