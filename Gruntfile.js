@@ -70,9 +70,8 @@ module.exports = function(grunt) {
     var done = this.async();
     var child_process = require('child_process');
 
-    child_process.exec('mocha-phantomjs ./test/model.html', function (err, stdout) {
+    child_process.exec('mocha-phantomjs ./test/smartboard.html', function (err, stdout) {
       grunt.log.write(stdout);
-      done(err);
     });
   });
 };

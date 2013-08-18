@@ -1,0 +1,79 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+    <title>Washago Smartboard</title> 
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+
+    <link href="../smartboard/css/smartboard.css" rel="stylesheet">
+
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+    <script src="../node_modules/underscore/underscore.js"></script>
+    <script src="../node_modules/backbone/backbone.js"></script>
+
+    <script src="../node_modules/backbone.drowsy/backbone.drowsy.js"></script>
+    <script src="../node_modules/backbone.drowsy/wakeful.js"></script>
+
+    <script src="../shared/js/washago.js"></script>
+    <script src="../shared/js/model.js"></script>
+    
+    <script src="../smartboard/js/smartboard.js"></script>
+    <script src="../smartboard/js/smartboard.view.js"></script>
+    <script src="../smartboard/js/smartboard.view.wall.js"></script>
+    <script src="../smartboard/js/smartboard.view.balloons.js"></script>
+</head>
+
+<body>
+    <div id="wall" class="loading">
+        <!-- <div id="tags-panel">
+            <div id="tags-tab">Tags</div>
+            <div id="tags-editor">...</div>
+        </div> -->
+
+        <div id="watermark"><img src="loader.gif" alt="Loading..." style="width: 400px" /></div>
+
+        <div id="add-tag-container">
+            <button id="add-tag-opener">Add Tag</button>
+            <input type="text" id="new-tag" />
+            <button id="submit-new-tag">✚</button>
+        </div>
+
+
+        <div id="action-buttons-container">
+            <button id="toggle-pause">Pause</button>
+
+            <button id="go-tagging">Tagging</button>
+            <button id="go-propose">Propose</button>
+            <button id="go-investigate">Investigate</button>
+        </div>
+    </div>
+
+    <script>
+        jQuery(document).ready(function () {
+            Washago.Smartboard.init();
+        });
+    </script>
+
+    <div id="mocha"></div>
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+
+    <script>
+        mocha.ui('bdd');
+        mocha.reporter('html');
+        expect = chai.expect;
+    </script>
+
+    <script src="smartboard.test.js"></script>
+
+    <script>
+        jQuery(document).ready(function () {
+            if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
+            else { mocha.run(); }
+        });
+    </script>
+</body>
+</html>
