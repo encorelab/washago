@@ -139,7 +139,7 @@ rollcall.userExists('akrauss')
   };
 
   Rollcall.prototype.authenticate = function(username, password) {
-    var authenticatePromise this.user(username)
+    var authenticatePromise = this.user(username)
       .then(function (user) {
         if (!user) {
           return false;
