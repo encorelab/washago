@@ -23,6 +23,17 @@
 
     <script src="js/mobile.js"></script>
     <script src="js/mobile.view.js"></script>
+
+    <!-- Testing out some templating -->
+    <script id="list-view-template" type="text/template">
+        <li id="note" class="list-item investigation-item">
+            <a class="note">
+                <span class="headline"><%= headline %></span>
+                <i class="icon-chevron-right"></i>
+                <span class="author"></span>
+            </a>
+        </li>
+    </script>
 </head>
 
 <body>

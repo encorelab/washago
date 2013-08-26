@@ -39,17 +39,36 @@
     ListView
   **/
   app.View.ListView = Backbone.View.extend({
+    template: "#list-view-template",
+
     initialize: function () {
+      var view = this;
+
       console.log('Initializing InputView...', this.el);
 
       Washago.Model.awake.notes.on('add', function(n) {
         console.log('Note added...');
         // wall.registerBalloon(n, Smartboard.View.NoteBalloon, wall.balloons);
       });
+
+      // find the list where items are rendered into
+      var list = this.$el.find('ul');
+
       Washago.Model.awake.notes.each(function(n) {
         console.log('Show each note...');
         // wall.registerBalloon(n, Smartboard.View.NoteBalloon, wall.balloons);
+        // var listItem = jQuery('<li>');
+        // listItem.text(n.get('headline'));
+        var data = n.toJSON();
+        // _.extend(data, viewHelpers);
+
+        var listItem = _.template(jQuery(view.template).text(), data);
+        // list.html(listItem);
+
+        list.append(listItem);
       });
+
+      return view;
     },
 
     events: {
