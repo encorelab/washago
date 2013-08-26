@@ -1,7 +1,7 @@
 (function () {
   "use strict";
   
-  var Washago = {}
+  var Washago = {};
 
   Washago.getState = function(forEntity) {
     var state;
@@ -29,7 +29,7 @@
   };
 
   // basc class for Washago-based apps; inherit from this!
-  Washago.App = function () { }
+  Washago.App = function () { };
 
   /**
   Retrieves a JSON config file from "/config.json" and configures
