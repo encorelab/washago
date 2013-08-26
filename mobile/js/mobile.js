@@ -96,6 +96,8 @@
 
         hideLogin();
         showUsername();
+
+        app.ready();
       } else {
         console.error('Username invalid');
       }
@@ -180,7 +182,7 @@
     var noteModel = new Model.Note(noteData);
     
     noteModel.wake(app.config.wakeful.url);
-    // noteModel.save();
+    noteModel.save();
 
     return Model.awake.notes.add(noteModel);
   };
