@@ -20,6 +20,7 @@
     <script src="../shared/js/libs/jquery.cookie.js"></script>
     <script src="../shared/js/washago.js"></script>
     <script src="../shared/js/model.js"></script>
+    <script src="../shared/js/rollcall.js"></script>
 
     <script src="js/mobile.js"></script>
     <script src="js/mobile.view.js"></script>
@@ -54,11 +55,19 @@
                         
                     </ul>
                     <form class="navbar-form pull-right">
-                        <input id="username" type="text" name="username" autocomplete="on" placeholder="Please enter name" title="error" pattern="^[a-zA-Z0-9]+$" maxlength="25" />
+                        <!-- Default behaviour of a input field in a form is to submit the form and reload
+                            the page. We don't want that at all. To circumvent this we add an onkeypress handler
+                            that calls the interceptKeypress function. This function calls loginUser if
+                            the 'return' key is pressed and then returns false to avoid bubbling of the event
+                            see also:
+                            http://stackoverflow.com/questions/905222/enter-key-press-event-in-javascript
+                        -->
+                        <input id="username" type="text" name="username" autocomplete="on" placeholder="Please enter name" title="error" pattern="^[a-zA-Z0-9]+$" maxlength="25" onkeypress="return Washago.Mobile.interceptKeypress(event)" />
                         <div class="alert alert-error input-alert">
                             <strong>Error!</strong> Name can only be alphanumerical without whitespace!
                         </div>
                         <button id="login-button" type="submit" class="btn btn-primary">Get me in!</button>
+                        <!-- <a id="login-button" class="btn btn-primary">Get me in!</a> -->
                     </form>
                     <ul class="nav pull-right">   
                         <li class="active username-display"><a></a></li>

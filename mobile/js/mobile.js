@@ -1,5 +1,5 @@
 /*jshint debug:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, undef:true, curly:true, browser: true, devel: true, jquery:true, strict:true */
-/*global  Backbone, _, jQuery */
+/*global  Backbone, _, jQuery, Rollcall */
 
 (function() {
   "use strict";
@@ -19,6 +19,8 @@
     },
     curnit:'string'
   };
+
+  app.rollcall = null;
 
   app.keyCount = 0;
   app.autoSaveTimer = window.setTimeout(function() { console.log("timer activated"); } ,10);
@@ -51,6 +53,10 @@
 
     // hide all rows initially
     app.hideAllRows();
+
+    if (app.rollcall === null) {
+      app.rollcall = new Rollcall('http://drowsy.badger.encorelab.org', 'rollcall');
+    }
 
     /* initialize the model and wake it up */
     Washago.Model.init(app.config.drowsy.url, DATABASE)
@@ -86,27 +92,12 @@
 
     // click listener that sets username
     jQuery('#login-button').click(function() {
-      app.username = jQuery('#username').val();
-      if (app.username && app.username !== '') {
-        jQuery.cookie('washago_mobile_username', app.username, { expires: 1, path: '/' });
-        jQuery('.username-display a').text(app.username);
-
-        // show index-screen aka home
-        jQuery('#index-screen').removeClass('hidden');
-
-        hideLogin();
-        showUsername();
-
-        app.ready();
-      } else {
-        console.error('Username invalid');
-      }
+      app.loginUser(jQuery('#username').val());
     });
 
     // click listener that log user out
     jQuery('.logout-user').click(function() {
-      jQuery.removeCookie('washago_mobile_username',  { path: '/' });
-      window.location.reload();
+      logoutUser();
     });
 
     // Show home / input screen
@@ -156,6 +147,58 @@
         el: '#list-screen'
       });
     }
+  };
+
+  app.loginUser = function (username) {
+    // retriev user with given username
+    app.rollcall.user(username)
+    .done(function (user) {
+      if (user) {
+        console.log(user.toJSON());
+
+        app.username = user.get('username');
+
+        jQuery.cookie('washago_mobile_username', app.username, { expires: 1, path: '/' });
+        jQuery('.username-display a').text(app.username);
+
+        // show index-screen aka home
+        jQuery('#index-screen').removeClass('hidden');
+
+        hideLogin();
+        showUsername();
+
+        app.ready();
+      } else {
+        console.log('User '+username+' not found!');
+        if (confirm('User '+username+' not found! Do you want to create the user to continue?')) {
+            // Create user and continue!
+            console.log('Create user and continue!');
+        } else {
+            // Do nothing!
+            console.log('No user logged in!');
+        }
+      }
+    });
+
+    // if (username && username !== '') {
+    //   jQuery.cookie('washago_mobile_username', username, { expires: 1, path: '/' });
+    //   jQuery('.username-display a').text(username);
+
+    //   // show index-screen aka home
+    //   jQuery('#index-screen').removeClass('hidden');
+
+    //   hideLogin();
+    //   showUsername();
+
+    //   app.ready();
+    // } else {
+    //   console.error('Username invalid');
+    // }
+  };
+
+  var logoutUser = function () {
+    jQuery.removeCookie('washago_mobile_username',  { path: '/' });
+    window.location.reload();
   };
 
   var hideLogin = function () {
@@ -213,6 +256,19 @@
         app.keyCount = 0;
       }
     //}
+  };
+
+  /**
+    Function that is called on each keypress on username input field (in a form).
+    If the 'return' key is pressed we call loginUser with the value of the input field.
+    To avoid further bubbling, form submission and reload of page we have to return false.
+    See also: http://stackoverflow.com/questions/905222/enter-key-press-event-in-javascript
+  **/
+  app.interceptKeypress = function(e) {
+    if (event.which === 13 || event.keyCode === 13) {
+      app.loginUser(jQuery('#username').val());
+      return false;
+    }
   };
 
   this.Washago = Washago;
