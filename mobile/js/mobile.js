@@ -265,7 +265,7 @@
     See also: http://stackoverflow.com/questions/905222/enter-key-press-event-in-javascript
   **/
   app.interceptKeypress = function(e) {
-    if (event.which === 13 || event.keyCode === 13) {
+    if (e.which === 13 || e.keyCode === 13) {
       app.loginUser(jQuery('#username').val());
       return false;
     }
