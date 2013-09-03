@@ -93,6 +93,8 @@
     // click listener that sets username
     jQuery('#login-button').click(function() {
       app.loginUser(jQuery('#username').val());
+      // prevent bubbling events that lead to reload
+      return false;
     });
 
     // click listener that log user out
